@@ -1,0 +1,300 @@
+openapi: '3.0.3'
+info:
+  title: B2B Usage-Based Billing Platform API
+  version: '1.0.0'
+
+tags:
+  - name: Auth
+  - name: Organization
+
+paths:
+  /v1/auth/register:
+    post:
+      summary: Create a new account and send email verification
+      operationId: register
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '202':
+          description: Registration accepted. Verification email has been sent
+          content:
+            'application/json':
+              schema:
+                type: object
+  
+  /v1/auth/email/verify:
+    post:
+      summary: Verify email
+      operationId: verifyEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+      responses:
+        '204':
+          description: Email verified
+  
+  /v1/auth/email/resend-verification:
+    post:
+      summary: Resend email verification
+      operationId: resendEmailVerification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendEmailVerificationRequest'
+      responses:
+        '204':
+          description: Email verification has been resent
+
+  /v1/auth/login:
+    post:
+      summary: Create a new session
+      operationId: login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Session created
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /v1/auth/refresh:
+    post:
+      summary: Refresh an access token of session
+      operationId: refreshSession
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/RefreshSessionRequest'
+      responses:
+        '200':
+          description: Session refreshed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /v1/auth/logout:
+    post:
+      summary: Finish the session
+      operationId: logout
+      tags: [Auth]
+      security: [Bearer: []]
+      responses:
+        '204':
+          description: Session finished
+
+  /v1/auth/switch-organization:
+    post:
+      summary: Switch an organization in session
+      operationId: switchOrganization
+      tags: [Auth]
+      security: [Bearer: []]
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/SwitchOrganizationRequest'
+      responses:
+        '200':
+          description: Session recreated with selected organization
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/SwitchOrganizationResponse'
+
+  /v1/me:
+    get:
+      summary: Get user info of current session
+      operationId: getMe
+      tags: [Auth]
+      security: [Bearer: []]
+      responses:
+        '200':
+          description: User info returned
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/MeResponse'
+
+  /v1/organizations:
+    post:
+      summary: Create a new organization
+      operationId: createOrganization
+      tags: [Organization]
+      security: [Bearer: []]
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationRequest'
+      responses:
+        '201':
+          description: Organization created
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CreateOrganizationResponse'
+
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+  schemas:
+    BadRequestResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Invalid request format
+        code:
+          type: integer
+          example: 1001
+
+    InternalErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Internal error
+
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    
+    VerifyEmailRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+
+    ResendEmailVerificationRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    RefreshSessionRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+
+    AuthResponse:
+      type: object
+      required:
+        - access_token
+        - refresh_token
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+
+    SwitchOrganizationRequest:
+      type: object
+      required:
+        - organization_id
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+
+    SwitchOrganizationResponse:
+      type: object
+      required:
+        - access_token
+      properties:
+        access_token:
+          type: string
+
+    MeResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        selected_organization:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+
+    CreateOrganizationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+
+    CreateOrganizationResponse:
+      type: object
+      required:
+        - organization_id
+        - access_token
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+        access_token:
+          type: string
+
