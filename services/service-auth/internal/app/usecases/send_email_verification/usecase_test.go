@@ -1,4 +1,4 @@
-package email_verification
+package send_email_verification
 
 import (
 	"context"
@@ -51,7 +51,7 @@ func TestUsecase(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		d := newDeps()
 
-		vers := []*user.Verification{
+		vers := []*user.EmailVerification{
 			{
 				Token: "test-token-1",
 				Email: "test-1@example.com",
@@ -98,7 +98,7 @@ func TestUsecase(t *testing.T) {
 
 		d.mockVerificationRepository.EXPECT().
 			GetUnsent(gomock.Any(), gomock.Eq(10)).
-			DoAndReturn(func(ctx context.Context, _ int) ([]*user.Verification, error) {
+			DoAndReturn(func(ctx context.Context, _ int) ([]*user.EmailVerification, error) {
 				trx.AddCommit(ctx, func() error {
 					commitCalled = true
 					return nil
@@ -117,7 +117,7 @@ func TestUsecase(t *testing.T) {
 	t.Run("commit trx", func(t *testing.T) {
 		d := newDeps()
 
-		vers := []*user.Verification{
+		vers := []*user.EmailVerification{
 			{
 				Token: "test-token",
 				Email: "test@example.com",
@@ -153,7 +153,7 @@ func TestUsecase(t *testing.T) {
 
 		d.mockVerificationRepository.EXPECT().
 			GetUnsent(gomock.Any(), gomock.Eq(10)).
-			DoAndReturn(func(ctx context.Context, _ int) ([]*user.Verification, error) {
+			DoAndReturn(func(ctx context.Context, _ int) ([]*user.EmailVerification, error) {
 				trx.AddRollback(ctx, func() error {
 					return errors.New("rollback test error")
 				})
@@ -180,7 +180,7 @@ func TestUsecase(t *testing.T) {
 	t.Run("publish mails error + trx rollback error", func(t *testing.T) {
 		d := newDeps()
 
-		vers := []*user.Verification{
+		vers := []*user.EmailVerification{
 			{
 				Token: "test-token",
 				Email: "test@example.com",
@@ -189,7 +189,7 @@ func TestUsecase(t *testing.T) {
 
 		d.mockVerificationRepository.EXPECT().
 			GetUnsent(gomock.Any(), gomock.Eq(10)).
-			DoAndReturn(func(ctx context.Context, _ int) ([]*user.Verification, error) {
+			DoAndReturn(func(ctx context.Context, _ int) ([]*user.EmailVerification, error) {
 				trx.AddRollback(ctx, func() error {
 					return errors.New("rollback test error")
 				})
@@ -220,7 +220,7 @@ func TestUsecase(t *testing.T) {
 	t.Run("mark as sent error + trx rollback error", func(t *testing.T) {
 		d := newDeps()
 
-		vers := []*user.Verification{
+		vers := []*user.EmailVerification{
 			{
 				Token: "test-token",
 				Email: "test@example.com",
@@ -229,7 +229,7 @@ func TestUsecase(t *testing.T) {
 
 		d.mockVerificationRepository.EXPECT().
 			GetUnsent(gomock.Any(), gomock.Eq(10)).
-			DoAndReturn(func(ctx context.Context, _ int) ([]*user.Verification, error) {
+			DoAndReturn(func(ctx context.Context, _ int) ([]*user.EmailVerification, error) {
 				trx.AddRollback(ctx, func() error {
 					return errors.New("rollback test error")
 				})

@@ -10,16 +10,16 @@ CREATE TABLE users (
 CREATE UNIQUE INDEX idx_users_email_unique 
     ON users (email);
 
-CREATE TABLE verifications (
+CREATE TABLE email_verifications (
     token uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    email_sent_at TIMESTAMPTZ DEFAULT NULL,
+    sent_at TIMESTAMPTZ DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT current_timestamp
 );
 
-CREATE INDEX idx_verifications_email_sent_at_is_null 
-    ON verifications (created_at)
-    WHERE email_sent_at IS NULL;
+CREATE INDEX idx_email_verifications_sent_at_is_null 
+    ON email_verifications (created_at)
+    WHERE sent_at IS NULL;
 
-CREATE INDEX idx_verifications_user_id_token 
-    ON verifications (user_id, token);
+CREATE INDEX idx_email_verifications_user_id_token 
+    ON email_verifications (user_id, token);

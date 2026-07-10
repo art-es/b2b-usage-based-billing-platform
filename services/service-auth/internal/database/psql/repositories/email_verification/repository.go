@@ -1,4 +1,4 @@
-package verification
+package email_verification
 
 import (
 	"context"
@@ -6,9 +6,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/lib/pq"
+
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
-	"github.com/lib/pq"
 )
 
 type Repository struct {
@@ -27,7 +28,7 @@ func (r *Repository) Create(ctx context.Context, userID string) error {
 		return err
 	}
 
-	query := `INSERT INTO verifications (user_id) VALUES ($1)`
+	query := `INSERT INTO email_verifications (user_id) VALUES ($1)`
 	args := []any{userID}
 
 	_, err = conn.ExecContext(ctx, query, args...)
@@ -38,16 +39,16 @@ func (r *Repository) Create(ctx context.Context, userID string) error {
 	return nil
 }
 
-func (r *Repository) GetUnsent(ctx context.Context, batchSize int) ([]*user.Verification, error) {
+func (r *Repository) GetUnsent(ctx context.Context, batchSize int) ([]*user.EmailVerification, error) {
 	conn, err := r.conns.Conn(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	query := `SELECT v.token, u.email
-		FROM verifications AS v
+		FROM email_verifications AS v
 		JOIN users AS u ON u.id = v.user_id
-		WHERE v.email_sent_at is NULL
+		WHERE v.sent_at is NULL
 		ORDER BY v.created_at
 		LIMIT $1
 		FOR UPDATE OF v SKIP LOCKED`
@@ -64,10 +65,10 @@ func (r *Repository) GetUnsent(ctx context.Context, batchSize int) ([]*user.Veri
 
 	defer rows.Close()
 
-	vers := make([]*user.Verification, 0, batchSize)
+	vers := make([]*user.EmailVerification, 0, batchSize)
 
 	for rows.Next() {
-		ver := &user.Verification{}
+		ver := &user.EmailVerification{}
 		if err := rows.Scan(&ver.Token, &ver.Email); err != nil {
 			return nil, fmt.Errorf("scan row: %w", err)
 		}
@@ -88,8 +89,8 @@ func (r *Repository) MarkAsSent(ctx context.Context, tokens []string) error {
 		return err
 	}
 
-	query := `UPDATE verifications
-		SET email_sent_at = current_timestamp
+	query := `UPDATE email_verifications
+		SET sent_at = current_timestamp
 		WHERE token = ANY($1::uuid[])`
 	args := []any{pq.Array(tokens)}
 

@@ -70,10 +70,10 @@ func build(ctx context.Context) error {
 
 	// Repositories
 	userRepository := psqlRepositories.NewUserRepository(psqlConn)
-	verificationRepository := psqlRepositories.NewVerificationRepository(psqlConn)
+	emailVerificationRepository := psqlRepositories.NewEmailVerificationRepository(psqlConn)
 
 	// Usecases
-	registerUsecase := usecases.NewRegisterUsecase(hashService, userRepository, verificationRepository, logger)
+	registerUsecase := usecases.NewRegisterUsecase(hashService, userRepository, emailVerificationRepository, logger)
 
 	// HTTP Server
 	httpRouter := http.NewServeMux()

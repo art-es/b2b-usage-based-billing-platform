@@ -1,4 +1,5 @@
-package email_verification
+//go:generate mockgen -source=usecase.go -destination=usecase_mock_test.go -package=$GOPACKAGE
+package send_email_verification
 
 import (
 	"context"
@@ -12,7 +13,7 @@ import (
 )
 
 type verificationRepository interface {
-	GetUnsent(ctx context.Context, batchSize int) ([]*user.Verification, error)
+	GetUnsent(ctx context.Context, batchSize int) ([]*user.EmailVerification, error)
 	MarkAsSent(ctx context.Context, tokens []string) error
 }
 
@@ -80,7 +81,7 @@ func (u *Usecase) Do(ctx context.Context) (int, error) {
 	return len(vers), nil
 }
 
-func convertToEvents(vers []*user.Verification) []event.EmailSend {
+func convertToEvents(vers []*user.EmailVerification) []event.EmailSend {
 	events := make([]event.EmailSend, 0, len(vers))
 	for _, ver := range vers {
 		events = append(events, event.EmailSend{
@@ -92,7 +93,7 @@ func convertToEvents(vers []*user.Verification) []event.EmailSend {
 	return events
 }
 
-func convertToTokens(vers []*user.Verification) []string {
+func convertToTokens(vers []*user.EmailVerification) []string {
 	tokens := make([]string, 0, len(vers))
 	for _, ver := range vers {
 		tokens = append(tokens, ver.Token)

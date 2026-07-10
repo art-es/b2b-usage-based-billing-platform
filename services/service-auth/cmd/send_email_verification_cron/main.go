@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/send_email_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/kafka"
@@ -25,7 +25,7 @@ var (
 var (
 	logger     log.Logger
 	shutdowner *shutdown.Shutdowner
-	usecase    *email_verification.Usecase
+	usecase    *send_email_verification.Usecase
 )
 
 func main() {
@@ -85,13 +85,13 @@ func build(ctx context.Context) error {
 	shutdowner.Add(kafkaProducer)
 
 	// Repositories
-	verificationRepository := repositories.NewVerificationRepository(psqlConn)
+	emailVerificationRepository := repositories.NewEmailVerificationRepository(psqlConn)
 
 	// Broker
 	emailSendProducer := email_send.NewProducer(kafkaProducer)
 
-	usecase = email_verification.NewUsecase(
-		verificationRepository,
+	usecase = send_email_verification.NewUsecase(
+		emailVerificationRepository,
 		emailSendProducer,
 		logger,
 		batchSize,

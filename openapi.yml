@@ -26,11 +26,34 @@ paths:
             'application/json':
               schema:
                 type: object
+        '400':
+          description: | 
+            Bad request 
+            
+            Additional codes:
+            - 2001: Required name
+            - 2002: Required email
+            - 2003: Required password
+            - 2004: Invalid name
+            - 2005: Invalid email
+            - 2006: Invalid password
+            - 2007: Email is already in use
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '500':
+          description: Internal error
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/InternalErrorResponse'
   
   /v1/auth/email/verify:
     post:
       summary: Verify email
       operationId: verifyEmail
+      tags: [Auth]
       requestBody:
         required: true
         content:
@@ -40,11 +63,29 @@ paths:
       responses:
         '204':
           description: Email verified
+        '400':
+          description: | 
+            Bad request 
+            
+            Additional codes:
+            - 2001: Required token
+            - 2002: Invalid token
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '500':
+          description: Internal error
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/InternalErrorResponse'
   
   /v1/auth/email/resend-verification:
     post:
       summary: Resend email verification
       operationId: resendEmailVerification
+      tags: [Auth]
       requestBody:
         required: true
         content:
@@ -191,13 +232,29 @@ components:
       properties:
         name:
           type: string
+          description: |
+            Rules:
+            - required field
+            - length between 3 and 100
+            - first character is letter
         email:
           type: string
           format: email
+          description: |
+            Rules:
+            - required field
+            - length no more than 100
+            - email format
         password:
           type: string
           format: password
-    
+          description: |
+            Rules:
+            - required field
+            - length between 8 and 64
+            - at least one letter
+            - at least one number
+
     VerifyEmailRequest:
       type: object
       required:
@@ -205,6 +262,7 @@ components:
       properties:
         token:
           type: string
+          format: uuid
 
     ResendEmailVerificationRequest:
       type: object
