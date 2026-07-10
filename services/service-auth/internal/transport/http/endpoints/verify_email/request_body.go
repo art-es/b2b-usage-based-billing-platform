@@ -5,7 +5,7 @@ import (
 )
 
 type requestBody struct {
-	Token string `json:"name"`
+	Token string `json:"token"`
 }
 
 func (b *requestBody) validate() (string, int, bool) {
@@ -21,5 +21,5 @@ func (b *requestBody) validate() (string, int, bool) {
 
 func (b *requestBody) validateToken() bool {
 	_, err := uuid.Parse(b.Token)
-	return err == nil
+	return err != nil
 }

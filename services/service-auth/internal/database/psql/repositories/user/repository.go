@@ -40,3 +40,20 @@ func (r *Repository) Create(ctx context.Context, usr *user.User) error {
 
 	return nil
 }
+
+func (r *Repository) MarkAsVerified(ctx context.Context, userID string) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `UPDATE users SET verified_at = current_timestamp WHERE id = $1`
+	args := []any{userID}
+
+	_, err = conn.ExecContext(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	return nil
+}

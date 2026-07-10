@@ -101,3 +101,47 @@ func (r *Repository) MarkAsSent(ctx context.Context, tokens []string) error {
 
 	return nil
 }
+
+func (r *Repository) GetByToken(ctx context.Context, token string) (*user.EmailVerification, error) {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := `SELECT v.token, u.user_id
+		FROM email_verifications AS v
+		JOIN users AS u ON u.id = v.user_id
+		WHERE v.token = $1 AND u.verified_at IS NULL
+		FOR UPDATE OF v SKIP LOCKED`
+	args := []any{token}
+
+	var ver user.EmailVerification
+
+	err = conn.QueryRowContext(ctx, query, args...).Scan(&ver.Token, &ver.UserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, fmt.Errorf("query execute: %w", err)
+	}
+
+	return &ver, nil
+}
+
+func (r *Repository) DeleteTokensByUserID(ctx context.Context, userID string) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `DELETE FROM email_verifications WHERE user_id = $1`
+	args := []any{userID}
+
+	_, err = conn.ExecContext(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	return nil
+}

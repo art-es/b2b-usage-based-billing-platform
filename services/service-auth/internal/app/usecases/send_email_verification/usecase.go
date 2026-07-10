@@ -23,14 +23,14 @@ type emailSendProducer interface {
 
 type Usecase struct {
 	verificationRepository verificationRepository
-	emailEventProducer     emailSendProducer
+	emailSendProducer      emailSendProducer
 	logger                 log.Logger
 	batchSize              int
 }
 
 func NewUsecase(
 	verificationRepository verificationRepository,
-	emailSendEventProducer emailSendProducer,
+	emailSendProducer emailSendProducer,
 	logger log.Logger,
 	batchSize int,
 ) *Usecase {
@@ -38,7 +38,7 @@ func NewUsecase(
 
 	return &Usecase{
 		verificationRepository: verificationRepository,
-		emailEventProducer:     emailSendEventProducer,
+		emailSendProducer:      emailSendProducer,
 		logger:                 logger,
 		batchSize:              batchSize,
 	}
@@ -47,35 +47,39 @@ func NewUsecase(
 func (u *Usecase) Do(ctx context.Context) (int, error) {
 	ctx = trx.Begin(ctx)
 
-	vers, err := u.verificationRepository.GetUnsent(ctx, u.batchSize)
+	updatesCount, err := u.processTrx(ctx)
 	if err != nil {
-		trxutil.RollbackOrLog(ctx, u.logger, fmt.Sprintf("get unsent verifications: %v", err))
+		trxutil.RollbackOrLog(ctx, u.logger, err.Error())
 
-		return 0, fmt.Errorf("get unsent verifications: %w", err)
-	}
-
-	if len(vers) == 0 {
-		_ = trx.Commit(ctx)
-		return 0, nil
-	}
-
-	err = u.emailEventProducer.Produce(ctx, convertToEvents(vers))
-	if err != nil {
-		trxutil.RollbackOrLog(ctx, u.logger, fmt.Sprintf("publish mails: %v", err))
-
-		return 0, fmt.Errorf("publish mails: %w", err)
-	}
-
-	err = u.verificationRepository.MarkAsSent(ctx, convertToTokens(vers))
-	if err != nil {
-		trxutil.RollbackOrLog(ctx, u.logger, fmt.Sprintf("mark verifications as sent: %v", err))
-
-		return 0, fmt.Errorf("mark verifications as sent: %w", err)
+		return 0, err
 	}
 
 	err = trx.Commit(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("commit trx: %w", err)
+	}
+
+	return updatesCount, nil
+}
+
+func (u *Usecase) processTrx(ctx context.Context) (int, error) {
+	vers, err := u.verificationRepository.GetUnsent(ctx, u.batchSize)
+	if err != nil {
+		return 0, fmt.Errorf("get unsent verifications: %w", err)
+	}
+
+	if len(vers) == 0 {
+		return 0, nil
+	}
+
+	err = u.emailSendProducer.Produce(ctx, convertToEvents(vers))
+	if err != nil {
+		return 0, fmt.Errorf("produce email.send: %w", err)
+	}
+
+	err = u.verificationRepository.MarkAsSent(ctx, convertToTokens(vers))
+	if err != nil {
+		return 0, fmt.Errorf("mark verifications as sent: %w", err)
 	}
 
 	return len(vers), nil

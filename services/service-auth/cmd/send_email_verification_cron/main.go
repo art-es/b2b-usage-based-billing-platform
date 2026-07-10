@@ -108,17 +108,17 @@ func run(ctx context.Context) error {
 		default:
 		}
 
-		var updates int
+		var updatesCount int
 
 		err := retry.Retry(5, func() (err error) {
-			updates, err = usecase.Do(ctx)
+			updatesCount, err = usecase.Do(ctx)
 			return
 		})
 		if err != nil {
 			return err
 		}
 
-		if updates == 0 {
+		if updatesCount == 0 {
 			return nil
 		}
 	}

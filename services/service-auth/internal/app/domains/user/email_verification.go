@@ -3,8 +3,9 @@ package user
 import "fmt"
 
 type EmailVerification struct {
-	Token string
-	Email string
+	Token  string
+	Email  string
+	UserID string
 }
 
 func (v *EmailVerification) EmailSubject() string {

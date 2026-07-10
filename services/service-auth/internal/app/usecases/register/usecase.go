@@ -56,13 +56,26 @@ func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
 	}
 
 	usr := user.NewRegisteredUser(req.Name, req.Email, passwordHash)
-
 	ctx = trx.Begin(ctx)
 
-	err = u.userRepository.Create(ctx, usr)
+	err = u.processTrx(ctx, usr)
 	if err != nil {
-		trxutil.RollbackOrLog(ctx, u.logger, fmt.Sprintf("create user: %v", err))
+		trxutil.RollbackOrLog(ctx, u.logger, err.Error())
 
+		return err
+	}
+
+	err = trx.Commit(ctx)
+	if err != nil {
+		return fmt.Errorf("commit trx: %w", err)
+	}
+
+	return nil
+}
+
+func (u *Usecase) processTrx(ctx context.Context, usr *user.User) error {
+	err := u.userRepository.Create(ctx, usr)
+	if err != nil {
 		if errors.Is(err, repository.ErrUnique) {
 			return dto.ErrEmailInUse
 		}
@@ -72,14 +85,8 @@ func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
 
 	err = u.verificationRepository.Create(ctx, usr.ID)
 	if err != nil {
-		trxutil.RollbackOrLog(ctx, u.logger, fmt.Sprintf("create verification: %v", err))
 
 		return fmt.Errorf("create verification: %w", err)
-	}
-
-	err = trx.Commit(ctx)
-	if err != nil {
-		return fmt.Errorf("commit trx: %w", err)
 	}
 
 	return nil
