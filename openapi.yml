@@ -297,6 +297,29 @@ paths:
         '200':
           description: Organization member deleted
 
+  /v1/organizations/{organizationId}/api-keys:
+    get:
+      summary: Get organization API keys
+      tags: [Organization]
+      responses:
+        '200':
+          description: Organization API key list
+
+    post:
+      summary: Create a new organization API key
+      tags: [Organization]
+      responses:
+        '201':
+          description: Organization API key created
+
+  /v1/organizations/{organizationId}/api-keys/{keyId}:
+    delete:
+      summary: Delete organization API key
+      tags: [Organization]
+      responses:
+        '200':
+          description: Organization API key deleted
+
   /v1/organizations/{organizationId}/tariffs:
     get:
       summary: Get tariffs
