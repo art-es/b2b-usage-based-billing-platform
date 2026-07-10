@@ -41,18 +41,56 @@ func (m *MockuserRepository) EXPECT() *MockuserRepositoryMockRecorder {
 	return m.recorder
 }
 
-// Store mocks base method.
-func (m *MockuserRepository) Store(ctx context.Context, usr *user.User) error {
+// Create mocks base method.
+func (m *MockuserRepository) Create(ctx context.Context, user *user.User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Store", ctx, usr)
+	ret := m.ctrl.Call(m, "Create", ctx, user)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Store indicates an expected call of Store.
-func (mr *MockuserRepositoryMockRecorder) Store(ctx, usr any) *gomock.Call {
+// Create indicates an expected call of Create.
+func (mr *MockuserRepositoryMockRecorder) Create(ctx, user any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockuserRepository)(nil).Store), ctx, usr)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockuserRepository)(nil).Create), ctx, user)
+}
+
+// MockverificationRepository is a mock of verificationRepository interface.
+type MockverificationRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockverificationRepositoryMockRecorder
+	isgomock struct{}
+}
+
+// MockverificationRepositoryMockRecorder is the mock recorder for MockverificationRepository.
+type MockverificationRepositoryMockRecorder struct {
+	mock *MockverificationRepository
+}
+
+// NewMockverificationRepository creates a new mock instance.
+func NewMockverificationRepository(ctrl *gomock.Controller) *MockverificationRepository {
+	mock := &MockverificationRepository{ctrl: ctrl}
+	mock.recorder = &MockverificationRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockverificationRepository) EXPECT() *MockverificationRepositoryMockRecorder {
+	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockverificationRepository) Create(ctx context.Context, userID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", ctx, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockverificationRepositoryMockRecorder) Create(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockverificationRepository)(nil).Create), ctx, userID)
 }
 
 // MockhashService is a mock of hashService interface.

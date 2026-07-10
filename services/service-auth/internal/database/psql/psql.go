@@ -28,8 +28,8 @@ type conns struct {
 	logger log.Logger
 }
 
-func Connect(logger log.Logger) (*conns, error) {
-	db, err := connect()
+func Connect(ctx context.Context, logger log.Logger) (*conns, error) {
+	db, err := connect(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func Connect(logger log.Logger) (*conns, error) {
 	}, nil
 }
 
-func connect() (*sql.DB, error) {
+func connect(ctx context.Context) (*sql.DB, error) {
 	url := os.Getenv("PSQL_URL")
 	if url == "" {
 		return nil, errors.New("PSQL_URL required")
@@ -53,7 +53,7 @@ func connect() (*sql.DB, error) {
 		return nil, fmt.Errorf("open DB conn: %w", err)
 	}
 
-	err = db.Ping()
+	err = db.PingContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("ping DB conn: %w", err)
 	}

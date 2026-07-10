@@ -1,4 +1,4 @@
-package cmdutil
+package shutdown
 
 import (
 	"io"
@@ -8,24 +8,24 @@ import (
 )
 
 // graceful shutdown manager
-type GSManager struct {
+type Shutdowner struct {
 	logger      log.Logger
 	openedConns []io.Closer
 }
 
-func NewGSManager(logger log.Logger) *GSManager {
-	return &GSManager{logger: logger}
+func NewManager(logger log.Logger) *Shutdowner {
+	return &Shutdowner{logger: logger}
 }
 
-func (m *GSManager) Add(conn io.Closer) {
+func (m *Shutdowner) Add(conn io.Closer) {
 	m.openedConns = append(m.openedConns, conn)
 }
 
-func (m *GSManager) AddFunc(fn func() error) {
+func (m *Shutdowner) AddFunc(fn func() error) {
 	m.openedConns = append(m.openedConns, closerFunc(fn))
 }
 
-func (m *GSManager) Shutdown() {
+func (m *Shutdowner) Shutdown() {
 	var wg sync.WaitGroup
 	wg.Add(len(m.openedConns))
 

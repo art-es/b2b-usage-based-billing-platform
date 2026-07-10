@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,28 +12,35 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
 	psqlRepositories "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/bcrypt"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/cmdutil"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/shutdown"
 	httpEndpoints "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/endpoints"
 )
 
 var (
 	logger     log.Logger
-	gsManager  *cmdutil.GSManager
+	shutdowner *shutdown.Shutdowner
 	httpServer *http.Server
 )
 
 func main() {
 	logger = log.NewLogger(nil).Set("pkg", "cmd/service")
-	gsManager = cmdutil.NewGSManager(logger)
-
-	if err := build(); err != nil {
-		logger.Log(log.Error).
-			Set("message", "service build error").
-			Write()
-	}
+	shutdowner = shutdown.NewManager(logger)
+	defer shutdowner.Shutdown()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
+	defer stop()
+
+	if err := build(ctx); err != nil {
+		logger.Log(log.Error).
+			Set("message", "build error").
+			Write()
+		return
+	}
+
+	logger.Log(log.Info).
+		Set("message", "service started").
+		Write()
 
 	go func() {
 		if err := httpServer.ListenAndServe(); err != nil {
@@ -46,30 +54,37 @@ func main() {
 
 	<-ctx.Done()
 
-	gsManager.Shutdown()
+	logger.Log(log.Info).
+		Set("message", "service finished").
+		Write()
 }
 
-func build() error {
-	psqlConn, err := psql.Connect(logger)
+func build(ctx context.Context) error {
+	psqlConn, err := psql.Connect(ctx, logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
-	gsManager.Add(psqlConn)
+	shutdowner.Add(psqlConn)
 
 	hashService := bcrypt.NewService()
 
 	// Repositories
 	userRepository := psqlRepositories.NewUserRepository(psqlConn)
+	verificationRepository := psqlRepositories.NewVerificationRepository(psqlConn)
 
 	// Usecases
-	registerUsecase := usecases.NewRegisterUsecase(userRepository, hashService)
+	registerUsecase := usecases.NewRegisterUsecase(hashService, userRepository, verificationRepository, logger)
 
-	// HTTP Endpoints
+	// HTTP Server
 	httpRouter := http.NewServeMux()
 	httpEndpoints.RegisterRegisterEndpoint(httpRouter, registerUsecase, logger)
 
-	httpServer = &http.Server{Addr: ":8080", Handler: httpRouter}
-	gsManager.AddFunc(func() error {
+	httpServer = &http.Server{
+		Addr:        ":8080",
+		Handler:     httpRouter,
+		BaseContext: func(net.Listener) context.Context { return ctx },
+	}
+	shutdowner.AddFunc(func() error {
 		return httpServer.Shutdown(context.Background())
 	})
 

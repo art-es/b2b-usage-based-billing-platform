@@ -20,7 +20,7 @@ func NewRepository(conns psql.Conns) *Repository {
 	}
 }
 
-func (r *Repository) Store(ctx context.Context, usr *user.User) error {
+func (r *Repository) Create(ctx context.Context, usr *user.User) error {
 	conn, err := r.conns.Conn(ctx)
 	if err != nil {
 		return err

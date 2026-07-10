@@ -9,10 +9,17 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/repository"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/register/dto"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx/trxutil"
 )
 
 type userRepository interface {
-	Store(ctx context.Context, usr *user.User) error
+	Create(ctx context.Context, user *user.User) error
+}
+
+type verificationRepository interface {
+	Create(ctx context.Context, userID string) error
 }
 
 type hashService interface {
@@ -20,14 +27,25 @@ type hashService interface {
 }
 
 type Usecase struct {
-	userRepository userRepository
-	hashService    hashService
+	hashService            hashService
+	userRepository         userRepository
+	verificationRepository verificationRepository
+	logger                 log.Logger
 }
 
-func NewUsecase(userRepository userRepository, hashService hashService) *Usecase {
+func NewUsecase(
+	hashService hashService,
+	userRepository userRepository,
+	verificationRepository verificationRepository,
+	logger log.Logger,
+) *Usecase {
+	logger = logger.Set("pkg", "internal/app/usecases/register")
+
 	return &Usecase{
-		userRepository: userRepository,
-		hashService:    hashService,
+		hashService:            hashService,
+		userRepository:         userRepository,
+		verificationRepository: verificationRepository,
+		logger:                 logger,
 	}
 }
 
@@ -39,13 +57,29 @@ func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
 
 	usr := user.NewRegisteredUser(req.Name, req.Email, passwordHash)
 
-	err = u.userRepository.Store(ctx, usr)
+	ctx = trx.Begin(ctx)
+
+	err = u.userRepository.Create(ctx, usr)
 	if err != nil {
+		trxutil.RollbackOrLog(ctx, u.logger, fmt.Sprintf("create user: %v", err))
+
 		if errors.Is(err, repository.ErrUnique) {
 			return dto.ErrEmailInUse
 		}
 
-		return fmt.Errorf("store user: %w", err)
+		return fmt.Errorf("create user: %w", err)
+	}
+
+	err = u.verificationRepository.Create(ctx, usr.ID)
+	if err != nil {
+		trxutil.RollbackOrLog(ctx, u.logger, fmt.Sprintf("create verification: %v", err))
+
+		return fmt.Errorf("create verification: %w", err)
+	}
+
+	err = trx.Commit(ctx)
+	if err != nil {
+		return fmt.Errorf("commit trx: %w", err)
 	}
 
 	return nil
