@@ -25,6 +25,7 @@ var (
 
 func main() {
 	logger = log.NewLogger(nil).Set("pkg", "cmd/service")
+
 	shutdowner = shutdown.NewManager(logger)
 	defer shutdowner.Shutdown()
 

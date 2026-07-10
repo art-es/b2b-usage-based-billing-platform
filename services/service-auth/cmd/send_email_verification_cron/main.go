@@ -33,6 +33,7 @@ func main() {
 	flag.Parse()
 
 	logger = log.NewLogger(nil).Set("pkg", "cmd/mail_verification_cron")
+
 	shutdowner = shutdown.NewManager(logger)
 	defer shutdowner.Shutdown()
 
