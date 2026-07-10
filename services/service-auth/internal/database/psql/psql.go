@@ -62,6 +62,10 @@ func connect(ctx context.Context) (*sql.DB, error) {
 }
 
 func (c *conns) Conn(ctx context.Context) (Conn, error) {
+	if !trx.Exists(ctx) {
+		return c.db, nil
+	}
+
 	if t, ok := trx.GetValue(ctx, trxKey{}); ok {
 		if sqlTx, ok := t.(*sql.Tx); ok {
 			return sqlTx, nil
@@ -72,7 +76,16 @@ func (c *conns) Conn(ctx context.Context) (Conn, error) {
 		}
 	}
 
-	return c.db, nil
+	sqlTx, err := c.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("begin sql tx: %w", err)
+	}
+
+	trx.SetValue(ctx, trxKey{}, sqlTx)
+	trx.AddRollback(ctx, sqlTx.Rollback)
+	trx.AddCommit(ctx, sqlTx.Commit)
+
+	return sqlTx, nil
 }
 
 func (c *conns) Close() error {

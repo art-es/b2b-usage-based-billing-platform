@@ -24,7 +24,7 @@ func NewProducer(ctx context.Context) (*Producer, error) {
 
 	writer := &kafka.Writer{
 		Addr:         kafka.TCP(url),
-		Async:        true,
+		Async:        false,
 		WriteTimeout: 10 * time.Second,
 	}
 

@@ -68,7 +68,7 @@ func (r *Repository) GetUnsent(ctx context.Context, batchSize int) ([]*user.Veri
 
 	for rows.Next() {
 		ver := &user.Verification{}
-		if err := rows.Scan(ver.Token, ver.Email); err != nil {
+		if err := rows.Scan(&ver.Token, &ver.Email); err != nil {
 			return nil, fmt.Errorf("scan row: %w", err)
 		}
 
@@ -90,7 +90,7 @@ func (r *Repository) MarkAsSent(ctx context.Context, tokens []string) error {
 
 	query := `UPDATE verifications
 		SET email_sent_at = current_timestamp
-		WHERE token = ANY($1)`
+		WHERE token = ANY($1::uuid[])`
 	args := []any{pq.Array(tokens)}
 
 	_, err = conn.ExecContext(ctx, query, args...)

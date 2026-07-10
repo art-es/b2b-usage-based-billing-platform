@@ -19,6 +19,11 @@ func newTrx() *trx {
 	return &trx{values: make(map[any]any)}
 }
 
+func Exists(ctx context.Context) bool {
+	_, ok := ctx.Value(ctxKey{}).(*trx)
+	return ok
+}
+
 func Begin(ctx context.Context) context.Context {
 	return context.WithValue(ctx, ctxKey{}, newTrx())
 }

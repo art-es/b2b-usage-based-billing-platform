@@ -2,7 +2,7 @@ CREATE TABLE users (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    password VARCHAR NOT NULL,
+    password_hash VARCHAR NOT NULL,
     created_at TIMESTAMPTZ DEFAULT current_timestamp,
     verified_at TIMESTAMPTZ DEFAULT NULL
 );
@@ -12,7 +12,7 @@ CREATE UNIQUE INDEX idx_users_email_unique
 
 CREATE TABLE verifications (
     token uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+    user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     email_sent_at TIMESTAMPTZ DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT current_timestamp
 );

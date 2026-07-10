@@ -54,6 +54,7 @@ func (u *Usecase) Do(ctx context.Context) (int, error) {
 	}
 
 	if len(vers) == 0 {
+		_ = trx.Commit(ctx)
 		return 0, nil
 	}
 
