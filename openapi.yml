@@ -6,6 +6,9 @@ info:
 tags:
   - name: Auth
   - name: Organization
+  - name: Customer
+  - name: Billing
+  - name: Event
 
 paths:
   /v1/auth/register:
@@ -134,8 +137,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
 
-  /v1/auth/logout:
-    post:
+  /v1/auth/sessions:
+    get:
+      summary: Get sessions
+      tags: [Auth]
+      security: [Bearer: []]
+      responses:
+        '200':
+          description: Session list
+
+    delete:
+      summary: Finish all sessions
+      operationId: logout
+      tags: [Auth]
+      security: [Bearer: []]
+      responses:
+        '204':
+          description: Sessions finished
+
+  /v1/auth/sessions/{sessionId}:
+    delete:
       summary: Finish the session
       operationId: logout
       tags: [Auth]
@@ -143,6 +164,31 @@ paths:
       responses:
         '204':
           description: Session finished
+
+  /v1/auth/password/forgot:
+    post:
+      summary: Send email with reset password link
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+
+  /v1/auth/password/reset:
+    post:
+      summary: Reset the password
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+
+  /v1/auth/password/change:
+    post:
+      summary: Change the password of authorized user
+      tags: [Auth]
+      security: [Bearer: []]
+      responses:
+        '200':
+          description: OK
 
   /v1/auth/switch-organization:
     post:
@@ -179,6 +225,21 @@ paths:
                 $ref: '#/components/schemas/MeResponse'
 
   /v1/organizations:
+    get:
+      summary: Get organizations
+      operationId: getOrganizations
+      tags: [Organization]
+      security: [Bearer: []]
+      parameters:
+        - name: fromId
+          in: query
+          description: last id of previous organization list
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organization list
+
     post:
       summary: Create a new organization
       operationId: createOrganization
@@ -197,6 +258,121 @@ paths:
             'application/json':
               schema:
                 $ref: '#/components/schemas/CreateOrganizationResponse'
+  
+  /v1/organizations/{organizationId}:
+    put:
+      summary: Update the organization
+      tags: [Organization]
+      responses:
+        '200':
+          description: Organization updated
+    
+    delete:
+      summary: Delete the organization
+      tags: [Organization]
+      responses:
+        '200':
+          description: Organization deleted
+
+  /v1/organizations/{organizationId}/members:
+    get:
+      summary: Get organization members
+      tags: [Organization]
+      responses:
+        '200':
+          description: Organization member list
+
+  /v1/organizations/{organizationId}/members/{memberId}:
+    patch:
+      summary: Update organization member
+      tags: [Organization]
+      responses:
+        '200':
+          description: Organization member updated
+
+    delete:
+      summary: Delete organization member
+      tags: [Organization]
+      responses:
+        '200':
+          description: Organization member deleted
+
+  /v1/organizations/{organizationId}/tariffs:
+    get:
+      summary: Get tariffs
+      tags: [Organization]
+      responses:
+        '200':
+          description: Tariff list
+    
+    post:
+      summary: Create a new tariff
+      tags: [Organization]
+      responses:
+        '201':
+          description: Tariff created
+  
+  /v1/organizations/{organizationId}/tariffs/{tariffId}:
+    put:
+      summary: Update the tariff
+      tags: [Organization]
+      responses:
+        '200':
+          description: Tariff updated
+
+    delete:
+      summary: Delete the tariff
+      tags: [Organization]
+      responses:
+        '200':
+          description: Tariff deleted
+
+  /v1/customers:
+    post:
+      summary: Create a new customer
+      tags: [Customer]
+      responses:
+        '201':
+          description: Tariff created
+
+  /v1/customers/{customerId}/subscribe:
+    post:
+      summary: Subscribe customer to tariff
+      tags: [Customer]
+      responses:
+        '200':
+          description: Customer subscribed
+  
+  /v1/customer/{customerId}/usage:
+    post:
+      summary: Add new usage
+      tags: [Customer]
+      responses:
+        '200':
+          description: Usage added
+  
+  /v1/billing/payments:
+    get:
+      summary: Get payment status
+      tags: [Billing]
+      responses:
+        '200':
+          description: Payment status
+
+    post:
+      summary: Generate a new payment link
+      tags: [Billing]
+      responses:
+        '200':
+          description: Payment link generated
+  
+  /v1/webhook:
+    get:
+      summary: Connect to webhook to receive events
+      tags: [Event]
+      responses:
+        '100':
+          description: Connected
 
 components:
   securitySchemes:
@@ -324,6 +500,8 @@ components:
     MeResponse:
       type: object
       properties:
+        session_id:
+          type: string
         name:
           type: string
         email:
@@ -355,4 +533,3 @@ components:
           format: uuid
         access_token:
           type: string
-
