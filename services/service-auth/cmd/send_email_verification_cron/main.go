@@ -35,7 +35,7 @@ func main() {
 
 	logger = log.NewLogger(nil).Set("pkg", "cmd/mail_verification_cron")
 
-	shutdowner = shutdown.NewManager(logger)
+	shutdowner = shutdown.New(logger)
 	defer shutdowner.Shutdown()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)

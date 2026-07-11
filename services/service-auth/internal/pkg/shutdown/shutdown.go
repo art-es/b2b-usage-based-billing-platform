@@ -13,7 +13,7 @@ type Shutdowner struct {
 	openedConns []io.Closer
 }
 
-func NewManager(logger log.Logger) *Shutdowner {
+func New(logger log.Logger) *Shutdowner {
 	return &Shutdowner{logger: logger}
 }
 

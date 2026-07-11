@@ -545,6 +545,10 @@ components:
 
     MeResponse:
       type: object
+      required:
+        - session_id
+        - name
+        - email
       properties:
         session_id:
           type: string
@@ -553,7 +557,7 @@ components:
         email:
           type: string
           format: email
-        selected_organization:
+        organization:
           type: object
           properties:
             id:

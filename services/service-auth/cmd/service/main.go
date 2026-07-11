@@ -26,7 +26,7 @@ var (
 func main() {
 	logger = log.NewLogger(nil).Set("pkg", "cmd/service")
 
-	shutdowner = shutdown.NewManager(logger)
+	shutdowner = shutdown.New(logger)
 	defer shutdowner.Shutdown()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
