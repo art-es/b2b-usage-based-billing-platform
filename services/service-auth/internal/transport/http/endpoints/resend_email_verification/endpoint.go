@@ -15,11 +15,13 @@ import (
 const (
 	errCodeRequiredEmail = iota + 2001
 	errCodeInvalidEmail
+	errCodeEmailVerified
 )
 
 const (
 	errMsgRequiredEmail = "Required email"
 	errMsgInvalidEmail  = "Invalid email"
+	errMsgEmailVerified = "Email is already verified"
 )
 
 type httpRouter interface {
@@ -67,20 +69,25 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usecase.Do(r.Context(), rb.Email)
 	if err != nil {
-		if errors.Is(err, dto.ErrInvalidEmail) {
+		switch {
+		case errors.Is(err, dto.ErrInvalidEmail):
 			httputil.Write(w, http.StatusBadRequest, &httputil.BadRequestBody{
 				Code:    errCodeInvalidEmail,
 				Message: errMsgInvalidEmail,
 			})
-			return
+		case errors.Is(err, dto.ErrEmailVerified):
+			httputil.Write(w, http.StatusBadRequest, &httputil.BadRequestBody{
+				Code:    errCodeEmailVerified,
+				Message: errMsgEmailVerified,
+			})
+		default:
+			h.logger.Log(log.Error).
+				Set("message", "unexpected usecase error").
+				Set("error", err.Error()).
+				Write()
+
+			httputil.WriteInternalError(w)
 		}
-
-		h.logger.Log(log.Error).
-			Set("message", "unexpected usecase error").
-			Set("error", err.Error()).
-			Write()
-
-		httputil.WriteInternalError(w)
 		return
 	}
 
