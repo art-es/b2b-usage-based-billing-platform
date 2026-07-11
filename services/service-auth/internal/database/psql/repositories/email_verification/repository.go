@@ -167,3 +167,56 @@ func (r *Repository) ClearDeprecated(ctx context.Context) error {
 
 	return nil
 }
+
+func (r *Repository) HasUnsentByEmail(ctx context.Context, email string) (bool, error) {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	query := `
+		SELECT 
+			u.verified_at IS NOT NULL AS is_verified,
+			EXISTS (
+				SELECT 1 FROM email_verifications AS v
+				WHERE v.user_id = u.id AND v.sent_at IS NULL
+			) AS has_unsent
+		FROM users AS u
+		WHERE u.email = $1`
+	args := []any{email}
+
+	var isVerified, hasUnsent bool
+
+	err = conn.QueryRowContext(ctx, query, args...).Scan(&isVerified, &hasUnsent)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, user.ErrUserNotFound
+		}
+
+		return false, fmt.Errorf("query execute: %w", err)
+	}
+
+	if isVerified {
+		return false, user.ErrEmailVerified
+	}
+
+	return hasUnsent, nil
+}
+
+func (r *Repository) CreateForEmail(ctx context.Context, email string) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `INSERT INTO email_verifications (user_id)
+		SELECT id FROM users WHERE email = $1`
+	args := []any{email}
+
+	_, err = conn.ExecContext(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	return nil
+}

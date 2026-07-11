@@ -1,5 +1,5 @@
 //go:generate mockgen -source=endpoint.go -destination=endpoint_mock_test.go -package=$GOPACKAGE
-package verify_email
+package resend_email_verification
 
 import (
 	"context"
@@ -7,19 +7,19 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/verify_email/dto"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/resend_email_verification/dto"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/httputil"
 )
 
 const (
-	errCodeRequiredToken = iota + 2001
-	errCodeInvalidToken
+	errCodeRequiredEmail = iota + 2001
+	errCodeInvalidEmail
 )
 
 const (
-	errMsgRequiredToken = "Required token"
-	errMsgInvalidToken  = "Invalid token"
+	errMsgRequiredEmail = "Required email"
+	errMsgInvalidEmail  = "Invalid email"
 )
 
 type httpRouter interface {
@@ -27,7 +27,7 @@ type httpRouter interface {
 }
 
 type usecase interface {
-	Do(ctx context.Context, token string) error
+	Do(ctx context.Context, email string) error
 }
 
 type handler struct {
@@ -40,9 +40,9 @@ func RegisterEndpoint(
 	usecase usecase,
 	logger log.Logger,
 ) {
-	logger = logger.Set("pkg", "internal/transport/http/endpoints/verify_email")
+	logger = logger.Set("pkg", "internal/transport/http/endpoints/resend_email_verification")
 
-	httpRouter.Handle("POST /v1/auth/email/verify", &handler{
+	httpRouter.Handle("POST /v1/auth/email/resend-verification", &handler{
 		usecase: usecase,
 		logger:  logger,
 	})
@@ -65,12 +65,12 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecase.Do(r.Context(), rb.Token)
+	err = h.usecase.Do(r.Context(), rb.Email)
 	if err != nil {
-		if errors.Is(err, dto.ErrInvalidToken) {
+		if errors.Is(err, dto.ErrInvalidEmail) {
 			httputil.Write(w, http.StatusBadRequest, &httputil.BadRequestBody{
-				Code:    errCodeInvalidToken,
-				Message: errMsgInvalidToken,
+				Code:    errCodeInvalidEmail,
+				Message: errMsgInvalidEmail,
 			})
 			return
 		}

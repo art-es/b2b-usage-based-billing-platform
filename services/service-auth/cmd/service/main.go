@@ -76,11 +76,13 @@ func build(ctx context.Context) error {
 	// Usecases
 	registerUsecase := usecases.NewRegisterUsecase(hashService, userRepository, emailVerificationRepository, logger)
 	verifyEmailUsecase := usecases.NewVerifyEmailUsecase(emailVerificationRepository, userRepository, logger)
+	resendEmailVerificationsUsecase := usecases.NewResendEmailVerificationUsecase(emailVerificationRepository)
 
 	// HTTP Server
 	httpRouter := http.NewServeMux()
 	httpEndpoints.RegisterRegisterEndpoint(httpRouter, registerUsecase, logger)
 	httpEndpoints.RegisterVerifyEmailEndpoint(httpRouter, verifyEmailUsecase, logger)
+	httpEndpoints.RegisterResendEmailVerificationEndpoint(httpRouter, resendEmailVerificationsUsecase, logger)
 
 	httpServer = &http.Server{
 		Addr:        ":8080",

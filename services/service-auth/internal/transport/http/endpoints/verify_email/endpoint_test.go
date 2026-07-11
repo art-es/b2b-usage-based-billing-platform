@@ -60,7 +60,7 @@ func TestEndpoint(t *testing.T) {
 
 		resp := callEndpoint(d, reqBody)
 
-		assert.Equal(t, 202, resp.Code)
+		assert.Equal(t, 204, resp.Code)
 		assert.Empty(t, resp.Body.String())
 		assert.Empty(t, d.logbuf.Logs())
 	})

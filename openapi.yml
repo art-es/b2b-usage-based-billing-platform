@@ -98,6 +98,24 @@ paths:
       responses:
         '204':
           description: Email verification has been resent
+        '400':
+          description: |
+            Bad request 
+            
+            Additional codes:
+            - 2001: Required email
+            - 2002: Invalid email
+            - 2003: Email is already verified
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '500':
+          description: Internal error
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/InternalErrorResponse'
 
   /v1/auth/login:
     post:
@@ -470,6 +488,11 @@ components:
       properties:
         email:
           type: string
+          description: |
+            Rules:
+            - required field
+            - length no more than 100
+            - email format
 
     LoginRequest:
       type: object
