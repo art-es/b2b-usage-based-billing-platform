@@ -10,7 +10,7 @@ import (
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/send_email_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories/email_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/kafka"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/retry"
@@ -26,6 +26,7 @@ var (
 	logger     log.Logger
 	shutdowner *shutdown.Shutdowner
 	usecase    *send_email_verification.Usecase
+	repository *email_verification.Repository
 )
 
 func main() {
@@ -85,14 +86,11 @@ func build(ctx context.Context) error {
 	}
 	shutdowner.Add(kafkaProducer)
 
-	// Repositories
-	emailVerificationRepository := repositories.NewEmailVerificationRepository(psqlConn)
-
-	// Broker
+	repository = email_verification.NewRepository(psqlConn)
 	emailSendProducer := email_send.NewProducer(kafkaProducer)
 
 	usecase = send_email_verification.NewUsecase(
-		emailVerificationRepository,
+		repository,
 		emailSendProducer,
 		logger,
 		batchSize,
@@ -102,6 +100,14 @@ func build(ctx context.Context) error {
 }
 
 func run(ctx context.Context) error {
+	err := repository.ClearDeprecated(ctx)
+	if err != nil {
+		logger.Log(log.Error).
+			Set("message", "clear deprecated email verifications error").
+			Set("error", err.Error()).
+			Write()
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -111,7 +117,7 @@ func run(ctx context.Context) error {
 
 		var updatesCount int
 
-		err := retry.Retry(5, func() (err error) {
+		err = retry.Retry(5, func() (err error) {
 			updatesCount, err = usecase.Do(ctx)
 			return
 		})

@@ -20,18 +20,18 @@ func TestUsecase(t *testing.T) {
 	ctx := context.Background()
 
 	type deps struct {
-		mockUserRepository         *MockuserRepository
-		mockHashService            *MockhashService
-		mockVerificationRepository *MockverificationRepository
-		logbuf                     log.Buffer
-		usecase                    *Usecase
+		mockUserRepository              *MockuserRepository
+		mockHashService                 *MockhashService
+		mockEmailVerificationRepository *MockemailVerificationRepository
+		logbuf                          log.Buffer
+		usecase                         *Usecase
 	}
 
 	newDeps := func() *deps {
 		mockCtrl := gomock.NewController(t)
 		mockHashService := NewMockhashService(mockCtrl)
 		mockUserRepository := NewMockuserRepository(mockCtrl)
-		mockVerificationRepository := NewMockverificationRepository(mockCtrl)
+		mockVerificationRepository := NewMockemailVerificationRepository(mockCtrl)
 
 		logbuf := log.NewBuffer()
 		logger := log.NewLogger(&log.Options{
@@ -40,10 +40,10 @@ func TestUsecase(t *testing.T) {
 		})
 
 		return &deps{
-			mockUserRepository:         mockUserRepository,
-			mockHashService:            mockHashService,
-			mockVerificationRepository: mockVerificationRepository,
-			logbuf:                     logbuf,
+			mockUserRepository:              mockUserRepository,
+			mockHashService:                 mockHashService,
+			mockEmailVerificationRepository: mockVerificationRepository,
+			logbuf:                          logbuf,
 			usecase: NewUsecase(
 				mockHashService,
 				mockUserRepository,
@@ -73,7 +73,7 @@ func TestUsecase(t *testing.T) {
 			}).
 			Return(nil)
 
-		d.mockVerificationRepository.EXPECT().
+		d.mockEmailVerificationRepository.EXPECT().
 			Create(gomock.Any(), gomock.Eq("test-user-id")).
 			Return(nil)
 
@@ -112,7 +112,7 @@ func TestUsecase(t *testing.T) {
 			}).
 			Return(nil)
 
-		d.mockVerificationRepository.EXPECT().
+		d.mockEmailVerificationRepository.EXPECT().
 			Create(gomock.Any(), gomock.Eq("test-user-id")).
 			Return(nil)
 
@@ -151,7 +151,7 @@ func TestUsecase(t *testing.T) {
 			}).
 			Return(nil)
 
-		d.mockVerificationRepository.EXPECT().
+		d.mockEmailVerificationRepository.EXPECT().
 			Create(gomock.Any(), gomock.Eq("test-user-id")).
 			Return(errors.New("test error"))
 

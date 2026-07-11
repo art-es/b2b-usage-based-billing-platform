@@ -18,7 +18,7 @@ type userRepository interface {
 	Create(ctx context.Context, user *user.User) error
 }
 
-type verificationRepository interface {
+type emailVerificationRepository interface {
 	Create(ctx context.Context, userID string) error
 }
 
@@ -27,25 +27,25 @@ type hashService interface {
 }
 
 type Usecase struct {
-	hashService            hashService
-	userRepository         userRepository
-	verificationRepository verificationRepository
-	logger                 log.Logger
+	hashService                 hashService
+	userRepository              userRepository
+	emailVerificationRepository emailVerificationRepository
+	logger                      log.Logger
 }
 
 func NewUsecase(
 	hashService hashService,
 	userRepository userRepository,
-	verificationRepository verificationRepository,
+	verificationRepository emailVerificationRepository,
 	logger log.Logger,
 ) *Usecase {
 	logger = logger.Set("pkg", "internal/app/usecases/register")
 
 	return &Usecase{
-		hashService:            hashService,
-		userRepository:         userRepository,
-		verificationRepository: verificationRepository,
-		logger:                 logger,
+		hashService:                 hashService,
+		userRepository:              userRepository,
+		emailVerificationRepository: verificationRepository,
+		logger:                      logger,
 	}
 }
 
@@ -83,7 +83,7 @@ func (u *Usecase) processTrx(ctx context.Context, usr *user.User) error {
 		return fmt.Errorf("create user: %w", err)
 	}
 
-	err = u.verificationRepository.Create(ctx, usr.ID)
+	err = u.emailVerificationRepository.Create(ctx, usr.ID)
 	if err != nil {
 
 		return fmt.Errorf("create verification: %w", err)

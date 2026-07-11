@@ -48,7 +48,9 @@ func (r *Repository) GetUnsent(ctx context.Context, batchSize int) ([]*user.Emai
 	query := `SELECT v.token, u.email
 		FROM email_verifications AS v
 		JOIN users AS u ON u.id = v.user_id
-		WHERE v.sent_at is NULL
+		WHERE 
+			v.sent_at IS NULL 
+			AND u.verified_at IS NULL
 		ORDER BY v.created_at
 		LIMIT $1
 		FOR UPDATE OF v SKIP LOCKED`
@@ -139,6 +141,26 @@ func (r *Repository) DeleteTokensByUserID(ctx context.Context, userID string) er
 	args := []any{userID}
 
 	_, err = conn.ExecContext(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) ClearDeprecated(ctx context.Context) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `DELETE FROM email_verifications AS v
+		JOIN users AS u ON u.id = v.user_id
+		WHERE 
+			u.verified_at IS NOT NULL 
+			OR v.created_at + INTERVAL '7 days' > current_timestamp`
+
+	_, err = conn.ExecContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}
