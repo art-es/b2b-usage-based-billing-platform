@@ -67,17 +67,20 @@ func TestUsecase(t *testing.T) {
 			Return(vers, nil)
 
 		d.mockEmailSendProducer.EXPECT().
-			Produce(gomock.Any(), gomock.Eq([]event.EmailSend{
-				{
-					Email:   "test-1@example.com",
-					Subject: "Verify your new account",
-					Content: "To verify your email address, please follow the link: https://example.com/verify-email/test-token-1",
-				},
-				{
-					Email:   "test-2@example.com",
-					Subject: "Verify your new account",
-					Content: "To verify your email address, please follow the link: https://example.com/verify-email/test-token-2",
-				},
+			Produce(gomock.Any(), gomock.Eq(event.EmailSend{
+				IdempotencyKey: "email-verification:test-token-1",
+				Email:          "test-1@example.com",
+				Subject:        "Verify your new account",
+				Content:        "To verify your email address, please follow the link: https://example.com/verify-email/test-token-1",
+			})).
+			Return(nil)
+
+		d.mockEmailSendProducer.EXPECT().
+			Produce(gomock.Any(), gomock.Eq(event.EmailSend{
+				IdempotencyKey: "email-verification:test-token-2",
+				Email:          "test-2@example.com",
+				Subject:        "Verify your new account",
+				Content:        "To verify your email address, please follow the link: https://example.com/verify-email/test-token-2",
 			})).
 			Return(nil)
 
@@ -202,19 +205,26 @@ func TestUsecase(t *testing.T) {
 			Return(errors.New("test error"))
 
 		updates, err := d.usecase.Do(ctx)
-		assert.EqualError(t, err, "publish mails: test error")
+		assert.EqualError(t, err, "all email.send producing failed")
 		assert.Equal(t, 0, updates)
 
 		logs := d.logbuf.Logs()
-		assert.Len(t, logs, 1)
+		assert.Len(t, logs, 2)
+		assert.JSONEq(t, `{
+			"created_at": "test-created-at",
+			"level": "error",
+			"pkg": "internal/app/usecases/mail_verification",
+			"message": "produce email.send error",
+			"error": "test error"
+		}`, logs[0])
 		assert.JSONEq(t, `{
 			"created_at": "test-created-at",
 			"level": "error",
 			"pkg": "internal/app/usecases/mail_verification",
 			"message": "trx rollback error",
 			"error": "rollback test error",
-			"additional_info": "publish mails: test error"
-		}`, logs[0])
+			"additional_info": "all email.send producing failed"
+		}`, logs[1])
 	})
 
 	t.Run("mark as sent error + trx rollback error", func(t *testing.T) {

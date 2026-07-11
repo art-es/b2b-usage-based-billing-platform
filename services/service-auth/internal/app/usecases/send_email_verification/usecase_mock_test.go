@@ -96,15 +96,15 @@ func (m *MockemailSendProducer) EXPECT() *MockemailSendProducerMockRecorder {
 }
 
 // Produce mocks base method.
-func (m *MockemailSendProducer) Produce(ctx context.Context, events []event.EmailSend) error {
+func (m *MockemailSendProducer) Produce(ctx context.Context, ev event.EmailSend) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Produce", ctx, events)
+	ret := m.ctrl.Call(m, "Produce", ctx, ev)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Produce indicates an expected call of Produce.
-func (mr *MockemailSendProducerMockRecorder) Produce(ctx, events any) *gomock.Call {
+func (mr *MockemailSendProducerMockRecorder) Produce(ctx, ev any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Produce", reflect.TypeOf((*MockemailSendProducer)(nil).Produce), ctx, events)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Produce", reflect.TypeOf((*MockemailSendProducer)(nil).Produce), ctx, ev)
 }

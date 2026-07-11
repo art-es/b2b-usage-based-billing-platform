@@ -1,7 +1,15 @@
 package broker
 
+const (
+	SubjectEmailSend = "email.send"
+)
+
 type ProduceMessage struct {
-	Topic string
-	Key   []byte
-	Value []byte
+	Subject        string
+	IdempotencyKey string
+	Payload        []byte
+}
+
+func SupportedSubjects() []string {
+	return []string{SubjectEmailSend}
 }

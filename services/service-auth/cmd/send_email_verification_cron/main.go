@@ -11,8 +11,8 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/send_email_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories/email_verification"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/kafka"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/nats"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/retry"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/shutdown"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/broker/producers/email_send"
@@ -80,14 +80,16 @@ func build(ctx context.Context) error {
 	}
 	shutdowner.Add(psqlConn)
 
-	kafkaProducer, err := kafka.NewProducer(ctx)
+	natsConn, err := nats.Connect()
 	if err != nil {
-		return fmt.Errorf("connect kafka: %w", err)
+		return fmt.Errorf("connect nats: %w", err)
 	}
-	shutdowner.Add(kafkaProducer)
+	shutdowner.Add(natsConn)
+
+	natsProducer := nats.NewProducer(natsConn)
 
 	repository = email_verification.NewRepository(psqlConn)
-	emailSendProducer := email_send.NewProducer(kafkaProducer)
+	emailSendProducer := email_send.NewProducer(natsProducer)
 
 	usecase = send_email_verification.NewUsecase(
 		repository,

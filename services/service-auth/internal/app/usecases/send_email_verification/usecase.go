@@ -3,6 +3,7 @@ package send_email_verification
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
@@ -18,7 +19,7 @@ type verificationRepository interface {
 }
 
 type emailSendProducer interface {
-	Produce(ctx context.Context, events []event.EmailSend) error
+	Produce(ctx context.Context, ev event.EmailSend) error
 }
 
 type Usecase struct {
@@ -72,9 +73,10 @@ func (u *Usecase) processTrx(ctx context.Context) (int, error) {
 		return 0, nil
 	}
 
-	err = u.emailSendProducer.Produce(ctx, convertToEvents(vers))
-	if err != nil {
-		return 0, fmt.Errorf("produce email.send: %w", err)
+	vers = u.produceEmailSend(ctx, vers)
+
+	if len(vers) == 0 {
+		return 0, errors.New("all email.send producing failed")
 	}
 
 	err = u.verificationRepository.MarkAsSent(ctx, convertToTokens(vers))
@@ -85,16 +87,37 @@ func (u *Usecase) processTrx(ctx context.Context) (int, error) {
 	return len(vers), nil
 }
 
-func convertToEvents(vers []*user.EmailVerification) []event.EmailSend {
-	events := make([]event.EmailSend, 0, len(vers))
+func (u *Usecase) produceEmailSend(ctx context.Context, vers []*user.EmailVerification) []*user.EmailVerification {
+	sent := make([]*user.EmailVerification, 0, len(vers))
+	var unsentErr error
+
 	for _, ver := range vers {
-		events = append(events, event.EmailSend{
-			Email:   ver.Email,
-			Subject: ver.EmailSubject(),
-			Content: ver.EmailContent(),
-		})
+		err := u.emailSendProducer.Produce(ctx, convertToEvent(ver))
+
+		if err != nil {
+			unsentErr = errors.Join(unsentErr, err)
+		} else {
+			sent = append(sent, ver)
+		}
 	}
-	return events
+
+	if unsentErr != nil {
+		u.logger.Log(log.Error).
+			Set("message", "produce email.send error").
+			Set("error", unsentErr.Error()).
+			Write()
+	}
+
+	return sent
+}
+
+func convertToEvent(ver *user.EmailVerification) event.EmailSend {
+	return event.EmailSend{
+		IdempotencyKey: "email-verification:" + ver.Token,
+		Email:          ver.Email,
+		Subject:        ver.EmailSubject(),
+		Content:        ver.EmailContent(),
+	}
 }
 
 func convertToTokens(vers []*user.EmailVerification) []string {
