@@ -1,30 +1,33 @@
 package session
 
-import "github.com/google/uuid"
+import (
+	"time"
+)
 
-var (
-	NewSessionID    = uuid.NewString
-	NewRefreshToken = uuid.NewString
+const (
+	AccessTokenExpiry  = 15 * time.Minute
+	RefreshTokenExpiry = 14 * 24 * time.Hour
 )
 
 type Session struct {
-	// Info from access token
-	ID             string
-	UserID         string
-	OrganizationID *string
-
-	// Keeps in DB
-	RefreshTokenHash string
+	ID                    string
+	UserID                string
+	RefreshTokenHash      string
+	RefreshTokenExpiresAt time.Time
 }
 
-type Tokens struct {
-	AccessToken  string
-	RefreshToken string
-}
-
-func NewSession(userID string) *Session {
+func NewSession(
+	userID string,
+	refreshTokenHash string,
+	now time.Time,
+) *Session {
 	return &Session{
-		ID:     NewSessionID(),
-		UserID: userID,
+		UserID:                userID,
+		RefreshTokenHash:      refreshTokenHash,
+		RefreshTokenExpiresAt: now.Add(RefreshTokenExpiry),
 	}
+}
+
+func (s *Session) Stored() bool {
+	return s.ID != ""
 }

@@ -4,45 +4,60 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/hash"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/repository"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/services/hash"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/login/dto"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx/trxutil"
 )
 
-type userRepository interface {
-	FindByEmail(ctx context.Context, email string) (*user.User, error)
-}
-
-type sessionRepository interface {
-	Create(ctx context.Context, sess *session.Session) error
-}
-
-type hashService interface {
-	Compare(s string, hash string) error
-	Generate(s string) (string, error)
-}
-
-type jwtService interface {
-	Generate(sess *session.Session) (string, error)
-}
-
 type Usecase struct {
-	userRepository    userRepository
-	sessionRepository sessionRepository
-	hashService       hashService
 	jwtService        jwtService
+	hashService       hashService
+	timeService       timeService
+	uuidService       uuidService
+	sessionRepository sessionRepository
+	userRepository    userRepository
+	logger            log.Logger
 }
 
-func (u *Usecase) Do(ctx context.Context, req *dto.Request) (*session.Tokens, error) {
+func NewUsecase(
+	jwtService jwtService,
+	hashService hashService,
+	timeService timeService,
+	uuidService uuidService,
+	sessionRepository sessionRepository,
+	userRepository userRepository,
+	logger log.Logger,
+) *Usecase {
+	logger = logger.Set("pkg", "internal/app/usecases/login")
+
+	return &Usecase{
+		jwtService:        jwtService,
+		hashService:       hashService,
+		timeService:       timeService,
+		uuidService:       uuidService,
+		sessionRepository: sessionRepository,
+		userRepository:    userRepository,
+		logger:            logger,
+	}
+}
+
+func (u *Usecase) Do(ctx context.Context, req *dto.Request) (*dto.Response, error) {
+	now := u.timeService.GetCurrentTime()
+
 	usr, err := u.authenticate(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return u.createSession(ctx, usr)
+	return u.createSession(ctx, usr, now)
 }
 
 func (u *Usecase) authenticate(ctx context.Context, req *dto.Request) (*user.User, error) {
@@ -55,10 +70,6 @@ func (u *Usecase) authenticate(ctx context.Context, req *dto.Request) (*user.Use
 		return nil, fmt.Errorf("get user by email: %w", err)
 	}
 
-	if !usr.IsVerified {
-		return nil, dto.ErrEmailNotVerified
-	}
-
 	err = u.hashService.Compare(req.Password, usr.PasswordHash)
 	if err != nil {
 		if errors.Is(err, hash.ErrMismatch) {
@@ -68,30 +79,48 @@ func (u *Usecase) authenticate(ctx context.Context, req *dto.Request) (*user.Use
 		return nil, fmt.Errorf("compare password with hash: %w", err)
 	}
 
+	if !usr.IsVerified {
+		return nil, dto.ErrEmailNotVerified
+	}
+
 	return usr, nil
 }
 
-func (u *Usecase) createSession(ctx context.Context, usr *user.User) (*session.Tokens, error) {
-	sess := session.NewSession(usr.ID)
-
-	accessToken, err := u.jwtService.Generate(sess)
-	if err != nil {
-		return nil, fmt.Errorf("generate access token as JWT: %w", err)
-	}
-
-	refreshToken := session.NewRefreshToken()
+func (u *Usecase) createSession(ctx context.Context, usr *user.User, now time.Time) (*dto.Response, error) {
+	refreshToken := u.uuidService.Generate()
 	refreshTokenHash, err := u.hashService.Generate(refreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("generate refresh token hash: %w", err)
 	}
 
-	sess.RefreshTokenHash = refreshTokenHash
-	err = u.sessionRepository.Create(ctx, sess)
+	var accessToken string
+
+	ctx = trx.Begin(ctx)
+	err = func() error {
+		ses := session.NewSession(usr.ID, refreshTokenHash, now)
+		err := u.sessionRepository.Save(ctx, ses)
+		if err != nil {
+			return fmt.Errorf("save session: %w", err)
+		}
+
+		accessToken, err = u.jwtService.Generate(jwt.NewClaims(ses.ID, usr.ID))
+		if err != nil {
+			return fmt.Errorf("generate access token as jwt: %w", err)
+		}
+
+		return nil
+	}()
 	if err != nil {
-		return nil, fmt.Errorf("create session: %w", err)
+		trxutil.RollbackOrLog(ctx, u.logger, err.Error())
+		return nil, err
 	}
 
-	return &session.Tokens{
+	err = trx.Commit(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("commit trx: %w", err)
+	}
+
+	return &dto.Response{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
