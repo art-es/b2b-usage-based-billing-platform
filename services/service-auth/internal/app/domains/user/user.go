@@ -26,3 +26,7 @@ func NewRegisteredUser(
 		PasswordHash: passwordHash,
 	}
 }
+
+func (u *User) Stored() bool {
+	return u.ID != ""
+}

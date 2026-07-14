@@ -15,10 +15,10 @@ import (
 )
 
 type userRepository interface {
-	Create(ctx context.Context, user *user.User) error
+	Save(ctx context.Context, user *user.User) error
 }
 
-type emailVerificationRepository interface {
+type verificationCreator interface {
 	Create(ctx context.Context, userID string) error
 }
 
@@ -27,25 +27,25 @@ type hashService interface {
 }
 
 type Usecase struct {
-	hashService                 hashService
-	userRepository              userRepository
-	emailVerificationRepository emailVerificationRepository
-	logger                      log.Logger
+	hashService         hashService
+	userRepository      userRepository
+	verificationCreator verificationCreator
+	logger              log.Logger
 }
 
 func NewUsecase(
 	hashService hashService,
 	userRepository userRepository,
-	verificationRepository emailVerificationRepository,
+	verificationCreator verificationCreator,
 	logger log.Logger,
 ) *Usecase {
 	logger = logger.Set("pkg", "internal/app/usecases/register")
 
 	return &Usecase{
-		hashService:                 hashService,
-		userRepository:              userRepository,
-		emailVerificationRepository: verificationRepository,
-		logger:                      logger,
+		hashService:         hashService,
+		userRepository:      userRepository,
+		verificationCreator: verificationCreator,
+		logger:              logger,
 	}
 }
 
@@ -74,16 +74,16 @@ func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
 }
 
 func (u *Usecase) processTrx(ctx context.Context, usr *user.User) error {
-	err := u.userRepository.Create(ctx, usr)
+	err := u.userRepository.Save(ctx, usr)
 	if err != nil {
 		if errors.Is(err, repository.ErrUnique) {
 			return dto.ErrEmailInUse
 		}
 
-		return fmt.Errorf("create user: %w", err)
+		return fmt.Errorf("save user: %w", err)
 	}
 
-	err = u.emailVerificationRepository.Create(ctx, usr.ID)
+	err = u.verificationCreator.Create(ctx, usr.ID)
 	if err != nil {
 
 		return fmt.Errorf("create verification: %w", err)

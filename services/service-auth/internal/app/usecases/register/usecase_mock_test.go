@@ -41,46 +41,46 @@ func (m *MockuserRepository) EXPECT() *MockuserRepositoryMockRecorder {
 	return m.recorder
 }
 
-// Create mocks base method.
-func (m *MockuserRepository) Create(ctx context.Context, user *user.User) error {
+// Save mocks base method.
+func (m *MockuserRepository) Save(ctx context.Context, user *user.User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, user)
+	ret := m.ctrl.Call(m, "Save", ctx, user)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Create indicates an expected call of Create.
-func (mr *MockuserRepositoryMockRecorder) Create(ctx, user any) *gomock.Call {
+// Save indicates an expected call of Save.
+func (mr *MockuserRepositoryMockRecorder) Save(ctx, user any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockuserRepository)(nil).Create), ctx, user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockuserRepository)(nil).Save), ctx, user)
 }
 
-// MockemailVerificationRepository is a mock of emailVerificationRepository interface.
-type MockemailVerificationRepository struct {
+// MockverificationCreator is a mock of verificationCreator interface.
+type MockverificationCreator struct {
 	ctrl     *gomock.Controller
-	recorder *MockemailVerificationRepositoryMockRecorder
+	recorder *MockverificationCreatorMockRecorder
 	isgomock struct{}
 }
 
-// MockemailVerificationRepositoryMockRecorder is the mock recorder for MockemailVerificationRepository.
-type MockemailVerificationRepositoryMockRecorder struct {
-	mock *MockemailVerificationRepository
+// MockverificationCreatorMockRecorder is the mock recorder for MockverificationCreator.
+type MockverificationCreatorMockRecorder struct {
+	mock *MockverificationCreator
 }
 
-// NewMockemailVerificationRepository creates a new mock instance.
-func NewMockemailVerificationRepository(ctrl *gomock.Controller) *MockemailVerificationRepository {
-	mock := &MockemailVerificationRepository{ctrl: ctrl}
-	mock.recorder = &MockemailVerificationRepositoryMockRecorder{mock}
+// NewMockverificationCreator creates a new mock instance.
+func NewMockverificationCreator(ctrl *gomock.Controller) *MockverificationCreator {
+	mock := &MockverificationCreator{ctrl: ctrl}
+	mock.recorder = &MockverificationCreatorMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockemailVerificationRepository) EXPECT() *MockemailVerificationRepositoryMockRecorder {
+func (m *MockverificationCreator) EXPECT() *MockverificationCreatorMockRecorder {
 	return m.recorder
 }
 
 // Create mocks base method.
-func (m *MockemailVerificationRepository) Create(ctx context.Context, userID string) error {
+func (m *MockverificationCreator) Create(ctx context.Context, userID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, userID)
 	ret0, _ := ret[0].(error)
@@ -88,9 +88,9 @@ func (m *MockemailVerificationRepository) Create(ctx context.Context, userID str
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockemailVerificationRepositoryMockRecorder) Create(ctx, userID any) *gomock.Call {
+func (mr *MockverificationCreatorMockRecorder) Create(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockemailVerificationRepository)(nil).Create), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockverificationCreator)(nil).Create), ctx, userID)
 }
 
 // MockhashService is a mock of hashService interface.

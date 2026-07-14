@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
@@ -20,7 +21,11 @@ func NewRepository(conns psql.Conns) *Repository {
 	}
 }
 
-func (r *Repository) Create(ctx context.Context, usr *user.User) error {
+func (r *Repository) Save(ctx context.Context, usr *user.User) error {
+	if usr.Stored() {
+		return errors.New("UPDATE not implemented")
+	}
+
 	conn, err := r.conns.Conn(ctx)
 	if err != nil {
 		return err

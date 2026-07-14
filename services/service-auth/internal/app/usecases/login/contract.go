@@ -27,7 +27,7 @@ type uuidService interface {
 }
 
 type sessionRepository interface {
-	Save(ctx context.Context, sess *session.Session) error
+	Save(ctx context.Context, ses *session.Session) error
 }
 
 type userRepository interface {
