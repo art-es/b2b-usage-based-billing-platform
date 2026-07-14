@@ -35,7 +35,12 @@ type httpRouter interface {
 }
 
 type usecase interface {
-	Do(ctx context.Context, req *dto.Request) error
+	Do(ctx context.Context, req *dto.Request) (*dto.Response, error)
+}
+
+type responseBody struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type handler struct {
@@ -73,7 +78,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecase.Do(r.Context(), &dto.Request{
+	res, err := h.usecase.Do(r.Context(), &dto.Request{
 		Email:    rb.Email,
 		Password: rb.Password,
 	})
@@ -100,5 +105,8 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputil.Write(w, http.StatusAccepted, nil)
+	httputil.Write(w, http.StatusOK, &responseBody{
+		AccessToken:  res.AccessToken,
+		RefreshToken: res.RefreshToken,
+	})
 }

@@ -56,37 +56,34 @@ func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
 	}
 
 	usr := user.NewRegisteredUser(req.Name, req.Email, passwordHash)
-	ctx = trx.Begin(ctx)
 
-	err = u.processTrx(ctx, usr)
+	ctx = trx.Begin(ctx)
+	err = func() error {
+		err := u.userRepository.Save(ctx, usr)
+		if err != nil {
+			if errors.Is(err, repository.ErrUnique) {
+				return dto.ErrEmailInUse
+			}
+
+			return fmt.Errorf("save user: %w", err)
+		}
+
+		err = u.verificationCreator.Create(ctx, usr.ID)
+		if err != nil {
+
+			return fmt.Errorf("create verification: %w", err)
+		}
+
+		return nil
+	}()
 	if err != nil {
 		trxutil.RollbackOrLog(ctx, u.logger, err.Error())
-
 		return err
 	}
 
 	err = trx.Commit(ctx)
 	if err != nil {
 		return fmt.Errorf("commit trx: %w", err)
-	}
-
-	return nil
-}
-
-func (u *Usecase) processTrx(ctx context.Context, usr *user.User) error {
-	err := u.userRepository.Save(ctx, usr)
-	if err != nil {
-		if errors.Is(err, repository.ErrUnique) {
-			return dto.ErrEmailInUse
-		}
-
-		return fmt.Errorf("save user: %w", err)
-	}
-
-	err = u.verificationCreator.Create(ctx, usr.ID)
-	if err != nil {
-
-		return fmt.Errorf("create verification: %w", err)
 	}
 
 	return nil

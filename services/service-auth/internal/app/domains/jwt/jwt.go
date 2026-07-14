@@ -1,6 +1,11 @@
 package jwt
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+var ErrInvalidToken = errors.New("invalid token")
 
 type Claims struct {
 	SessionID      string

@@ -25,6 +25,7 @@ type Usecase struct {
 	sessionRepository sessionRepository
 	userRepository    userRepository
 	logger            log.Logger
+	jwtSecret         []byte
 }
 
 func NewUsecase(
@@ -35,6 +36,7 @@ func NewUsecase(
 	sessionRepository sessionRepository,
 	userRepository userRepository,
 	logger log.Logger,
+	jwtSecret []byte,
 ) *Usecase {
 	logger = logger.Set("pkg", "internal/app/usecases/login")
 
@@ -46,6 +48,7 @@ func NewUsecase(
 		sessionRepository: sessionRepository,
 		userRepository:    userRepository,
 		logger:            logger,
+		jwtSecret:         jwtSecret,
 	}
 }
 
@@ -103,7 +106,7 @@ func (u *Usecase) createSession(ctx context.Context, usr *user.User, now time.Ti
 			return fmt.Errorf("save session: %w", err)
 		}
 
-		accessToken, err = u.jwtService.Generate(jwt.NewClaims(ses.ID, usr.ID))
+		accessToken, err = u.jwtService.Generate(u.jwtSecret, jwt.NewClaims(ses.ID, usr.ID))
 		if err != nil {
 			return fmt.Errorf("generate access token as jwt: %w", err)
 		}

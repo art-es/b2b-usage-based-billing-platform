@@ -15,7 +15,7 @@ type hashService interface {
 }
 
 type jwtService interface {
-	Generate(claims *jwt.Claims) (string, error)
+	Generate(secret []byte, claims *jwt.Claims) (string, error)
 }
 
 type timeService interface {

@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -19,6 +20,29 @@ func NewRepository(conns psql.Conns) *Repository {
 	return &Repository{
 		conns: conns,
 	}
+}
+
+func (r *Repository) FindByEmail(ctx context.Context, email string) (*user.User, error) {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := `SELECT id, email, password_hash, verified_at IS NOT NULL AS is_verified
+		FROM users WHERE email = $1`
+	args := []any{email}
+
+	usr := &user.User{}
+	err = conn.QueryRowContext(ctx, query, args...).Scan(&usr.ID, &usr.Email, &usr.PasswordHash, &usr.IsVerified)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, repository.ErrNotFound
+		}
+
+		return nil, fmt.Errorf("query execute: %w", err)
+	}
+
+	return usr, nil
 }
 
 func (r *Repository) Save(ctx context.Context, usr *user.User) error {
