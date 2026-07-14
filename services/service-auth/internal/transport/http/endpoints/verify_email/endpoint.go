@@ -35,7 +35,7 @@ type handler struct {
 	logger  log.Logger
 }
 
-func RegisterEndpoint(
+func Bind(
 	httpRouter httpRouter,
 	usecase usecase,
 	logger log.Logger,

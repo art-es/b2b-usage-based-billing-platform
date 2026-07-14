@@ -11,14 +11,14 @@ import (
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
-	psqlRepositories "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/bcrypt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/jwt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/shutdown"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/time"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/uuid"
-	httpEndpoints "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/endpoints"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/endpoints"
 )
 
 var (
@@ -82,9 +82,9 @@ func build(ctx context.Context) error {
 	jwtService := jwt.NewService(logger)
 
 	// Repositories
-	userRepository := psqlRepositories.NewUserRepository(psqlConn)
-	emailVerificationRepository := psqlRepositories.NewEmailVerificationRepository(psqlConn)
-	sessionRepository := psqlRepositories.NewSessionsRepository(psqlConn)
+	userRepository := repositories.NewUserRepository(psqlConn)
+	emailVerificationRepository := repositories.NewEmailVerificationRepository(psqlConn)
+	sessionRepository := repositories.NewSessionsRepository(psqlConn)
 
 	// Usecases
 	registerUsecase := usecases.NewRegisterUsecase(hashService, userRepository, emailVerificationRepository, logger)
@@ -94,10 +94,10 @@ func build(ctx context.Context) error {
 
 	// HTTP Server
 	httpRouter := http.NewServeMux()
-	httpEndpoints.RegisterRegisterEndpoint(httpRouter, registerUsecase, logger)
-	httpEndpoints.RegisterVerifyEmailEndpoint(httpRouter, verifyEmailUsecase, logger)
-	httpEndpoints.RegisterResendEmailVerificationEndpoint(httpRouter, resendEmailVerificationsUsecase, logger)
-	httpEndpoints.RegisterLoginEndpoint(httpRouter, loginUsecase, logger)
+	endpoints.BindRegister(httpRouter, registerUsecase, logger)
+	endpoints.BindVerifyEmail(httpRouter, verifyEmailUsecase, logger)
+	endpoints.BindResendEmailVerification(httpRouter, resendEmailVerificationsUsecase, logger)
+	endpoints.BindLogin(httpRouter, loginUsecase, logger)
 
 	httpServer = &http.Server{
 		Addr:        ":8080",

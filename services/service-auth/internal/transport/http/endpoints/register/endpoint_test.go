@@ -38,7 +38,7 @@ func TestEndpoint(t *testing.T) {
 
 	callEndpoint := func(d *deps, reqBody io.Reader) *httptest.ResponseRecorder {
 		mux := http.NewServeMux()
-		RegisterEndpoint(mux, d.mockUsecase, d.logger)
+		Bind(mux, d.mockUsecase, d.logger)
 
 		w := httptest.NewRecorder()
 		r := httptest.NewRequest(http.MethodPost, "/v1/auth/register", reqBody)
@@ -168,7 +168,7 @@ func TestEndpoint_WrongHTTPMethod(t *testing.T) {
 	logbuf := log.NewBuffer()
 	mux := http.NewServeMux()
 
-	RegisterEndpoint(
+	Bind(
 		mux,
 		NewMockusecase(gomock.NewController(t)),
 		log.NewLogger(&log.Options{Output: logbuf}),

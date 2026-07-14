@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	RegisterRegisterEndpoint                = register.RegisterEndpoint
-	RegisterVerifyEmailEndpoint             = verify_email.RegisterEndpoint
-	RegisterResendEmailVerificationEndpoint = resend_email_verification.RegisterEndpoint
-	RegisterLoginEndpoint                   = login.RegisterEndpoint
+	BindRegister                = register.Bind
+	BindVerifyEmail             = verify_email.Bind
+	BindResendEmailVerification = resend_email_verification.Bind
+	BindLogin                   = login.Bind
 )
