@@ -8,8 +8,8 @@ import (
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/repository"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/psqlutil"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/psqlutil"
 )
 
 type Repository struct {

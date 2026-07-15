@@ -12,6 +12,7 @@ const (
 type Session struct {
 	ID                    string
 	UserID                string
+	OrganizationID        *string
 	RefreshTokenHash      string
 	RefreshTokenExpiresAt time.Time
 }

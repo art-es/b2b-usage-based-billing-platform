@@ -9,7 +9,7 @@ import (
 	"github.com/lib/pq"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql"
 )
 
 type Repository struct {

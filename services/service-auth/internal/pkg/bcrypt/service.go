@@ -8,6 +8,8 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/hash"
 )
 
+const hashCost = 12
+
 type Service struct{}
 
 func NewService() *Service {
@@ -15,7 +17,7 @@ func NewService() *Service {
 }
 
 func (*Service) Generate(s string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(s), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(s), hashCost)
 	return string(hash), err
 }
 

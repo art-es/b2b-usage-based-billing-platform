@@ -9,8 +9,9 @@ import (
 	"os/signal"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/send_email_verification"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories/email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/env"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories/email_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/nats"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/retry"
@@ -74,13 +75,21 @@ func build(ctx context.Context) error {
 		return errors.New("-batch must be more than 0")
 	}
 
-	psqlConn, err := psql.Connect(ctx, logger)
+	envs, err := env.ParseVars(
+		env.Required(env.FieldPsqlUrl),
+		env.Required(env.FieldNatsUrl),
+	)
+	if err != nil {
+		return fmt.Errorf("parse env vars: %w", err)
+	}
+
+	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlUrl), logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
 	shutdowner.Add(psqlConn)
 
-	natsConn, err := nats.Connect()
+	natsConn, err := nats.Connect(envs.Get(env.FieldNatsUrl))
 	if err != nil {
 		return fmt.Errorf("connect nats: %w", err)
 	}

@@ -1,4 +1,4 @@
-package login
+package refresh_session
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/session"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
 )
 
 type jwtService interface {
@@ -15,10 +14,6 @@ type jwtService interface {
 
 type keyedHashService interface {
 	Generate(secret []byte, s string) (string, error)
-}
-
-type passwordHashService interface {
-	Compare(s string, hash string) error
 }
 
 type timeService interface {
@@ -30,9 +25,6 @@ type uuidService interface {
 }
 
 type sessionRepository interface {
+	GetByRefreshTokenHash(ctx context.Context, hash string) (*session.Session, error)
 	Save(ctx context.Context, ses *session.Session) error
-}
-
-type userRepository interface {
-	FindByEmail(ctx context.Context, email string) (*user.User, error)
 }

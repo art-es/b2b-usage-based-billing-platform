@@ -18,37 +18,43 @@ import (
 )
 
 type Usecase struct {
-	jwtService        jwtService
-	hashService       hashService
-	timeService       timeService
-	uuidService       uuidService
-	sessionRepository sessionRepository
-	userRepository    userRepository
-	logger            log.Logger
-	jwtSecret         []byte
+	jwtService             jwtService
+	keyedHashService       keyedHashService
+	passwordHashService    passwordHashService
+	timeService            timeService
+	uuidService            uuidService
+	sessionRepository      sessionRepository
+	userRepository         userRepository
+	logger                 log.Logger
+	jwtSecret              []byte
+	refreshTokenHashSecret []byte
 }
 
 func NewUsecase(
 	jwtService jwtService,
-	hashService hashService,
+	keyedHashService keyedHashService,
+	hashService passwordHashService,
 	timeService timeService,
 	uuidService uuidService,
 	sessionRepository sessionRepository,
 	userRepository userRepository,
+	jwtSecret string,
+	refreshTokenHashSecret string,
 	logger log.Logger,
-	jwtSecret []byte,
 ) *Usecase {
 	logger = logger.Set("pkg", "internal/app/usecases/login")
 
 	return &Usecase{
-		jwtService:        jwtService,
-		hashService:       hashService,
-		timeService:       timeService,
-		uuidService:       uuidService,
-		sessionRepository: sessionRepository,
-		userRepository:    userRepository,
-		logger:            logger,
-		jwtSecret:         jwtSecret,
+		jwtService:             jwtService,
+		keyedHashService:       keyedHashService,
+		passwordHashService:    hashService,
+		timeService:            timeService,
+		uuidService:            uuidService,
+		sessionRepository:      sessionRepository,
+		userRepository:         userRepository,
+		jwtSecret:              []byte(jwtSecret),
+		refreshTokenHashSecret: []byte(refreshTokenHashSecret),
+		logger:                 logger,
 	}
 }
 
@@ -73,7 +79,7 @@ func (u *Usecase) authenticate(ctx context.Context, req *dto.Request) (*user.Use
 		return nil, fmt.Errorf("get user by email: %w", err)
 	}
 
-	err = u.hashService.Compare(req.Password, usr.PasswordHash)
+	err = u.passwordHashService.Compare(req.Password, usr.PasswordHash)
 	if err != nil {
 		if errors.Is(err, hash.ErrMismatch) {
 			return nil, dto.ErrWrongCredentials
@@ -90,13 +96,13 @@ func (u *Usecase) authenticate(ctx context.Context, req *dto.Request) (*user.Use
 }
 
 func (u *Usecase) createSession(ctx context.Context, usr *user.User, now time.Time) (*dto.Response, error) {
-	refreshToken := u.uuidService.Generate()
-	refreshTokenHash, err := u.hashService.Generate(refreshToken)
+	res := &dto.Response{}
+	res.RefreshToken = u.uuidService.Generate()
+
+	refreshTokenHash, err := u.keyedHashService.Generate(u.refreshTokenHashSecret, res.RefreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("generate refresh token hash: %w", err)
 	}
-
-	var accessToken string
 
 	ctx = trx.Begin(ctx)
 	err = func() error {
@@ -106,7 +112,7 @@ func (u *Usecase) createSession(ctx context.Context, usr *user.User, now time.Ti
 			return fmt.Errorf("save session: %w", err)
 		}
 
-		accessToken, err = u.jwtService.Generate(u.jwtSecret, jwt.NewClaims(ses.ID, usr.ID))
+		res.AccessToken, err = u.jwtService.Generate(u.jwtSecret, jwt.NewClaims(ses.ID, usr.ID))
 		if err != nil {
 			return fmt.Errorf("generate access token as jwt: %w", err)
 		}
@@ -123,8 +129,5 @@ func (u *Usecase) createSession(ctx context.Context, usr *user.User, now time.Ti
 		return nil, fmt.Errorf("commit trx: %w", err)
 	}
 
-	return &dto.Response{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}, nil
+	return res, nil
 }

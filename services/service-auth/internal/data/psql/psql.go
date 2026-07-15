@@ -3,9 +3,7 @@ package psql
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
-	"os"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
@@ -28,8 +26,8 @@ type conns struct {
 	logger log.Logger
 }
 
-func Connect(ctx context.Context, logger log.Logger) (*conns, error) {
-	db, err := connect(ctx)
+func Connect(ctx context.Context, url string, logger log.Logger) (*conns, error) {
+	db, err := connect(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -42,12 +40,7 @@ func Connect(ctx context.Context, logger log.Logger) (*conns, error) {
 	}, nil
 }
 
-func connect(ctx context.Context) (*sql.DB, error) {
-	url := os.Getenv("PSQL_URL")
-	if url == "" {
-		return nil, errors.New("PSQL_URL required")
-	}
-
+func connect(ctx context.Context, url string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, fmt.Errorf("open DB conn: %w", err)

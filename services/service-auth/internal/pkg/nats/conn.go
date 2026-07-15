@@ -1,12 +1,11 @@
 package nats
 
 import (
-	"errors"
 	"fmt"
-	"os"
+
+	"github.com/nats-io/nats.go"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/broker"
-	"github.com/nats-io/nats.go"
 )
 
 type Conn struct {
@@ -14,12 +13,7 @@ type Conn struct {
 	js   nats.JetStream
 }
 
-func Connect() (*Conn, error) {
-	url := os.Getenv("NATS_URL")
-	if url == "" {
-		return nil, errors.New("NATS_URL required")
-	}
-
+func Connect(url string) (*Conn, error) {
 	conn, err := nats.Connect(url)
 	if err != nil {
 		return nil, fmt.Errorf("connect to nats server: %w", err)

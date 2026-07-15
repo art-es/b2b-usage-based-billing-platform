@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -10,9 +9,11 @@ import (
 	"os/signal"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/database/psql/repositories"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/env"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/bcrypt"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/hmac_sha256"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/jwt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/shutdown"
@@ -65,21 +66,26 @@ func main() {
 }
 
 func build(ctx context.Context) error {
-	psqlConn, err := psql.Connect(ctx, logger)
+	envs, err := env.ParseVars(
+		env.Required(env.FieldPsqlUrl),
+		env.Required(env.FieldJwtSecret),
+		env.Required(env.FieldRefreshTokenHashSecret),
+	)
+	if err != nil {
+		return fmt.Errorf("parse env vars: %w", err)
+	}
+
+	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlUrl), logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
 	shutdowner.Add(psqlConn)
 
-	jwtSecret := os.Getenv("JWT_SECRET")
-	if jwtSecret == "" {
-		return errors.New("JWT_SECRET required")
-	}
-
 	timeService := time.NewService()
 	uuidService := uuid.NewService()
-	hashService := bcrypt.NewService()
 	jwtService := jwt.NewService(logger)
+	passwordHashService := bcrypt.NewService()
+	hmacSha256Service := hmac_sha256.NewService()
 
 	// Repositories
 	userRepository := repositories.NewUserRepository(psqlConn)
@@ -87,10 +93,13 @@ func build(ctx context.Context) error {
 	sessionRepository := repositories.NewSessionsRepository(psqlConn)
 
 	// Usecases
-	registerUsecase := usecases.NewRegisterUsecase(hashService, userRepository, emailVerificationRepository, logger)
+	registerUsecase := usecases.NewRegisterUsecase(passwordHashService, userRepository, emailVerificationRepository, logger)
 	verifyEmailUsecase := usecases.NewVerifyEmailUsecase(emailVerificationRepository, userRepository, logger)
 	resendEmailVerificationsUsecase := usecases.NewResendEmailVerificationUsecase(emailVerificationRepository)
-	loginUsecase := usecases.NewLoginUsecase(jwtService, hashService, timeService, uuidService, sessionRepository, userRepository, logger, []byte(jwtSecret))
+	loginUsecase := usecases.NewLoginUsecase(
+		jwtService, hmacSha256Service, passwordHashService, timeService, uuidService, sessionRepository,
+		userRepository, envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenHashSecret), logger,
+	)
 
 	// HTTP Server
 	httpRouter := http.NewServeMux()
