@@ -32,7 +32,8 @@ func (r *Repository) GetByRefreshTokenHash(ctx context.Context, refreshTokenHash
 			refresh_token_hash,
 			refresh_token_expires_at
 		FROM sessions
-		WHERE refresh_token_hash = $1`
+		WHERE refresh_token_hash = $1 
+		FOR UPDATE SKIP LOCKED`
 	args := []any{refreshTokenHash}
 
 	ses := &session.Session{}
