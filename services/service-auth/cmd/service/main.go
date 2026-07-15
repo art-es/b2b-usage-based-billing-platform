@@ -83,7 +83,7 @@ func build(ctx context.Context) error {
 
 	timeService := time.NewService()
 	uuidService := uuid.NewService()
-	jwtService := jwt.NewService(logger)
+	jwtService := jwt.NewService(timeService, logger)
 	passwordHashService := bcrypt.NewService()
 	hmacSha256Service := hmac_sha256.NewService()
 

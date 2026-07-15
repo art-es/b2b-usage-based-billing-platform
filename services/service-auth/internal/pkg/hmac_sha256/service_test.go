@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestService_Generate(t *testing.T) {
+func TestService(t *testing.T) {
 	svc := NewService()
 
 	t.Run("same string, same secret", func(t *testing.T) {
