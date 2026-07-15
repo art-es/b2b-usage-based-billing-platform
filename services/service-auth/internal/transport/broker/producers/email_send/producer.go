@@ -1,3 +1,4 @@
+//go:generate mockgen -source=producer.go -destination=producer_mock_test.go -package=$GOPACKAGE
 package email_send
 
 import (
@@ -30,18 +31,20 @@ func NewProducer(client client) *Producer {
 }
 
 func (p *Producer) Produce(ctx context.Context, ev event.EmailSend) error {
-	payload, err := json.Marshal(messagePayload{
+	payload, _ := json.Marshal(messagePayload{
 		Email:   ev.Email,
 		Subject: ev.Subject,
 		Content: ev.Content,
 	})
-	if err != nil {
-		return fmt.Errorf("encode payload to json: %w", err)
-	}
 
-	return p.client.Produce(ctx, broker.ProduceMessage{
+	err := p.client.Produce(ctx, broker.ProduceMessage{
 		Subject:        broker.SubjectEmailSend,
 		IdempotencyKey: ev.IdempotencyKey,
 		Payload:        payload,
 	})
+	if err != nil {
+		return fmt.Errorf("client: %w", err)
+	}
+
+	return nil
 }
