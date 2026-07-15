@@ -16,6 +16,7 @@ import (
 type Usecase struct {
 	jwtService             jwtService
 	keyedHashService       keyedHashService
+	timeService            timeService
 	uuidService            uuidService
 	sessionRepository      sessionRepository
 	jwtSecret              []byte
@@ -26,6 +27,7 @@ type Usecase struct {
 func NewUsecase(
 	jwtService jwtService,
 	keyedHashService keyedHashService,
+	timeService timeService,
 	uuidService uuidService,
 	sessionRepository sessionRepository,
 	jwtSecret string,
@@ -37,6 +39,7 @@ func NewUsecase(
 	return &Usecase{
 		jwtService:             jwtService,
 		keyedHashService:       keyedHashService,
+		timeService:            timeService,
 		uuidService:            uuidService,
 		sessionRepository:      sessionRepository,
 		jwtSecret:              []byte(jwtSecret),
@@ -46,6 +49,8 @@ func NewUsecase(
 }
 
 func (u *Usecase) Do(ctx context.Context, refreshToken string) (*dto.Response, error) {
+	now := u.timeService.GetCurrentTime()
+
 	refreshTokenHash, err := u.keyedHashService.Generate(u.refreshTokenHashSecret, refreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("generate input refresh token hash: %w", err)
@@ -64,17 +69,20 @@ func (u *Usecase) Do(ctx context.Context, refreshToken string) (*dto.Response, e
 		}
 
 		res.RefreshToken = u.uuidService.Generate()
-		ses.RefreshTokenHash, err = u.keyedHashService.Generate(u.refreshTokenHashSecret, res.RefreshToken)
+
+		refreshTokenHash, err := u.keyedHashService.Generate(u.refreshTokenHashSecret, res.RefreshToken)
 		if err != nil {
 			return fmt.Errorf("generate refresh token hash: %w", err)
 		}
+
+		ses.SetRefreshTokenHash(refreshTokenHash, now)
 
 		err = u.sessionRepository.Save(ctx, ses)
 		if err != nil {
 			return fmt.Errorf("save session: %w", err)
 		}
 
-		res.AccessToken, err = u.jwtService.Generate(u.jwtSecret, jwt.NewClaims(ses.ID, ses.UserID))
+		res.AccessToken, err = u.jwtService.Generate(u.jwtSecret, jwt.NewClaims(ses.ID, ses.UserID, ses.OrganizationID))
 		if err != nil {
 			return fmt.Errorf("generate access token as jwt: %w", err)
 		}

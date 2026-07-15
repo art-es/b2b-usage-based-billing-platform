@@ -14,9 +14,10 @@ type Claims struct {
 	ExpiresAt      time.Time
 }
 
-func NewClaims(sid, uid string) *Claims {
+func NewClaims(sid, uid string, oid *string) *Claims {
 	return &Claims{
-		SessionID: sid,
-		UserID:    uid,
+		SessionID:      sid,
+		UserID:         uid,
+		OrganizationID: oid,
 	}
 }

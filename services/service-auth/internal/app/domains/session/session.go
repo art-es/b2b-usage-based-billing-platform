@@ -32,3 +32,8 @@ func NewSession(
 func (s *Session) Stored() bool {
 	return s.ID != ""
 }
+
+func (s *Session) SetRefreshTokenHash(hash string, now time.Time) {
+	s.RefreshTokenHash = hash
+	s.RefreshTokenExpiresAt = now.Add(RefreshTokenExpiry)
+}

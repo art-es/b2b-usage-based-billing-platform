@@ -112,7 +112,7 @@ func (u *Usecase) createSession(ctx context.Context, usr *user.User, now time.Ti
 			return fmt.Errorf("save session: %w", err)
 		}
 
-		res.AccessToken, err = u.jwtService.Generate(u.jwtSecret, jwt.NewClaims(ses.ID, usr.ID))
+		res.AccessToken, err = u.jwtService.Generate(u.jwtSecret, jwt.NewClaims(ses.ID, usr.ID, nil))
 		if err != nil {
 			return fmt.Errorf("generate access token as jwt: %w", err)
 		}
