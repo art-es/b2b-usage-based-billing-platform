@@ -2,12 +2,14 @@ package repositories
 
 import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories/email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories/orgn"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories/sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories/user"
 )
 
 var (
 	NewUserRepository              = user.NewRepository
+	NewOrgnRepository              = orgn.NewRepository
 	NewEmailVerificationRepository = email_verification.NewRepository
 	NewSessionsRepository          = sessions.NewRepository
 )

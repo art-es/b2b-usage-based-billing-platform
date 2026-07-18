@@ -19,6 +19,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/shutdown"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/time"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/uuid"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/authorizer"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/endpoints"
 )
 
@@ -89,6 +90,7 @@ func build(ctx context.Context) error {
 
 	// Repositories
 	userRepository := repositories.NewUserRepository(psqlConn)
+	orgnRepository := repositories.NewOrgnRepository(psqlConn)
 	emailVerificationRepository := repositories.NewEmailVerificationRepository(psqlConn)
 	sessionRepository := repositories.NewSessionsRepository(psqlConn)
 
@@ -100,17 +102,21 @@ func build(ctx context.Context) error {
 		jwtService, hmacSha256Service, passwordHashService, timeService, uuidService, sessionRepository,
 		userRepository, envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenHashSecret), logger,
 	)
+	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnRepository)
 
 	// HTTP Server
-	httpRouter := http.NewServeMux()
-	endpoints.BindRegister(httpRouter, registerUsecase, logger)
-	endpoints.BindVerifyEmail(httpRouter, verifyEmailUsecase, logger)
-	endpoints.BindResendEmailVerification(httpRouter, resendEmailVerificationsUsecase, logger)
-	endpoints.BindLogin(httpRouter, loginUsecase, logger)
+	router := http.NewServeMux()
+	authorizer := authorizer.New(jwtService, envs.Get(env.FieldJwtSecret), logger)
+
+	endpoints.BindRegister(router, registerUsecase, logger)
+	endpoints.BindVerifyEmail(router, verifyEmailUsecase, logger)
+	endpoints.BindResendEmailVerification(router, resendEmailVerificationsUsecase, logger)
+	endpoints.BindLogin(router, loginUsecase, logger)
+	endpoints.BindGetMe(router, authorizer, getMeUsecase, logger)
 
 	httpServer = &http.Server{
 		Addr:        ":8080",
-		Handler:     httpRouter,
+		Handler:     router,
 		BaseContext: func(net.Listener) context.Context { return ctx },
 	}
 	shutdowner.AddFunc(func() error {

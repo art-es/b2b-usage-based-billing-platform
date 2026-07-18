@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/get_me"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/login"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/register"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/resend_email_verification"
@@ -12,4 +13,5 @@ var (
 	NewVerifyEmailUsecase             = verify_email.NewUsecase
 	NewResendEmailVerificationUsecase = resend_email_verification.NewUsecase
 	NewLoginUsecase                   = login.NewUsecase
+	NewGetMeUsecase                   = get_me.NewUsecase
 )

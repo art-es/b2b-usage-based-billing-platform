@@ -11,6 +11,7 @@ const (
 
 var (
 	bodyInvalidRequest = []byte(`{"code":1001,"message":"Invalid request format"}`)
+	bodyUnauthorized   = []byte(`{"message":"Unauthorized"}`)
 	bodyInternalError  = []byte(`{"message":"Internal error"}`)
 )
 
@@ -39,6 +40,10 @@ func Write(w http.ResponseWriter, code int, body any) {
 
 func WriteInvalidRequest(w http.ResponseWriter) {
 	WriteRaw(w, http.StatusBadRequest, bodyInvalidRequest)
+}
+
+func WriteUnauthorized(w http.ResponseWriter) {
+	WriteRaw(w, http.StatusUnauthorized, bodyUnauthorized)
 }
 
 func WriteInternalError(w http.ResponseWriter) {

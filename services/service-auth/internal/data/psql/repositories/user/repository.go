@@ -22,6 +22,29 @@ func NewRepository(conns psql.Conns) *Repository {
 	}
 }
 
+func (r *Repository) Find(ctx context.Context, id string) (*user.User, error) {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := `SELECT id, email, password_hash, verified_at IS NOT NULL AS is_verified
+		FROM users WHERE id = $1`
+	args := []any{id}
+
+	usr := &user.User{}
+	err = conn.QueryRowContext(ctx, query, args...).Scan(&usr.ID, &usr.Email, &usr.PasswordHash, &usr.IsVerified)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, repository.ErrNotFound
+		}
+
+		return nil, fmt.Errorf("query execute: %w", err)
+	}
+
+	return usr, nil
+}
+
 func (r *Repository) FindByEmail(ctx context.Context, email string) (*user.User, error) {
 	conn, err := r.conns.Conn(ctx)
 	if err != nil {

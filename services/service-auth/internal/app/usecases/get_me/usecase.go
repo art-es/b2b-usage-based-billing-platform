@@ -1,3 +1,4 @@
+//go:generate mockgen -source=usecase.go -destination=usecase_mock_test.go -package=$GOPACKAGE
 package get_me
 
 import (
@@ -43,7 +44,7 @@ func (u *Usecase) Do(ctx context.Context, claims *jwt.Claims) (*dto.Response, er
 	if claims.OrgnID != nil {
 		org, err = u.orgnRepository.Find(ctx, *claims.OrgnID)
 		if err != nil {
-			return nil, fmt.Errorf("find org: %w", err)
+			return nil, fmt.Errorf("find orgn: %w", err)
 		}
 	}
 
@@ -53,9 +54,16 @@ func (u *Usecase) Do(ctx context.Context, claims *jwt.Claims) (*dto.Response, er
 			Email: usr.Email,
 			Name:  usr.Name,
 		},
-		Orgn: &dto.ResponseOrgn{
-			ID:   org.ID,
-			Name: org.Name,
-		},
+		Orgn: convertOrgn(org),
 	}, nil
+}
+
+func convertOrgn(in *orgn.Orgn) *dto.ResponseOrgn {
+	if in != nil {
+		return &dto.ResponseOrgn{
+			ID:   in.ID,
+			Name: in.Name,
+		}
+	}
+	return nil
 }

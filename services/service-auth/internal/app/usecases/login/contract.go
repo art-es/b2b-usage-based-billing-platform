@@ -1,3 +1,4 @@
+//go:generate mockgen -source=contract.go -destination=contract_mock_test.go -package=$GOPACKAGE
 package login
 
 import (
