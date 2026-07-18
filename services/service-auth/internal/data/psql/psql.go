@@ -1,3 +1,4 @@
+//go:generate mockgen -source=psql.go -destination=psqlmock/psql.go -package=psqlmock
 package psql
 
 import (
