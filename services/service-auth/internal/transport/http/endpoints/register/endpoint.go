@@ -32,7 +32,7 @@ const (
 	errMsgEmailInUse       = "Email is already in use"
 )
 
-type httpRouter interface {
+type router interface {
 	Handle(pattern string, handler http.Handler)
 }
 
@@ -46,13 +46,13 @@ type handler struct {
 }
 
 func Bind(
-	httpRouter httpRouter,
+	router router,
 	usecase usecase,
 	logger log.Logger,
 ) {
 	logger = logger.Set("pkg", "internal/transport/http/endpoints/register")
 
-	httpRouter.Handle("POST /v1/auth/register", &handler{
+	router.Handle("POST /v1/auth/register", &handler{
 		usecase: usecase,
 		logger:  logger,
 	})

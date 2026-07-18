@@ -48,7 +48,7 @@ func (s *Service) Generate(secret []byte, claims *domain.Claims) (string, error)
 			ExpiresAt: jwt.NewNumericDate(claims.ExpiresAt),
 		},
 		UserID:         claims.UserID,
-		OrganizationID: claims.OrganizationID,
+		OrganizationID: claims.OrgnID,
 	})
 
 	token, err := obj.SignedString(secret)
@@ -84,7 +84,7 @@ func (s *Service) Parse(secret []byte, token string) (*domain.Claims, error) {
 	return &domain.Claims{
 		SessionID:      claims.ID,
 		UserID:         claims.UserID,
-		OrganizationID: claims.OrganizationID,
+		OrgnID: claims.OrganizationID,
 		ExpiresAt:      claims.ExpiresAt.Time,
 	}, nil
 }

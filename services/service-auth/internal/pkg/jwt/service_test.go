@@ -28,7 +28,7 @@ func TestService_OK(t *testing.T) {
 	claims := domain.Claims{
 		SessionID:      "test-session-id",
 		UserID:         "test-user-id",
-		OrganizationID: ptr.To("test-org-id"),
+		OrgnID: ptr.To("test-org-id"),
 		ExpiresAt:      getTime("2026-01-03 12:00:00"),
 	}
 
@@ -59,7 +59,7 @@ func TestService_Expired(t *testing.T) {
 	claims := domain.Claims{
 		SessionID:      "test-session-id",
 		UserID:         "test-user-id",
-		OrganizationID: ptr.To("test-org-id"),
+		OrgnID: ptr.To("test-org-id"),
 		ExpiresAt:      getTime("2026-01-01 12:00:00"),
 	}
 

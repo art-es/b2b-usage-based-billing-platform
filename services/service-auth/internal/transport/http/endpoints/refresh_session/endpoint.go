@@ -22,7 +22,7 @@ const (
 	errMsgInvalidToken  = "Invalid token"
 )
 
-type httpRouter interface {
+type router interface {
 	Handle(pattern string, handler http.Handler)
 }
 
@@ -41,13 +41,13 @@ type handler struct {
 }
 
 func Bind(
-	httpRouter httpRouter,
+	router router,
 	usecase usecase,
 	logger log.Logger,
 ) {
 	logger = logger.Set("pkg", "internal/transport/http/endpoints/refresh_session")
 
-	httpRouter.Handle("POST /v1/auth/refresh", &handler{
+	router.Handle("POST /v1/auth/refresh", &handler{
 		usecase: usecase,
 		logger:  logger,
 	})
