@@ -1,4 +1,3 @@
-//go:generate mockgen -source=psql.go -destination=psqlmock/psql.go -package=psqlmock
 package psql
 
 import (
@@ -9,16 +8,6 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
 )
-
-type Conns interface {
-	Conn(ctx context.Context) (Conn, error)
-}
-
-type Conn interface {
-	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
-	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
-}
 
 type trxKey struct{}
 
@@ -57,12 +46,12 @@ func connect(ctx context.Context, url string) (*sql.DB, error) {
 
 func (c *conns) Conn(ctx context.Context) (Conn, error) {
 	if !trx.Exists(ctx) {
-		return c.db, nil
+		return adaptDB(c.db), nil
 	}
 
 	if t, ok := trx.GetValue(ctx, trxKey{}); ok {
 		if sqlTx, ok := t.(*sql.Tx); ok {
-			return sqlTx, nil
+			return adaptTx(sqlTx), nil
 		} else {
 			c.logger.Log(log.Warning).
 				Set("message", "transaction is not *sql.Tx").
@@ -79,9 +68,53 @@ func (c *conns) Conn(ctx context.Context) (Conn, error) {
 	trx.AddRollback(ctx, sqlTx.Rollback)
 	trx.AddCommit(ctx, sqlTx.Commit)
 
-	return sqlTx, nil
+	return adaptTx(sqlTx), nil
 }
 
 func (c *conns) Close() error {
 	return c.db.Close()
+}
+
+// *sql.DB adapter
+
+type dbAdapter struct {
+	adaptee *sql.DB
+}
+
+func adaptDB(db *sql.DB) *dbAdapter {
+	return &dbAdapter{adaptee: db}
+}
+
+func (a *dbAdapter) Exec(ctx context.Context, query string, args ...any) (Result, error) {
+	return a.adaptee.ExecContext(ctx, query, args...)
+}
+
+func (a *dbAdapter) Query(ctx context.Context, query string, args ...any) (Rows, error) {
+	return a.adaptee.QueryContext(ctx, query, args...)
+}
+
+func (a *dbAdapter) QueryRow(ctx context.Context, query string, args ...any) Row {
+	return a.adaptee.QueryRowContext(ctx, query, args...)
+}
+
+// *sql.Tx adapter
+
+type txAdapter struct {
+	adaptee *sql.Tx
+}
+
+func adaptTx(tx *sql.Tx) *txAdapter {
+	return &txAdapter{adaptee: tx}
+}
+
+func (a *txAdapter) Exec(ctx context.Context, query string, args ...any) (Result, error) {
+	return a.adaptee.ExecContext(ctx, query, args...)
+}
+
+func (a *txAdapter) Query(ctx context.Context, query string, args ...any) (Rows, error) {
+	return a.adaptee.QueryContext(ctx, query, args...)
+}
+
+func (a *txAdapter) QueryRow(ctx context.Context, query string, args ...any) Row {
+	return a.adaptee.QueryRowContext(ctx, query, args...)
 }

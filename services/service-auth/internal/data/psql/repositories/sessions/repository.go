@@ -37,7 +37,7 @@ func (r *Repository) GetByRefreshTokenHash(ctx context.Context, refreshTokenHash
 	args := []any{refreshTokenHash}
 
 	ses := &session.Session{}
-	err = conn.QueryRowContext(ctx, query, args...).
+	err = conn.QueryRow(ctx, query, args...).
 		Scan(
 			&ses.ID,
 			&ses.UserID,
@@ -45,6 +45,7 @@ func (r *Repository) GetByRefreshTokenHash(ctx context.Context, refreshTokenHash
 			&ses.RefreshTokenHash,
 			&ses.RefreshTokenExpiresAt,
 		)
+
 	if err != nil {
 		return nil, fmt.Errorf("query execute: %w", err)
 	}
@@ -76,7 +77,9 @@ func (r *Repository) insert(ctx context.Context, s *session.Session) error {
 		RETURNING id`
 	args := []any{s.UserID, s.RefreshTokenHash, s.RefreshTokenExpiresAt}
 
-	err = conn.QueryRowContext(ctx, query, args...).Scan(&s.ID)
+	err = conn.QueryRow(ctx, query, args...).
+		Scan(&s.ID)
+
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}
@@ -99,7 +102,7 @@ func (r *Repository) update(ctx context.Context, s *session.Session) error {
 		WHERE id = $3`
 	args := []any{s.RefreshTokenHash, s.RefreshTokenExpiresAt, s.ID}
 
-	_, err = conn.ExecContext(ctx, query, args...)
+	_, err = conn.Exec(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}

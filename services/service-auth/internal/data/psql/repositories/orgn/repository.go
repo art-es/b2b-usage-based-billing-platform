@@ -31,7 +31,9 @@ func (r *Repository) Find(ctx context.Context, id string) (*orgn.Orgn, error) {
 	args := []any{id}
 
 	org := &orgn.Orgn{}
-	err = conn.QueryRowContext(ctx, query, args...).Scan(&org.ID, &org.Name)
+	err = conn.QueryRow(ctx, query, args...).
+		Scan(&org.ID, &org.Name)
+
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, repository.ErrNotFound

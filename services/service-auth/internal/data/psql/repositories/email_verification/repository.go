@@ -31,7 +31,7 @@ func (r *Repository) Create(ctx context.Context, userID string) error {
 	query := `INSERT INTO email_verifications (user_id) VALUES ($1)`
 	args := []any{userID}
 
-	_, err = conn.ExecContext(ctx, query, args...)
+	_, err = conn.Exec(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}
@@ -56,7 +56,7 @@ func (r *Repository) GetUnsent(ctx context.Context, batchSize int) ([]*user.Emai
 		FOR UPDATE OF v SKIP LOCKED`
 	args := []any{batchSize}
 
-	rows, err := conn.QueryContext(ctx, query, args...)
+	rows, err := conn.Query(ctx, query, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -96,7 +96,7 @@ func (r *Repository) MarkAsSent(ctx context.Context, tokens []string) error {
 		WHERE token = ANY($1::uuid[])`
 	args := []any{pq.Array(tokens)}
 
-	_, err = conn.ExecContext(ctx, query, args...)
+	_, err = conn.Exec(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}
@@ -119,7 +119,9 @@ func (r *Repository) GetByToken(ctx context.Context, token string) (*user.EmailV
 
 	var ver user.EmailVerification
 
-	err = conn.QueryRowContext(ctx, query, args...).Scan(&ver.Token, &ver.UserID)
+	err = conn.QueryRow(ctx, query, args...).
+		Scan(&ver.Token, &ver.UserID)
+
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -140,7 +142,7 @@ func (r *Repository) DeleteTokensByUserID(ctx context.Context, userID string) er
 	query := `DELETE FROM email_verifications WHERE user_id = $1`
 	args := []any{userID}
 
-	_, err = conn.ExecContext(ctx, query, args...)
+	_, err = conn.Exec(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}
@@ -160,7 +162,7 @@ func (r *Repository) ClearDeprecated(ctx context.Context) error {
 			u.verified_at IS NOT NULL 
 			OR v.created_at + INTERVAL '7 days' > current_timestamp`
 
-	_, err = conn.ExecContext(ctx, query)
+	_, err = conn.Exec(ctx, query)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}
@@ -187,7 +189,9 @@ func (r *Repository) HasUnsentByEmail(ctx context.Context, email string) (bool, 
 
 	var isVerified, hasUnsent bool
 
-	err = conn.QueryRowContext(ctx, query, args...).Scan(&isVerified, &hasUnsent)
+	err = conn.QueryRow(ctx, query, args...).
+		Scan(&isVerified, &hasUnsent)
+
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, user.ErrUserNotFound
@@ -213,7 +217,7 @@ func (r *Repository) CreateForEmail(ctx context.Context, email string) error {
 		SELECT id FROM users WHERE email = $1`
 	args := []any{email}
 
-	_, err = conn.ExecContext(ctx, query, args...)
+	_, err = conn.Exec(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}
