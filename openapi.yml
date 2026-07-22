@@ -14,7 +14,6 @@ paths:
   /v1/auth/register:
     post:
       summary: Create a new account and send email verification
-      operationId: register
       tags: [Auth]
       requestBody:
         required: true
@@ -55,7 +54,6 @@ paths:
   /v1/auth/email/verify:
     post:
       summary: Verify email
-      operationId: verifyEmail
       tags: [Auth]
       requestBody:
         required: true
@@ -87,7 +85,6 @@ paths:
   /v1/auth/email/resend-verification:
     post:
       summary: Resend email verification
-      operationId: resendEmailVerification
       tags: [Auth]
       requestBody:
         required: true
@@ -120,7 +117,6 @@ paths:
   /v1/auth/login:
     post:
       summary: Create a new session
-      operationId: login
       tags: [Auth]
       requestBody:
         required: true
@@ -139,7 +135,6 @@ paths:
   /v1/auth/refresh:
     post:
       summary: Refresh an access token of session
-      operationId: refreshSession
       tags: [Auth]
       requestBody:
         required: true
@@ -166,7 +161,6 @@ paths:
 
     delete:
       summary: Finish all sessions
-      operationId: logout
       tags: [Auth]
       security: [Bearer: []]
       responses:
@@ -176,9 +170,14 @@ paths:
   /v1/auth/sessions/{sessionId}:
     delete:
       summary: Finish the session
-      operationId: logout
       tags: [Auth]
       security: [Bearer: []]
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '204':
           description: Session finished
@@ -211,7 +210,6 @@ paths:
   /v1/auth/switch-orgn:
     post:
       summary: Switch an organization in session
-      operationId: switchOrgn
       tags: [Auth]
       security: [Bearer: []]
       requestBody:
@@ -231,7 +229,6 @@ paths:
   /v1/me:
     get:
       summary: Get user info of current session
-      operationId: getMe
       tags: [Auth]
       security: [Bearer: []]
       responses:
@@ -245,7 +242,6 @@ paths:
   /v1/orgns:
     get:
       summary: Get organizations
-      operationId: getOrgns
       tags: [Organization]
       security: [Bearer: []]
       parameters:
@@ -260,7 +256,6 @@ paths:
 
     post:
       summary: Create a new organization
-      operationId: createOrgn
       tags: [Organization]
       security: [Bearer: []]
       requestBody:
@@ -278,6 +273,13 @@ paths:
                 $ref: '#/components/schemas/CreateOrgnResponse'
   
   /v1/orgns/{orgnId}:
+    parameters:
+      - name: orgnId
+        in: path
+        required: true
+        schema:
+          type: string
+
     put:
       summary: Update the organization
       tags: [Organization]
@@ -296,11 +298,29 @@ paths:
     get:
       summary: Get organization members
       tags: [Organization]
+      parameters:
+        - name: orgnId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Organization member list
 
   /v1/orgns/{orgnId}/members/{memberId}:
+    parameters:
+      - name: orgnId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: string
+
     patch:
       summary: Update organization member
       tags: [Organization]
@@ -316,6 +336,13 @@ paths:
           description: Organization member deleted
 
   /v1/orgns/{orgnId}/api-keys:
+    parameters:
+      - name: orgnId
+        in: path
+        required: true
+        schema:
+          type: string
+
     get:
       summary: Get orgn API keys
       tags: [Organization]
@@ -334,11 +361,29 @@ paths:
     delete:
       summary: Delete organization API key
       tags: [Organization]
+      parameters:
+        - name: orgnId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: keyId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Organization API key deleted
 
   /v1/orgns/{orgnId}/tariffs:
+    parameters:
+      - name: orgnId
+        in: path
+        required: true
+        schema:
+          type: string
+
     get:
       summary: Get tariffs
       tags: [Organization]
@@ -354,6 +399,18 @@ paths:
           description: Tariff created
   
   /v1/orgns/{orgnId}/tariffs/{tariffId}:
+    parameters:
+      - name: orgnId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: tariffId
+        in: path
+        required: true
+        schema:
+          type: string
+
     put:
       summary: Update the tariff
       tags: [Organization]
@@ -380,6 +437,12 @@ paths:
     post:
       summary: Subscribe customer to tariff
       tags: [Customer]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Customer subscribed
@@ -388,6 +451,12 @@ paths:
     post:
       summary: Add new usage
       tags: [Customer]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Usage added
