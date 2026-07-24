@@ -6,18 +6,24 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/httputil"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_login"
 )
 
 type handler struct {
-	logger log.Logger
+	logger                 log.Logger
+	postV1AuthLoginHandler *post_v1_auth_login.Handler
 }
 
-func NewHandler(logger log.Logger) http.Handler {
+func NewHandler(
+	logger log.Logger,
+	authService authService,
+) http.Handler {
 	logger = logger.Set("pkg", "internal/transport/http/handler")
 
 	return openapi.HandlerWithOptions(
 		&handler{
-			logger: logger,
+			logger:                 logger,
+			postV1AuthLoginHandler: post_v1_auth_login.NewHandler(logger, authService),
 		},
 		openapi.StdHTTPServerOptions{
 			ErrorHandlerFunc: httputil.HandleError,
@@ -40,7 +46,7 @@ func (h *handler) PostV1AuthEmailVerify(w http.ResponseWriter, r *http.Request) 
 // PostV1AuthLogin Create a new session
 // (POST /v1/auth/login)
 func (h *handler) PostV1AuthLogin(w http.ResponseWriter, r *http.Request) {
-	httputil.WriteNotImplemented(w, h.logger, "POST /v1/auth/login")
+	h.postV1AuthLoginHandler.Handle(w, r)
 }
 
 // PostV1AuthPasswordChange Change the password of authorized user

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package auth_service;
+
+option go_package = "internal/generated/grpc/auth_service";
+
+service AuthService {
+    rpc Register (RegisterRequest) returns (Empty) {}
+    rpc VerifyEmail (VerifyEmailRequest) returns (Empty) {}
+    rpc ResendEmailVerification (ResendEmailVerificationRequest) returns (Empty) {}
+    rpc Login (LoginRequest) returns (LoginResponse) {}
+    rpc GetMe (Empty) returns (GetMeResponse) {}
+}
+
+message RegisterRequest {
+    string name = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message VerifyEmailRequest {
+    string token = 1;
+}
+
+message ResendEmailVerificationRequest {
+    string email = 1;
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+message GetMeResponse {
+    string session_id = 1;
+    string name = 2;
+    string email = 3;
+    optional GetMeResponseOrgn orgn = 4;
+}
+
+message GetMeResponseOrgn {
+    string id = 1;
+    string name = 2;
+}
+
+message Empty {}

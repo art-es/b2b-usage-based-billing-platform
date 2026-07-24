@@ -171,7 +171,7 @@ func TestUsecase(t *testing.T) {
 
 		res, err := d.usecase.Do(ctx, &dto.Request{Email: "test@example.com"})
 		assert.EqualError(t, err, "wrong credentials")
-		assert.ErrorIs(t, err, dto.ErrWrongCredentials)
+		assert.ErrorIs(t, err, errWrongCredentials)
 		assert.Nil(t, res)
 	})
 
@@ -201,7 +201,7 @@ func TestUsecase(t *testing.T) {
 
 		res, err := d.usecase.Do(ctx, &dto.Request{Password: "test-password"})
 		assert.EqualError(t, err, "wrong credentials")
-		assert.ErrorIs(t, err, dto.ErrWrongCredentials)
+		assert.ErrorIs(t, err, errWrongCredentials)
 		assert.Nil(t, res)
 	})
 
@@ -230,7 +230,7 @@ func TestUsecase(t *testing.T) {
 
 		res, err := d.usecase.Do(ctx, &dto.Request{})
 		assert.EqualError(t, err, "email is not verified")
-		assert.ErrorIs(t, err, dto.ErrEmailNotVerified)
+		assert.ErrorIs(t, err, errWrongCredentials)
 		assert.Nil(t, res)
 	})
 

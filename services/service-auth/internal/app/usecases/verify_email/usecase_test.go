@@ -9,7 +9,6 @@ import (
 	gomock "go.uber.org/mock/gomock"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/verify_email/dto"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
 )
@@ -129,7 +128,7 @@ func TestUsecase(t *testing.T) {
 
 		err := d.usecase.Do(ctx, "test-token")
 		assert.EqualError(t, err, "invalid token")
-		assert.ErrorIs(t, err, dto.ErrInvalidToken)
+		assert.ErrorIs(t, err, errInvalidToken)
 		assert.Empty(t, d.logbuf.Logs())
 	})
 

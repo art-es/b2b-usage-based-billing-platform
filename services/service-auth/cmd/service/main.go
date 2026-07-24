@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"net/http"
 	"os"
 	"os/signal"
 
@@ -19,14 +18,14 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/shutdown"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/time"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/uuid"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/authorizer"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/http/endpoints"
+	grpc_auth_service "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service"
+	grpc_auth "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/auth"
 )
 
 var (
-	logger     log.Logger
-	shutdowner *shutdown.Shutdowner
-	httpServer *http.Server
+	logger        log.Logger
+	shutdowner    *shutdown.Shutdowner
+	runGRPCServer func() error
 )
 
 func main() {
@@ -50,9 +49,9 @@ func main() {
 		Write()
 
 	go func() {
-		if err := httpServer.ListenAndServe(); err != nil {
+		if err := runGRPCServer(); err != nil {
 			logger.Log(log.Error).
-				Set("message", "http server listen error").
+				Set("message", "grpc server run error").
 				Set("error", err.Error()).
 				Write()
 		}
@@ -104,24 +103,31 @@ func build(ctx context.Context) error {
 	)
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnRepository)
 
-	// HTTP Server
-	router := http.NewServeMux()
-	authorizer := authorizer.New(jwtService, envs.Get(env.FieldJwtSecret), logger)
-
-	endpoints.BindRegister(router, registerUsecase, logger)
-	endpoints.BindVerifyEmail(router, verifyEmailUsecase, logger)
-	endpoints.BindResendEmailVerification(router, resendEmailVerificationsUsecase, logger)
-	endpoints.BindLogin(router, loginUsecase, logger)
-	endpoints.BindGetMe(router, authorizer, getMeUsecase, logger)
-
-	httpServer = &http.Server{
-		Addr:        ":8080",
-		Handler:     router,
-		BaseContext: func(net.Listener) context.Context { return ctx },
+	// GRPC Server
+	grpcServerListener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		return fmt.Errorf("listen grpc server port: %w", err)
 	}
+	shutdowner.Add(grpcServerListener)
+
+	grpcAuthorizer := grpc_auth.NewAuthorizer(jwtService, envs.Get(env.FieldJwtSecret), logger)
+	grpcServer := grpc_auth_service.NewServer(
+		logger,
+		grpcAuthorizer,
+		registerUsecase,
+		verifyEmailUsecase,
+		resendEmailVerificationsUsecase,
+		loginUsecase,
+		getMeUsecase,
+	)
 	shutdowner.AddFunc(func() error {
-		return httpServer.Shutdown(context.Background())
+		grpcServer.GracefulStop()
+		return nil
 	})
+
+	runGRPCServer = func() error {
+		return grpcServer.Serve(grpcServerListener)
+	}
 
 	return nil
 }

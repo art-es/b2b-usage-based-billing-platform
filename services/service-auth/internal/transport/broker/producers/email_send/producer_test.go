@@ -1,4 +1,4 @@
-//go:generate mockgen -source=usecase.go -destination=usecase_mock_test.go -package=$GOPACKAGE
+//go:generate mockgen -source=producer.go -destination=producer_mock_test.go -package=$GOPACKAGE
 package email_send
 
 import (

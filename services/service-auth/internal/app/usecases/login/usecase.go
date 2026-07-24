@@ -61,6 +61,10 @@ func NewUsecase(
 func (u *Usecase) Do(ctx context.Context, req *dto.Request) (*dto.Response, error) {
 	now := u.timeService.GetCurrentTime()
 
+	if err := validateRequest(req); err != nil {
+		return nil, err
+	}
+
 	usr, err := u.authenticate(ctx, req)
 	if err != nil {
 		return nil, err
@@ -73,7 +77,7 @@ func (u *Usecase) authenticate(ctx context.Context, req *dto.Request) (*user.Use
 	usr, err := u.userRepository.FindByEmail(ctx, req.Email)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, dto.ErrWrongCredentials
+			return nil, errWrongCredentials
 		}
 
 		return nil, fmt.Errorf("get user by email: %w", err)
@@ -82,14 +86,14 @@ func (u *Usecase) authenticate(ctx context.Context, req *dto.Request) (*user.Use
 	err = u.passwordHashService.Compare(req.Password, usr.PasswordHash)
 	if err != nil {
 		if errors.Is(err, hash.ErrMismatch) {
-			return nil, dto.ErrWrongCredentials
+			return nil, errWrongCredentials
 		}
 
 		return nil, fmt.Errorf("compare password with hash: %w", err)
 	}
 
 	if !usr.IsVerified {
-		return nil, dto.ErrEmailNotVerified
+		return nil, errEmailNotVerified
 	}
 
 	return usr, nil

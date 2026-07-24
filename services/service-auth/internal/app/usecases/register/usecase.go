@@ -50,6 +50,10 @@ func NewUsecase(
 }
 
 func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
+	if err := validateRequest(req); err != nil {
+		return err
+	}
+
 	passwordHash, err := u.hashService.Generate(req.Password)
 	if err != nil {
 		return fmt.Errorf("generate password hash: %w", err)
@@ -62,7 +66,7 @@ func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
 		err := u.userRepository.Save(ctx, usr)
 		if err != nil {
 			if errors.Is(err, repository.ErrUnique) {
-				return dto.ErrEmailInUse
+				return errEmailInUse
 			}
 
 			return fmt.Errorf("save user: %w", err)

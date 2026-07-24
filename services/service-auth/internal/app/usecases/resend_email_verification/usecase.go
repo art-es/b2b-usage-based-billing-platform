@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/resend_email_verification/dto"
 )
 
 type emailVerificationRepository interface {
@@ -23,13 +22,17 @@ func NewUsecase(emailVerificationRepository emailVerificationRepository) *Usecas
 }
 
 func (u *Usecase) Do(ctx context.Context, email string) error {
+	if err := validateEmail(email); err != nil {
+		return err
+	}
+
 	hasUnsent, err := u.emailVerificationRepository.HasUnsentByEmail(ctx, email)
 	if err != nil {
 		switch {
 		case errors.Is(err, user.ErrEmailVerified):
-			return dto.ErrEmailVerified
+			return errEmailNotVerified
 		case errors.Is(err, user.ErrUserNotFound):
-			return dto.ErrInvalidEmail
+			return errInvalidEmail
 		default:
 			return fmt.Errorf("check existence of unsent verification: %w", err)
 		}

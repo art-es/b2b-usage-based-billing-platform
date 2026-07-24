@@ -229,7 +229,7 @@ func TestUsecase(t *testing.T) {
 
 		err := d.usecase.Do(ctx, req)
 		assert.EqualError(t, err, "email is already in use")
-		assert.ErrorIs(t, err, dto.ErrEmailInUse)
+		assert.ErrorIs(t, err, errEmailInUse)
 		assert.Empty(t, d.logbuf.Logs())
 	})
 

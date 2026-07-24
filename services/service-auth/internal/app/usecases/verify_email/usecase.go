@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/verify_email/dto"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx/trxutil"
@@ -57,13 +56,17 @@ func (u *Usecase) Do(ctx context.Context, token string) error {
 }
 
 func (u *Usecase) processTrx(ctx context.Context, token string) error {
+	if err := validateToken(token); err != nil {
+		return err
+	}
+
 	ver, err := u.emailVerificationsRepository.GetByToken(ctx, token)
 	if err != nil {
 		return fmt.Errorf("get verification by token: %w", err)
 	}
 
 	if ver == nil {
-		return dto.ErrInvalidToken
+		return errInvalidToken
 	}
 
 	err = u.userRepository.MarkAsVerified(ctx, ver.UserID)

@@ -10,7 +10,6 @@ import (
 	gomock "go.uber.org/mock/gomock"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/resend_email_verification/dto"
 )
 
 func TestUsecase(t *testing.T) {
@@ -66,7 +65,7 @@ func TestUsecase(t *testing.T) {
 
 		err := d.usecase.Do(ctx, "test@example.com")
 		assert.EqualError(t, err, "email is already verified")
-		assert.ErrorIs(t, err, dto.ErrEmailVerified)
+		assert.ErrorIs(t, err, errEmailNotVerified)
 	})
 
 	t.Run("invalid email", func(t *testing.T) {
@@ -78,7 +77,7 @@ func TestUsecase(t *testing.T) {
 
 		err := d.usecase.Do(ctx, "test@example.com")
 		assert.EqualError(t, err, "invalid email")
-		assert.ErrorIs(t, err, dto.ErrInvalidEmail)
+		assert.ErrorIs(t, err, errInvalidEmail)
 	})
 
 	t.Run("check unsent verification error", func(t *testing.T) {

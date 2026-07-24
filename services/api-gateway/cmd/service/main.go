@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/data/env"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/shutdown"
@@ -65,9 +66,14 @@ func build(ctx context.Context) error {
 		return fmt.Errorf("parse env vars: %w", err)
 	}
 
+	authService := auth_service.NewClient(envs.Get(env.FieldAuthServiceAddr))
+
 	httpServer = &http.Server{
-		Addr:        envs.Get(env.FieldApiGatewayAddr),
-		Handler:     openapi.NewHandler(logger),
+		Addr: envs.Get(env.FieldApiGatewayAddr),
+		Handler: openapi.NewHandler(
+			logger,
+			authService,
+		),
 		BaseContext: func(net.Listener) context.Context { return ctx },
 	}
 	shutdowner.AddFunc(func() error {
