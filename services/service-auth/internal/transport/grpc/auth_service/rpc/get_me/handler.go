@@ -39,12 +39,12 @@ func NewHandler(
 }
 
 func (h *Handler) GetMe(ctx context.Context, _ *pb.Empty) (*pb.GetMeResponse, error) {
-	token, err := h.authorizer.Authorize(ctx)
+	claims, err := h.authorizer.Authorize(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	ucRes, err := h.usecase.Do(ctx, token)
+	ucRes, err := h.usecase.Do(ctx, claims)
 	if err != nil {
 		return nil, grpcutil.ConvertError(err, h.logger)
 	}
