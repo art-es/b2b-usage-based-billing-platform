@@ -7,6 +7,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/ptr"
 )
 
+
 var errWrongCredentials = &validate.Error{
 	Field:   "email|password",
 	Type:    validate.ErrorIncorrect,

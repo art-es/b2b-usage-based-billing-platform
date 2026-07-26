@@ -1,7 +1,7 @@
-openapi: '3.0.3'
+openapi: "3.0.3"
 info:
   title: B2B Usage-Based Billing Platform API
-  version: '1.0.0'
+  version: "1.0.0"
 
 tags:
   - name: Auth
@@ -18,38 +18,32 @@ paths:
       requestBody:
         required: true
         content:
-          'application/json':
+          "application/json":
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
-        '202':
+        "202":
           description: Registration accepted. Verification email has been sent
           content:
-            'application/json':
+            "application/json":
               schema:
                 type: object
-        '400':
-          description: | 
-            Bad request 
-            
-            Additional codes:
-            - 2001: Required name
-            - 2002: Required email
-            - 2003: Required password
-            - 2004: Invalid name
-            - 2005: Invalid email
-            - 2006: Invalid password
-            - 2007: Email is already in use
+        "400":
+          description: |
+            Bad request
+
+            Special errors:
+             * `email`, `1005` – email is already in use
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/BadRequestResponse'
-        '500':
+                $ref: "#/components/schemas/BadRequestResponse"
+        "500":
           description: Internal error
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/InternalErrorResponse'
+                $ref: "#/components/schemas/InternalErrorResponse"
   
   /v1/auth/email/verify:
     post:
@@ -60,11 +54,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyEmailRequest'
+              $ref: "#/components/schemas/VerifyEmailRequest"
       responses:
-        '204':
+        "204":
           description: Email verified
-        '400':
+        "400":
           description: | 
             Bad request 
             
@@ -72,15 +66,15 @@ paths:
             - 2001: Required token
             - 2002: Invalid token
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/BadRequestResponse'
-        '500':
+                $ref: "#/components/schemas/BadRequestResponse"
+        "500":
           description: Internal error
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/InternalErrorResponse'
+                $ref: "#/components/schemas/InternalErrorResponse"
   
   /v1/auth/email/resend-verification:
     post:
@@ -91,11 +85,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResendEmailVerificationRequest'
+              $ref: "#/components/schemas/ResendEmailVerificationRequest"
       responses:
-        '204':
+        "204":
           description: Email verification has been resent
-        '400':
+        "400":
           description: |
             Bad request 
             
@@ -104,15 +98,15 @@ paths:
             - 2002: Invalid email
             - 2003: Email is already verified
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/BadRequestResponse'
-        '500':
+                $ref: "#/components/schemas/BadRequestResponse"
+        "500":
           description: Internal error
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/InternalErrorResponse'
+                $ref: "#/components/schemas/InternalErrorResponse"
 
   /v1/auth/login:
     post:
@@ -121,16 +115,16 @@ paths:
       requestBody:
         required: true
         content:
-          'application/json':
+          "application/json":
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Session created
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: "#/components/schemas/AuthResponse"
 
   /v1/auth/refresh:
     post:
@@ -139,16 +133,16 @@ paths:
       requestBody:
         required: true
         content:
-          'application/json':
+          "application/json":
             schema:
-              $ref: '#/components/schemas/RefreshSessionRequest'
+              $ref: "#/components/schemas/RefreshSessionRequest"
       responses:
-        '200':
+        "200":
           description: Session refreshed
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: "#/components/schemas/AuthResponse"
 
   /v1/auth/sessions:
     get:
@@ -156,7 +150,7 @@ paths:
       tags: [Auth]
       security: [Bearer: []]
       responses:
-        '200':
+        "200":
           description: Session list
 
     delete:
@@ -164,7 +158,7 @@ paths:
       tags: [Auth]
       security: [Bearer: []]
       responses:
-        '204':
+        "204":
           description: Sessions finished
 
   /v1/auth/sessions/{sessionId}:
@@ -179,7 +173,7 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Session finished
 
   /v1/auth/password/forgot:
@@ -187,7 +181,7 @@ paths:
       summary: Send email with reset password link
       tags: [Auth]
       responses:
-        '200':
+        "200":
           description: OK
 
   /v1/auth/password/reset:
@@ -195,7 +189,7 @@ paths:
       summary: Reset the password
       tags: [Auth]
       responses:
-        '200':
+        "200":
           description: OK
 
   /v1/auth/password/change:
@@ -204,7 +198,7 @@ paths:
       tags: [Auth]
       security: [Bearer: []]
       responses:
-        '200':
+        "200":
           description: OK
 
   /v1/auth/switch-orgn:
@@ -215,16 +209,16 @@ paths:
       requestBody:
         required: true
         content:
-          'application/json':
+          "application/json":
             schema:
-              $ref: '#/components/schemas/SwitchOrgnRequest'
+              $ref: "#/components/schemas/SwitchOrgnRequest"
       responses:
-        '200':
+        "200":
           description: Session recreated with selected organization
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/SwitchOrgnResponse'
+                $ref: "#/components/schemas/SwitchOrgnResponse"
 
   /v1/me:
     get:
@@ -232,12 +226,12 @@ paths:
       tags: [Auth]
       security: [Bearer: []]
       responses:
-        '200':
+        "200":
           description: User info returned
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/MeResponse'
+                $ref: "#/components/schemas/MeResponse"
 
   /v1/orgns:
     get:
@@ -251,7 +245,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Organization list
 
     post:
@@ -261,16 +255,16 @@ paths:
       requestBody:
         required: true
         content:
-          'application/json':
+          "application/json":
             schema:
-              $ref: '#/components/schemas/CreateOrgnRequest'
+              $ref: "#/components/schemas/CreateOrgnRequest"
       responses:
-        '201':
+        "201":
           description: Organization created
           content:
-            'application/json':
+            "application/json":
               schema:
-                $ref: '#/components/schemas/CreateOrgnResponse'
+                $ref: "#/components/schemas/CreateOrgnResponse"
   
   /v1/orgns/{orgnId}:
     parameters:
@@ -284,14 +278,14 @@ paths:
       summary: Update the organization
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Organization updated
     
     delete:
       summary: Delete the organization
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Organization deleted
 
   /v1/orgns/{orgnId}/members:
@@ -305,7 +299,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Organization member list
 
   /v1/orgns/{orgnId}/members/{memberId}:
@@ -325,14 +319,14 @@ paths:
       summary: Update organization member
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Organization member updated
 
     delete:
       summary: Delete organization member
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Organization member deleted
 
   /v1/orgns/{orgnId}/api-keys:
@@ -347,14 +341,14 @@ paths:
       summary: Get orgn API keys
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Organization API key list
 
     post:
       summary: Create a new organization API key
       tags: [Organization]
       responses:
-        '201':
+        "201":
           description: Organization API key created
 
   /v1/orgns/{orgnId}/api-keys/{keyId}:
@@ -373,7 +367,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Organization API key deleted
 
   /v1/orgns/{orgnId}/tariffs:
@@ -388,14 +382,14 @@ paths:
       summary: Get tariffs
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Tariff list
     
     post:
       summary: Create a new tariff
       tags: [Organization]
       responses:
-        '201':
+        "201":
           description: Tariff created
   
   /v1/orgns/{orgnId}/tariffs/{tariffId}:
@@ -415,14 +409,14 @@ paths:
       summary: Update the tariff
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Tariff updated
 
     delete:
       summary: Delete the tariff
       tags: [Organization]
       responses:
-        '200':
+        "200":
           description: Tariff deleted
 
   /v1/customers:
@@ -430,7 +424,7 @@ paths:
       summary: Create a new customer
       tags: [Customer]
       responses:
-        '201':
+        "201":
           description: Tariff created
 
   /v1/customers/{customerId}/subscribe:
@@ -444,7 +438,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Customer subscribed
   
   /v1/customer/{customerId}/usage:
@@ -458,7 +452,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Usage added
   
   /v1/billing/payments:
@@ -466,14 +460,14 @@ paths:
       summary: Get payment status
       tags: [Billing]
       responses:
-        '200':
+        "200":
           description: Payment status
 
     post:
       summary: Generate a new payment link
       tags: [Billing]
       responses:
-        '200':
+        "200":
           description: Payment link generated
   
   /v1/webhook:
@@ -481,7 +475,7 @@ paths:
       summary: Connect to webhook to receive events
       tags: [Event]
       responses:
-        '100':
+        "100":
           description: Connected
 
 components:
@@ -497,17 +491,39 @@ components:
       properties:
         message:
           type: string
-          example: Invalid request format
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/BadRequestResponseError"
+    
+    BadRequestResponseError:
+      type: object
+      properties:
+        field:
+          type: string
+          example: name
+        message:
+          type: string
+          example: something is wrong 
         code:
           type: integer
-          example: 1001
+          enum: [1001, 1002, 1003, 1004, 1005, 1006]
+          description: >
+            Codes:
+            * `1001` – value is empty (when field is required)
+            * `1002` – value in incorrect format
+            * `1003` – value with incorrect length
+            * `1004` – value is incorrect (e.g. incorrect email or password)
+            * `1005` – value is already in use (when value should be unique)
+            * `1006` – field is not verified (e.g. email is not verified yet)
+
 
     InternalErrorResponse:
       type: object
       properties:
         message:
           type: string
-          example: Internal error
+          example: internal error
 
     RegisterRequest:
       type: object

@@ -15,15 +15,12 @@ const (
 )
 
 func ValidationErrors(vErrs validate.Errors) error {
-	br := &errdetails.BadRequest{}
+	details := &errdetails.BadRequest{}
 	for _, vErr := range vErrs {
-		br.FieldViolations = append(br.FieldViolations, toValidatonError(vErr))
+		details.FieldViolations = append(details.FieldViolations, toValidatonError(vErr))
 	}
 
-	st := status.New(codes.InvalidArgument, "validation error")
-	st.WithDetails(br)
-
-	return st.Err()
+	return newInvalidArgumentError(details)
 }
 
 func ValidationError(vErr *validate.Error) error {
@@ -31,13 +28,21 @@ func ValidationError(vErr *validate.Error) error {
 		return nil
 	}
 
-	br := &errdetails.BadRequest{}
-	br.FieldViolations = append(br.FieldViolations, toValidatonError(vErr))
+	details := &errdetails.BadRequest{}
+	details.FieldViolations = append(details.FieldViolations, toValidatonError(vErr))
 
+	return newInvalidArgumentError(details)
+}
+
+func newInvalidArgumentError(details *errdetails.BadRequest) error {
 	st := status.New(codes.InvalidArgument, "validation error")
-	st.WithDetails(br)
 
-	return st.Err()
+	stWithDetails, err := st.WithDetails(details)
+	if err != nil {
+		return st.Err()
+	}
+
+	return stWithDetails.Err()
 }
 
 func toValidatonError(vErr *validate.Error) *errdetails.BadRequest_FieldViolation {

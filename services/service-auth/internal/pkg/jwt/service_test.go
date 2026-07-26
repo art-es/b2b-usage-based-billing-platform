@@ -26,10 +26,10 @@ func TestService_OK(t *testing.T) {
 	svc := NewService(mockTimeService, logger)
 
 	claims := domain.Claims{
-		SessionID:      "test-session-id",
-		UserID:         "test-user-id",
-		OrgnID: ptr.To("test-org-id"),
-		ExpiresAt:      getTime("2026-01-03 12:00:00"),
+		SessionID: "test-session-id",
+		UserID:    "test-user-id",
+		OrgnID:    ptr.To("test-org-id"),
+		ExpiresAt: getTime("2026-01-03 12:00:00"),
 	}
 
 	gotToken, err := svc.Generate([]byte("test-secret"), &claims)
@@ -57,10 +57,10 @@ func TestService_Expired(t *testing.T) {
 	svc := NewService(mockTimeService, logger)
 
 	claims := domain.Claims{
-		SessionID:      "test-session-id",
-		UserID:         "test-user-id",
-		OrgnID: ptr.To("test-org-id"),
-		ExpiresAt:      getTime("2026-01-01 12:00:00"),
+		SessionID: "test-session-id",
+		UserID:    "test-user-id",
+		OrgnID:    ptr.To("test-org-id"),
+		ExpiresAt: getTime("2026-01-01 12:00:00"),
 	}
 
 	gotToken, err := svc.Generate([]byte("test-secret"), &claims)

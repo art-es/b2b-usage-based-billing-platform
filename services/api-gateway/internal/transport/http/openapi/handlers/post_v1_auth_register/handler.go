@@ -1,4 +1,4 @@
-package post_v1_auth_login
+package post_v1_auth_register
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 )
 
 type AuthService interface {
-	Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginResponse, error)
+	Register(ctx context.Context, req *dto.RegisterRequest) error
 }
 
 type Handler struct {
@@ -19,8 +19,9 @@ func NewHandler(authService AuthService) *Handler {
 	return &Handler{authService: authService}
 }
 
-func (h *Handler) PostV1AuthLogin(ctx context.Context, req openapi.PostV1AuthLoginRequestObject) (openapi.PostV1AuthLoginResponseObject, error) {
-	res, err := h.authService.Login(ctx, &dto.LoginRequest{
+func (h *Handler) PostV1AuthRegister(ctx context.Context, req openapi.PostV1AuthRegisterRequestObject) (openapi.PostV1AuthRegisterResponseObject, error) {
+	err := h.authService.Register(ctx, &dto.RegisterRequest{
+		Name:     req.Body.Name,
 		Email:    string(req.Body.Email),
 		Password: req.Body.Password,
 	})
@@ -28,8 +29,5 @@ func (h *Handler) PostV1AuthLogin(ctx context.Context, req openapi.PostV1AuthLog
 		return nil, err
 	}
 
-	return &openapi.PostV1AuthLogin200JSONResponse{
-		AccessToken:  res.AccessToken,
-		RefreshToken: res.RefreshToken,
-	}, nil
+	return openapi.PostV1AuthRegister202JSONResponse{}, nil
 }

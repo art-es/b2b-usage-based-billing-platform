@@ -8,17 +8,17 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/data/env"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/shutdown"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi"
 )
 
 var (
-	logger     log.Logger
-	shutdowner *shutdown.Shutdowner
-	httpServer *http.Server
+	logger        log.Logger
+	shutdowner    *shutdown.Shutdowner
+	runHTTPServer func() error
 )
 
 func main() {
@@ -42,9 +42,9 @@ func main() {
 		Write()
 
 	go func() {
-		if err := httpServer.ListenAndServe(); err != nil {
+		if err := runHTTPServer(); err != nil {
 			logger.Log(log.Error).
-				Set("message", "http server listen error").
+				Set("message", "http server run error").
 				Set("error", err.Error()).
 				Write()
 		}
@@ -66,9 +66,13 @@ func build(ctx context.Context) error {
 		return fmt.Errorf("parse env vars: %w", err)
 	}
 
-	authService := auth_service.NewClient(envs.Get(env.FieldAuthServiceAddr))
+	authService, err := auth_service.NewClient(envs.Get(env.FieldAuthServiceAddr))
+	if err != nil {
+		return fmt.Errorf("create grpc client of auth service: %w", err)
+	}
+	shutdowner.Add(authService)
 
-	httpServer = &http.Server{
+	httpServer := &http.Server{
 		Addr: envs.Get(env.FieldApiGatewayAddr),
 		Handler: openapi.NewHandler(
 			logger,
@@ -79,6 +83,10 @@ func build(ctx context.Context) error {
 	shutdowner.AddFunc(func() error {
 		return httpServer.Shutdown(context.Background())
 	})
+
+	runHTTPServer = func() error {
+		return httpServer.ListenAndServe()
+	}
 
 	return nil
 }

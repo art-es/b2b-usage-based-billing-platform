@@ -6,6 +6,9 @@
 package openapi
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -13,6 +16,36 @@ import (
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
+
+// Defines values for BadRequestResponseErrorCode.
+const (
+	N1001 BadRequestResponseErrorCode = 1001
+	N1002 BadRequestResponseErrorCode = 1002
+	N1003 BadRequestResponseErrorCode = 1003
+	N1004 BadRequestResponseErrorCode = 1004
+	N1005 BadRequestResponseErrorCode = 1005
+	N1006 BadRequestResponseErrorCode = 1006
+)
+
+// Valid indicates whether the value is a known member of the BadRequestResponseErrorCode enum.
+func (e BadRequestResponseErrorCode) Valid() bool {
+	switch e {
+	case N1001:
+		return true
+	case N1002:
+		return true
+	case N1003:
+		return true
+	case N1004:
+		return true
+	case N1005:
+		return true
+	case N1006:
+		return true
+	default:
+		return false
+	}
+}
 
 // AuthResponse defines model for AuthResponse.
 type AuthResponse struct {
@@ -22,12 +55,24 @@ type AuthResponse struct {
 
 // BadRequestResponse defines model for BadRequestResponse.
 type BadRequestResponse struct {
-	// Code Example: 1001
-	Code *int `json:"code,omitempty"`
+	Errors  *[]BadRequestResponseError `json:"errors,omitempty"`
+	Message *string                    `json:"message,omitempty"`
+}
 
-	// Message Example: Invalid request format
+// BadRequestResponseError defines model for BadRequestResponseError.
+type BadRequestResponseError struct {
+	// Code Codes: * `1001` – value is empty (when field is required) * `1002` – value in incorrect format * `1003` – value with incorrect length * `1004` – value is incorrect (e.g. incorrect email or password) * `1005` – value is already in use (when value should be unique) * `1006` – field is not verified (e.g. email is not verified yet)
+	Code *BadRequestResponseErrorCode `json:"code,omitempty"`
+
+	// Field Example: name
+	Field *string `json:"field,omitempty"`
+
+	// Message Example: something is wrong
 	Message *string `json:"message,omitempty"`
 }
+
+// BadRequestResponseErrorCode Codes: * `1001` – value is empty (when field is required) * `1002` – value in incorrect format * `1003` – value with incorrect length * `1004` – value is incorrect (e.g. incorrect email or password) * `1005` – value is already in use (when value should be unique) * `1006` – field is not verified (e.g. email is not verified yet)
+type BadRequestResponseErrorCode int
 
 // CreateOrgnRequest defines model for CreateOrgnRequest.
 type CreateOrgnRequest struct {
@@ -42,7 +87,7 @@ type CreateOrgnResponse struct {
 
 // InternalErrorResponse defines model for InternalErrorResponse.
 type InternalErrorResponse struct {
-	// Message Example: Internal error
+	// Message Example: internal error
 	Message *string `json:"message,omitempty"`
 }
 
@@ -1114,4 +1159,1667 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/webhook", wrapper.GetV1Webhook)
 
 	return m
+}
+
+type PostV1AuthEmailResendVerificationRequestObject struct {
+	Body *PostV1AuthEmailResendVerificationJSONRequestBody
+}
+
+type PostV1AuthEmailResendVerificationResponseObject interface {
+	VisitPostV1AuthEmailResendVerificationResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthEmailResendVerification204Response struct {
+}
+
+func (response PostV1AuthEmailResendVerification204Response) VisitPostV1AuthEmailResendVerificationResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PostV1AuthEmailResendVerification400JSONResponse BadRequestResponse
+
+func (response PostV1AuthEmailResendVerification400JSONResponse) VisitPostV1AuthEmailResendVerificationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthEmailResendVerification500JSONResponse InternalErrorResponse
+
+func (response PostV1AuthEmailResendVerification500JSONResponse) VisitPostV1AuthEmailResendVerificationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthEmailVerifyRequestObject struct {
+	Body *PostV1AuthEmailVerifyJSONRequestBody
+}
+
+type PostV1AuthEmailVerifyResponseObject interface {
+	VisitPostV1AuthEmailVerifyResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthEmailVerify204Response struct {
+}
+
+func (response PostV1AuthEmailVerify204Response) VisitPostV1AuthEmailVerifyResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PostV1AuthEmailVerify400JSONResponse BadRequestResponse
+
+func (response PostV1AuthEmailVerify400JSONResponse) VisitPostV1AuthEmailVerifyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthEmailVerify500JSONResponse InternalErrorResponse
+
+func (response PostV1AuthEmailVerify500JSONResponse) VisitPostV1AuthEmailVerifyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthLoginRequestObject struct {
+	Body *PostV1AuthLoginJSONRequestBody
+}
+
+type PostV1AuthLoginResponseObject interface {
+	VisitPostV1AuthLoginResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthLogin200JSONResponse AuthResponse
+
+func (response PostV1AuthLogin200JSONResponse) VisitPostV1AuthLoginResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthPasswordChangeRequestObject struct {
+}
+
+type PostV1AuthPasswordChangeResponseObject interface {
+	VisitPostV1AuthPasswordChangeResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthPasswordChange200Response struct {
+}
+
+func (response PostV1AuthPasswordChange200Response) VisitPostV1AuthPasswordChangeResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1AuthPasswordForgotRequestObject struct {
+}
+
+type PostV1AuthPasswordForgotResponseObject interface {
+	VisitPostV1AuthPasswordForgotResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthPasswordForgot200Response struct {
+}
+
+func (response PostV1AuthPasswordForgot200Response) VisitPostV1AuthPasswordForgotResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1AuthPasswordResetRequestObject struct {
+}
+
+type PostV1AuthPasswordResetResponseObject interface {
+	VisitPostV1AuthPasswordResetResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthPasswordReset200Response struct {
+}
+
+func (response PostV1AuthPasswordReset200Response) VisitPostV1AuthPasswordResetResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1AuthRefreshRequestObject struct {
+	Body *PostV1AuthRefreshJSONRequestBody
+}
+
+type PostV1AuthRefreshResponseObject interface {
+	VisitPostV1AuthRefreshResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthRefresh200JSONResponse AuthResponse
+
+func (response PostV1AuthRefresh200JSONResponse) VisitPostV1AuthRefreshResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthRegisterRequestObject struct {
+	Body *PostV1AuthRegisterJSONRequestBody
+}
+
+type PostV1AuthRegisterResponseObject interface {
+	VisitPostV1AuthRegisterResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthRegister202JSONResponse map[string]interface{}
+
+func (response PostV1AuthRegister202JSONResponse) VisitPostV1AuthRegisterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthRegister400JSONResponse BadRequestResponse
+
+func (response PostV1AuthRegister400JSONResponse) VisitPostV1AuthRegisterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostV1AuthRegister500JSONResponse InternalErrorResponse
+
+func (response PostV1AuthRegister500JSONResponse) VisitPostV1AuthRegisterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteV1AuthSessionsRequestObject struct {
+}
+
+type DeleteV1AuthSessionsResponseObject interface {
+	VisitDeleteV1AuthSessionsResponse(w http.ResponseWriter) error
+}
+
+type DeleteV1AuthSessions204Response struct {
+}
+
+func (response DeleteV1AuthSessions204Response) VisitDeleteV1AuthSessionsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type GetV1AuthSessionsRequestObject struct {
+}
+
+type GetV1AuthSessionsResponseObject interface {
+	VisitGetV1AuthSessionsResponse(w http.ResponseWriter) error
+}
+
+type GetV1AuthSessions200Response struct {
+}
+
+func (response GetV1AuthSessions200Response) VisitGetV1AuthSessionsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type DeleteV1AuthSessionsSessionIdRequestObject struct {
+	SessionId string `json:"sessionId"`
+}
+
+type DeleteV1AuthSessionsSessionIdResponseObject interface {
+	VisitDeleteV1AuthSessionsSessionIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteV1AuthSessionsSessionId204Response struct {
+}
+
+func (response DeleteV1AuthSessionsSessionId204Response) VisitDeleteV1AuthSessionsSessionIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PostV1AuthSwitchOrgnRequestObject struct {
+	Body *PostV1AuthSwitchOrgnJSONRequestBody
+}
+
+type PostV1AuthSwitchOrgnResponseObject interface {
+	VisitPostV1AuthSwitchOrgnResponse(w http.ResponseWriter) error
+}
+
+type PostV1AuthSwitchOrgn200JSONResponse SwitchOrgnResponse
+
+func (response PostV1AuthSwitchOrgn200JSONResponse) VisitPostV1AuthSwitchOrgnResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetV1BillingPaymentsRequestObject struct {
+}
+
+type GetV1BillingPaymentsResponseObject interface {
+	VisitGetV1BillingPaymentsResponse(w http.ResponseWriter) error
+}
+
+type GetV1BillingPayments200Response struct {
+}
+
+func (response GetV1BillingPayments200Response) VisitGetV1BillingPaymentsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1BillingPaymentsRequestObject struct {
+}
+
+type PostV1BillingPaymentsResponseObject interface {
+	VisitPostV1BillingPaymentsResponse(w http.ResponseWriter) error
+}
+
+type PostV1BillingPayments200Response struct {
+}
+
+func (response PostV1BillingPayments200Response) VisitPostV1BillingPaymentsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1CustomerCustomerIdUsageRequestObject struct {
+	CustomerId string `json:"customerId"`
+}
+
+type PostV1CustomerCustomerIdUsageResponseObject interface {
+	VisitPostV1CustomerCustomerIdUsageResponse(w http.ResponseWriter) error
+}
+
+type PostV1CustomerCustomerIdUsage200Response struct {
+}
+
+func (response PostV1CustomerCustomerIdUsage200Response) VisitPostV1CustomerCustomerIdUsageResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1CustomersRequestObject struct {
+}
+
+type PostV1CustomersResponseObject interface {
+	VisitPostV1CustomersResponse(w http.ResponseWriter) error
+}
+
+type PostV1Customers201Response struct {
+}
+
+func (response PostV1Customers201Response) VisitPostV1CustomersResponse(w http.ResponseWriter) error {
+	w.WriteHeader(201)
+	return nil
+}
+
+type PostV1CustomersCustomerIdSubscribeRequestObject struct {
+	CustomerId string `json:"customerId"`
+}
+
+type PostV1CustomersCustomerIdSubscribeResponseObject interface {
+	VisitPostV1CustomersCustomerIdSubscribeResponse(w http.ResponseWriter) error
+}
+
+type PostV1CustomersCustomerIdSubscribe200Response struct {
+}
+
+func (response PostV1CustomersCustomerIdSubscribe200Response) VisitPostV1CustomersCustomerIdSubscribeResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type GetV1MeRequestObject struct {
+}
+
+type GetV1MeResponseObject interface {
+	VisitGetV1MeResponse(w http.ResponseWriter) error
+}
+
+type GetV1Me200JSONResponse MeResponse
+
+func (response GetV1Me200JSONResponse) VisitGetV1MeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetV1OrgnsRequestObject struct {
+	Params GetV1OrgnsParams
+}
+
+type GetV1OrgnsResponseObject interface {
+	VisitGetV1OrgnsResponse(w http.ResponseWriter) error
+}
+
+type GetV1Orgns200Response struct {
+}
+
+func (response GetV1Orgns200Response) VisitGetV1OrgnsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1OrgnsRequestObject struct {
+	Body *PostV1OrgnsJSONRequestBody
+}
+
+type PostV1OrgnsResponseObject interface {
+	VisitPostV1OrgnsResponse(w http.ResponseWriter) error
+}
+
+type PostV1Orgns201JSONResponse CreateOrgnResponse
+
+func (response PostV1Orgns201JSONResponse) VisitPostV1OrgnsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteV1OrgnsOrgnIdRequestObject struct {
+	OrgnId string `json:"orgnId"`
+}
+
+type DeleteV1OrgnsOrgnIdResponseObject interface {
+	VisitDeleteV1OrgnsOrgnIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteV1OrgnsOrgnId200Response struct {
+}
+
+func (response DeleteV1OrgnsOrgnId200Response) VisitDeleteV1OrgnsOrgnIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PutV1OrgnsOrgnIdRequestObject struct {
+	OrgnId string `json:"orgnId"`
+}
+
+type PutV1OrgnsOrgnIdResponseObject interface {
+	VisitPutV1OrgnsOrgnIdResponse(w http.ResponseWriter) error
+}
+
+type PutV1OrgnsOrgnId200Response struct {
+}
+
+func (response PutV1OrgnsOrgnId200Response) VisitPutV1OrgnsOrgnIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type GetV1OrgnsOrgnIdApiKeysRequestObject struct {
+	OrgnId string `json:"orgnId"`
+}
+
+type GetV1OrgnsOrgnIdApiKeysResponseObject interface {
+	VisitGetV1OrgnsOrgnIdApiKeysResponse(w http.ResponseWriter) error
+}
+
+type GetV1OrgnsOrgnIdApiKeys200Response struct {
+}
+
+func (response GetV1OrgnsOrgnIdApiKeys200Response) VisitGetV1OrgnsOrgnIdApiKeysResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1OrgnsOrgnIdApiKeysRequestObject struct {
+	OrgnId string `json:"orgnId"`
+}
+
+type PostV1OrgnsOrgnIdApiKeysResponseObject interface {
+	VisitPostV1OrgnsOrgnIdApiKeysResponse(w http.ResponseWriter) error
+}
+
+type PostV1OrgnsOrgnIdApiKeys201Response struct {
+}
+
+func (response PostV1OrgnsOrgnIdApiKeys201Response) VisitPostV1OrgnsOrgnIdApiKeysResponse(w http.ResponseWriter) error {
+	w.WriteHeader(201)
+	return nil
+}
+
+type DeleteV1OrgnsOrgnIdApiKeysKeyIdRequestObject struct {
+	OrgnId string `json:"orgnId"`
+	KeyId  string `json:"keyId"`
+}
+
+type DeleteV1OrgnsOrgnIdApiKeysKeyIdResponseObject interface {
+	VisitDeleteV1OrgnsOrgnIdApiKeysKeyIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteV1OrgnsOrgnIdApiKeysKeyId200Response struct {
+}
+
+func (response DeleteV1OrgnsOrgnIdApiKeysKeyId200Response) VisitDeleteV1OrgnsOrgnIdApiKeysKeyIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type GetV1OrgnsOrgnIdMembersRequestObject struct {
+	OrgnId string `json:"orgnId"`
+}
+
+type GetV1OrgnsOrgnIdMembersResponseObject interface {
+	VisitGetV1OrgnsOrgnIdMembersResponse(w http.ResponseWriter) error
+}
+
+type GetV1OrgnsOrgnIdMembers200Response struct {
+}
+
+func (response GetV1OrgnsOrgnIdMembers200Response) VisitGetV1OrgnsOrgnIdMembersResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type DeleteV1OrgnsOrgnIdMembersMemberIdRequestObject struct {
+	OrgnId   string `json:"orgnId"`
+	MemberId string `json:"memberId"`
+}
+
+type DeleteV1OrgnsOrgnIdMembersMemberIdResponseObject interface {
+	VisitDeleteV1OrgnsOrgnIdMembersMemberIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteV1OrgnsOrgnIdMembersMemberId200Response struct {
+}
+
+func (response DeleteV1OrgnsOrgnIdMembersMemberId200Response) VisitDeleteV1OrgnsOrgnIdMembersMemberIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PatchV1OrgnsOrgnIdMembersMemberIdRequestObject struct {
+	OrgnId   string `json:"orgnId"`
+	MemberId string `json:"memberId"`
+}
+
+type PatchV1OrgnsOrgnIdMembersMemberIdResponseObject interface {
+	VisitPatchV1OrgnsOrgnIdMembersMemberIdResponse(w http.ResponseWriter) error
+}
+
+type PatchV1OrgnsOrgnIdMembersMemberId200Response struct {
+}
+
+func (response PatchV1OrgnsOrgnIdMembersMemberId200Response) VisitPatchV1OrgnsOrgnIdMembersMemberIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type GetV1OrgnsOrgnIdTariffsRequestObject struct {
+	OrgnId string `json:"orgnId"`
+}
+
+type GetV1OrgnsOrgnIdTariffsResponseObject interface {
+	VisitGetV1OrgnsOrgnIdTariffsResponse(w http.ResponseWriter) error
+}
+
+type GetV1OrgnsOrgnIdTariffs200Response struct {
+}
+
+func (response GetV1OrgnsOrgnIdTariffs200Response) VisitGetV1OrgnsOrgnIdTariffsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PostV1OrgnsOrgnIdTariffsRequestObject struct {
+	OrgnId string `json:"orgnId"`
+}
+
+type PostV1OrgnsOrgnIdTariffsResponseObject interface {
+	VisitPostV1OrgnsOrgnIdTariffsResponse(w http.ResponseWriter) error
+}
+
+type PostV1OrgnsOrgnIdTariffs201Response struct {
+}
+
+func (response PostV1OrgnsOrgnIdTariffs201Response) VisitPostV1OrgnsOrgnIdTariffsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(201)
+	return nil
+}
+
+type DeleteV1OrgnsOrgnIdTariffsTariffIdRequestObject struct {
+	OrgnId   string `json:"orgnId"`
+	TariffId string `json:"tariffId"`
+}
+
+type DeleteV1OrgnsOrgnIdTariffsTariffIdResponseObject interface {
+	VisitDeleteV1OrgnsOrgnIdTariffsTariffIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteV1OrgnsOrgnIdTariffsTariffId200Response struct {
+}
+
+func (response DeleteV1OrgnsOrgnIdTariffsTariffId200Response) VisitDeleteV1OrgnsOrgnIdTariffsTariffIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type PutV1OrgnsOrgnIdTariffsTariffIdRequestObject struct {
+	OrgnId   string `json:"orgnId"`
+	TariffId string `json:"tariffId"`
+}
+
+type PutV1OrgnsOrgnIdTariffsTariffIdResponseObject interface {
+	VisitPutV1OrgnsOrgnIdTariffsTariffIdResponse(w http.ResponseWriter) error
+}
+
+type PutV1OrgnsOrgnIdTariffsTariffId200Response struct {
+}
+
+func (response PutV1OrgnsOrgnIdTariffsTariffId200Response) VisitPutV1OrgnsOrgnIdTariffsTariffIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type GetV1WebhookRequestObject struct {
+}
+
+type GetV1WebhookResponseObject interface {
+	VisitGetV1WebhookResponse(w http.ResponseWriter) error
+}
+
+type GetV1Webhook100Response struct {
+}
+
+func (response GetV1Webhook100Response) VisitGetV1WebhookResponse(w http.ResponseWriter) error {
+	w.WriteHeader(100)
+	return nil
+}
+
+// StrictServerInterface represents all server handlers.
+type StrictServerInterface interface {
+	// PostV1AuthEmailResendVerification Resend email verification
+	// (POST /v1/auth/email/resend-verification)
+	PostV1AuthEmailResendVerification(ctx context.Context, request PostV1AuthEmailResendVerificationRequestObject) (PostV1AuthEmailResendVerificationResponseObject, error)
+	// PostV1AuthEmailVerify Verify email
+	// (POST /v1/auth/email/verify)
+	PostV1AuthEmailVerify(ctx context.Context, request PostV1AuthEmailVerifyRequestObject) (PostV1AuthEmailVerifyResponseObject, error)
+	// PostV1AuthLogin Create a new session
+	// (POST /v1/auth/login)
+	PostV1AuthLogin(ctx context.Context, request PostV1AuthLoginRequestObject) (PostV1AuthLoginResponseObject, error)
+	// PostV1AuthPasswordChange Change the password of authorized user
+	// (POST /v1/auth/password/change)
+	PostV1AuthPasswordChange(ctx context.Context, request PostV1AuthPasswordChangeRequestObject) (PostV1AuthPasswordChangeResponseObject, error)
+	// PostV1AuthPasswordForgot Send email with reset password link
+	// (POST /v1/auth/password/forgot)
+	PostV1AuthPasswordForgot(ctx context.Context, request PostV1AuthPasswordForgotRequestObject) (PostV1AuthPasswordForgotResponseObject, error)
+	// PostV1AuthPasswordReset Reset the password
+	// (POST /v1/auth/password/reset)
+	PostV1AuthPasswordReset(ctx context.Context, request PostV1AuthPasswordResetRequestObject) (PostV1AuthPasswordResetResponseObject, error)
+	// PostV1AuthRefresh Refresh an access token of session
+	// (POST /v1/auth/refresh)
+	PostV1AuthRefresh(ctx context.Context, request PostV1AuthRefreshRequestObject) (PostV1AuthRefreshResponseObject, error)
+	// PostV1AuthRegister Create a new account and send email verification
+	// (POST /v1/auth/register)
+	PostV1AuthRegister(ctx context.Context, request PostV1AuthRegisterRequestObject) (PostV1AuthRegisterResponseObject, error)
+	// DeleteV1AuthSessions Finish all sessions
+	// (DELETE /v1/auth/sessions)
+	DeleteV1AuthSessions(ctx context.Context, request DeleteV1AuthSessionsRequestObject) (DeleteV1AuthSessionsResponseObject, error)
+	// GetV1AuthSessions Get sessions
+	// (GET /v1/auth/sessions)
+	GetV1AuthSessions(ctx context.Context, request GetV1AuthSessionsRequestObject) (GetV1AuthSessionsResponseObject, error)
+	// DeleteV1AuthSessionsSessionId Finish the session
+	// (DELETE /v1/auth/sessions/{sessionId})
+	DeleteV1AuthSessionsSessionId(ctx context.Context, request DeleteV1AuthSessionsSessionIdRequestObject) (DeleteV1AuthSessionsSessionIdResponseObject, error)
+	// PostV1AuthSwitchOrgn Switch an organization in session
+	// (POST /v1/auth/switch-orgn)
+	PostV1AuthSwitchOrgn(ctx context.Context, request PostV1AuthSwitchOrgnRequestObject) (PostV1AuthSwitchOrgnResponseObject, error)
+	// GetV1BillingPayments Get payment status
+	// (GET /v1/billing/payments)
+	GetV1BillingPayments(ctx context.Context, request GetV1BillingPaymentsRequestObject) (GetV1BillingPaymentsResponseObject, error)
+	// PostV1BillingPayments Generate a new payment link
+	// (POST /v1/billing/payments)
+	PostV1BillingPayments(ctx context.Context, request PostV1BillingPaymentsRequestObject) (PostV1BillingPaymentsResponseObject, error)
+	// PostV1CustomerCustomerIdUsage Add new usage
+	// (POST /v1/customer/{customerId}/usage)
+	PostV1CustomerCustomerIdUsage(ctx context.Context, request PostV1CustomerCustomerIdUsageRequestObject) (PostV1CustomerCustomerIdUsageResponseObject, error)
+	// PostV1Customers Create a new customer
+	// (POST /v1/customers)
+	PostV1Customers(ctx context.Context, request PostV1CustomersRequestObject) (PostV1CustomersResponseObject, error)
+	// PostV1CustomersCustomerIdSubscribe Subscribe customer to tariff
+	// (POST /v1/customers/{customerId}/subscribe)
+	PostV1CustomersCustomerIdSubscribe(ctx context.Context, request PostV1CustomersCustomerIdSubscribeRequestObject) (PostV1CustomersCustomerIdSubscribeResponseObject, error)
+	// GetV1Me Get user info of current session
+	// (GET /v1/me)
+	GetV1Me(ctx context.Context, request GetV1MeRequestObject) (GetV1MeResponseObject, error)
+	// GetV1Orgns Get organizations
+	// (GET /v1/orgns)
+	GetV1Orgns(ctx context.Context, request GetV1OrgnsRequestObject) (GetV1OrgnsResponseObject, error)
+	// PostV1Orgns Create a new organization
+	// (POST /v1/orgns)
+	PostV1Orgns(ctx context.Context, request PostV1OrgnsRequestObject) (PostV1OrgnsResponseObject, error)
+	// DeleteV1OrgnsOrgnId Delete the organization
+	// (DELETE /v1/orgns/{orgnId})
+	DeleteV1OrgnsOrgnId(ctx context.Context, request DeleteV1OrgnsOrgnIdRequestObject) (DeleteV1OrgnsOrgnIdResponseObject, error)
+	// PutV1OrgnsOrgnId Update the organization
+	// (PUT /v1/orgns/{orgnId})
+	PutV1OrgnsOrgnId(ctx context.Context, request PutV1OrgnsOrgnIdRequestObject) (PutV1OrgnsOrgnIdResponseObject, error)
+	// GetV1OrgnsOrgnIdApiKeys Get orgn API keys
+	// (GET /v1/orgns/{orgnId}/api-keys)
+	GetV1OrgnsOrgnIdApiKeys(ctx context.Context, request GetV1OrgnsOrgnIdApiKeysRequestObject) (GetV1OrgnsOrgnIdApiKeysResponseObject, error)
+	// PostV1OrgnsOrgnIdApiKeys Create a new organization API key
+	// (POST /v1/orgns/{orgnId}/api-keys)
+	PostV1OrgnsOrgnIdApiKeys(ctx context.Context, request PostV1OrgnsOrgnIdApiKeysRequestObject) (PostV1OrgnsOrgnIdApiKeysResponseObject, error)
+	// DeleteV1OrgnsOrgnIdApiKeysKeyId Delete organization API key
+	// (DELETE /v1/orgns/{orgnId}/api-keys/{keyId})
+	DeleteV1OrgnsOrgnIdApiKeysKeyId(ctx context.Context, request DeleteV1OrgnsOrgnIdApiKeysKeyIdRequestObject) (DeleteV1OrgnsOrgnIdApiKeysKeyIdResponseObject, error)
+	// GetV1OrgnsOrgnIdMembers Get organization members
+	// (GET /v1/orgns/{orgnId}/members)
+	GetV1OrgnsOrgnIdMembers(ctx context.Context, request GetV1OrgnsOrgnIdMembersRequestObject) (GetV1OrgnsOrgnIdMembersResponseObject, error)
+	// DeleteV1OrgnsOrgnIdMembersMemberId Delete organization member
+	// (DELETE /v1/orgns/{orgnId}/members/{memberId})
+	DeleteV1OrgnsOrgnIdMembersMemberId(ctx context.Context, request DeleteV1OrgnsOrgnIdMembersMemberIdRequestObject) (DeleteV1OrgnsOrgnIdMembersMemberIdResponseObject, error)
+	// PatchV1OrgnsOrgnIdMembersMemberId Update organization member
+	// (PATCH /v1/orgns/{orgnId}/members/{memberId})
+	PatchV1OrgnsOrgnIdMembersMemberId(ctx context.Context, request PatchV1OrgnsOrgnIdMembersMemberIdRequestObject) (PatchV1OrgnsOrgnIdMembersMemberIdResponseObject, error)
+	// GetV1OrgnsOrgnIdTariffs Get tariffs
+	// (GET /v1/orgns/{orgnId}/tariffs)
+	GetV1OrgnsOrgnIdTariffs(ctx context.Context, request GetV1OrgnsOrgnIdTariffsRequestObject) (GetV1OrgnsOrgnIdTariffsResponseObject, error)
+	// PostV1OrgnsOrgnIdTariffs Create a new tariff
+	// (POST /v1/orgns/{orgnId}/tariffs)
+	PostV1OrgnsOrgnIdTariffs(ctx context.Context, request PostV1OrgnsOrgnIdTariffsRequestObject) (PostV1OrgnsOrgnIdTariffsResponseObject, error)
+	// DeleteV1OrgnsOrgnIdTariffsTariffId Delete the tariff
+	// (DELETE /v1/orgns/{orgnId}/tariffs/{tariffId})
+	DeleteV1OrgnsOrgnIdTariffsTariffId(ctx context.Context, request DeleteV1OrgnsOrgnIdTariffsTariffIdRequestObject) (DeleteV1OrgnsOrgnIdTariffsTariffIdResponseObject, error)
+	// PutV1OrgnsOrgnIdTariffsTariffId Update the tariff
+	// (PUT /v1/orgns/{orgnId}/tariffs/{tariffId})
+	PutV1OrgnsOrgnIdTariffsTariffId(ctx context.Context, request PutV1OrgnsOrgnIdTariffsTariffIdRequestObject) (PutV1OrgnsOrgnIdTariffsTariffIdResponseObject, error)
+	// GetV1Webhook Connect to webhook to receive events
+	// (GET /v1/webhook)
+	GetV1Webhook(ctx context.Context, request GetV1WebhookRequestObject) (GetV1WebhookResponseObject, error)
+}
+
+type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
+type StrictMiddlewareFunc func(f StrictHandlerFunc, operationID string) StrictHandlerFunc
+
+type StrictHTTPServerOptions struct {
+	RequestErrorHandlerFunc  func(w http.ResponseWriter, r *http.Request, err error)
+	ResponseErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
+}
+
+func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc) ServerInterface {
+	return &strictHandler{ssi: ssi, middlewares: middlewares, options: StrictHTTPServerOptions{
+		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		},
+		ResponseErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		},
+	}}
+}
+
+func NewStrictHandlerWithOptions(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc, options StrictHTTPServerOptions) ServerInterface {
+	if options.RequestErrorHandlerFunc == nil {
+		options.RequestErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+	}
+	if options.ResponseErrorHandlerFunc == nil {
+		options.ResponseErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+	return &strictHandler{ssi: ssi, middlewares: middlewares, options: options}
+}
+
+type strictHandler struct {
+	ssi         StrictServerInterface
+	middlewares []StrictMiddlewareFunc
+	options     StrictHTTPServerOptions
+}
+
+// PostV1AuthEmailResendVerification operation middleware
+func (sh *strictHandler) PostV1AuthEmailResendVerification(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthEmailResendVerificationRequestObject
+
+	var body PostV1AuthEmailResendVerificationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthEmailResendVerification(ctx, request.(PostV1AuthEmailResendVerificationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthEmailResendVerification")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthEmailResendVerificationResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthEmailResendVerificationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthEmailVerify operation middleware
+func (sh *strictHandler) PostV1AuthEmailVerify(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthEmailVerifyRequestObject
+
+	var body PostV1AuthEmailVerifyJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthEmailVerify(ctx, request.(PostV1AuthEmailVerifyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthEmailVerify")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthEmailVerifyResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthEmailVerifyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthLogin operation middleware
+func (sh *strictHandler) PostV1AuthLogin(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthLoginRequestObject
+
+	var body PostV1AuthLoginJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthLogin(ctx, request.(PostV1AuthLoginRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthLogin")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthLoginResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthLoginResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthPasswordChange operation middleware
+func (sh *strictHandler) PostV1AuthPasswordChange(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthPasswordChangeRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthPasswordChange(ctx, request.(PostV1AuthPasswordChangeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthPasswordChange")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthPasswordChangeResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthPasswordChangeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthPasswordForgot operation middleware
+func (sh *strictHandler) PostV1AuthPasswordForgot(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthPasswordForgotRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthPasswordForgot(ctx, request.(PostV1AuthPasswordForgotRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthPasswordForgot")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthPasswordForgotResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthPasswordForgotResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthPasswordReset operation middleware
+func (sh *strictHandler) PostV1AuthPasswordReset(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthPasswordResetRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthPasswordReset(ctx, request.(PostV1AuthPasswordResetRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthPasswordReset")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthPasswordResetResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthPasswordResetResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthRefresh operation middleware
+func (sh *strictHandler) PostV1AuthRefresh(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthRefreshRequestObject
+
+	var body PostV1AuthRefreshJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthRefresh(ctx, request.(PostV1AuthRefreshRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthRefresh")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthRefreshResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthRefreshResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthRegister operation middleware
+func (sh *strictHandler) PostV1AuthRegister(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthRegisterRequestObject
+
+	var body PostV1AuthRegisterJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthRegister(ctx, request.(PostV1AuthRegisterRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthRegister")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthRegisterResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthRegisterResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteV1AuthSessions operation middleware
+func (sh *strictHandler) DeleteV1AuthSessions(w http.ResponseWriter, r *http.Request) {
+	var request DeleteV1AuthSessionsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteV1AuthSessions(ctx, request.(DeleteV1AuthSessionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteV1AuthSessions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteV1AuthSessionsResponseObject); ok {
+		if err := validResponse.VisitDeleteV1AuthSessionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1AuthSessions operation middleware
+func (sh *strictHandler) GetV1AuthSessions(w http.ResponseWriter, r *http.Request) {
+	var request GetV1AuthSessionsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1AuthSessions(ctx, request.(GetV1AuthSessionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1AuthSessions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1AuthSessionsResponseObject); ok {
+		if err := validResponse.VisitGetV1AuthSessionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteV1AuthSessionsSessionId operation middleware
+func (sh *strictHandler) DeleteV1AuthSessionsSessionId(w http.ResponseWriter, r *http.Request, sessionId string) {
+	var request DeleteV1AuthSessionsSessionIdRequestObject
+
+	request.SessionId = sessionId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteV1AuthSessionsSessionId(ctx, request.(DeleteV1AuthSessionsSessionIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteV1AuthSessionsSessionId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteV1AuthSessionsSessionIdResponseObject); ok {
+		if err := validResponse.VisitDeleteV1AuthSessionsSessionIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1AuthSwitchOrgn operation middleware
+func (sh *strictHandler) PostV1AuthSwitchOrgn(w http.ResponseWriter, r *http.Request) {
+	var request PostV1AuthSwitchOrgnRequestObject
+
+	var body PostV1AuthSwitchOrgnJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1AuthSwitchOrgn(ctx, request.(PostV1AuthSwitchOrgnRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1AuthSwitchOrgn")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1AuthSwitchOrgnResponseObject); ok {
+		if err := validResponse.VisitPostV1AuthSwitchOrgnResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1BillingPayments operation middleware
+func (sh *strictHandler) GetV1BillingPayments(w http.ResponseWriter, r *http.Request) {
+	var request GetV1BillingPaymentsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1BillingPayments(ctx, request.(GetV1BillingPaymentsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1BillingPayments")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1BillingPaymentsResponseObject); ok {
+		if err := validResponse.VisitGetV1BillingPaymentsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1BillingPayments operation middleware
+func (sh *strictHandler) PostV1BillingPayments(w http.ResponseWriter, r *http.Request) {
+	var request PostV1BillingPaymentsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1BillingPayments(ctx, request.(PostV1BillingPaymentsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1BillingPayments")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1BillingPaymentsResponseObject); ok {
+		if err := validResponse.VisitPostV1BillingPaymentsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1CustomerCustomerIdUsage operation middleware
+func (sh *strictHandler) PostV1CustomerCustomerIdUsage(w http.ResponseWriter, r *http.Request, customerId string) {
+	var request PostV1CustomerCustomerIdUsageRequestObject
+
+	request.CustomerId = customerId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1CustomerCustomerIdUsage(ctx, request.(PostV1CustomerCustomerIdUsageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1CustomerCustomerIdUsage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1CustomerCustomerIdUsageResponseObject); ok {
+		if err := validResponse.VisitPostV1CustomerCustomerIdUsageResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1Customers operation middleware
+func (sh *strictHandler) PostV1Customers(w http.ResponseWriter, r *http.Request) {
+	var request PostV1CustomersRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1Customers(ctx, request.(PostV1CustomersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1Customers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1CustomersResponseObject); ok {
+		if err := validResponse.VisitPostV1CustomersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1CustomersCustomerIdSubscribe operation middleware
+func (sh *strictHandler) PostV1CustomersCustomerIdSubscribe(w http.ResponseWriter, r *http.Request, customerId string) {
+	var request PostV1CustomersCustomerIdSubscribeRequestObject
+
+	request.CustomerId = customerId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1CustomersCustomerIdSubscribe(ctx, request.(PostV1CustomersCustomerIdSubscribeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1CustomersCustomerIdSubscribe")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1CustomersCustomerIdSubscribeResponseObject); ok {
+		if err := validResponse.VisitPostV1CustomersCustomerIdSubscribeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1Me operation middleware
+func (sh *strictHandler) GetV1Me(w http.ResponseWriter, r *http.Request) {
+	var request GetV1MeRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1Me(ctx, request.(GetV1MeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1Me")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1MeResponseObject); ok {
+		if err := validResponse.VisitGetV1MeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1Orgns operation middleware
+func (sh *strictHandler) GetV1Orgns(w http.ResponseWriter, r *http.Request, params GetV1OrgnsParams) {
+	var request GetV1OrgnsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1Orgns(ctx, request.(GetV1OrgnsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1Orgns")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1OrgnsResponseObject); ok {
+		if err := validResponse.VisitGetV1OrgnsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1Orgns operation middleware
+func (sh *strictHandler) PostV1Orgns(w http.ResponseWriter, r *http.Request) {
+	var request PostV1OrgnsRequestObject
+
+	var body PostV1OrgnsJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1Orgns(ctx, request.(PostV1OrgnsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1Orgns")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1OrgnsResponseObject); ok {
+		if err := validResponse.VisitPostV1OrgnsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteV1OrgnsOrgnId operation middleware
+func (sh *strictHandler) DeleteV1OrgnsOrgnId(w http.ResponseWriter, r *http.Request, orgnId string) {
+	var request DeleteV1OrgnsOrgnIdRequestObject
+
+	request.OrgnId = orgnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteV1OrgnsOrgnId(ctx, request.(DeleteV1OrgnsOrgnIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteV1OrgnsOrgnId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteV1OrgnsOrgnIdResponseObject); ok {
+		if err := validResponse.VisitDeleteV1OrgnsOrgnIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PutV1OrgnsOrgnId operation middleware
+func (sh *strictHandler) PutV1OrgnsOrgnId(w http.ResponseWriter, r *http.Request, orgnId string) {
+	var request PutV1OrgnsOrgnIdRequestObject
+
+	request.OrgnId = orgnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PutV1OrgnsOrgnId(ctx, request.(PutV1OrgnsOrgnIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PutV1OrgnsOrgnId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PutV1OrgnsOrgnIdResponseObject); ok {
+		if err := validResponse.VisitPutV1OrgnsOrgnIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1OrgnsOrgnIdApiKeys operation middleware
+func (sh *strictHandler) GetV1OrgnsOrgnIdApiKeys(w http.ResponseWriter, r *http.Request, orgnId string) {
+	var request GetV1OrgnsOrgnIdApiKeysRequestObject
+
+	request.OrgnId = orgnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1OrgnsOrgnIdApiKeys(ctx, request.(GetV1OrgnsOrgnIdApiKeysRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1OrgnsOrgnIdApiKeys")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1OrgnsOrgnIdApiKeysResponseObject); ok {
+		if err := validResponse.VisitGetV1OrgnsOrgnIdApiKeysResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1OrgnsOrgnIdApiKeys operation middleware
+func (sh *strictHandler) PostV1OrgnsOrgnIdApiKeys(w http.ResponseWriter, r *http.Request, orgnId string) {
+	var request PostV1OrgnsOrgnIdApiKeysRequestObject
+
+	request.OrgnId = orgnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1OrgnsOrgnIdApiKeys(ctx, request.(PostV1OrgnsOrgnIdApiKeysRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1OrgnsOrgnIdApiKeys")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1OrgnsOrgnIdApiKeysResponseObject); ok {
+		if err := validResponse.VisitPostV1OrgnsOrgnIdApiKeysResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteV1OrgnsOrgnIdApiKeysKeyId operation middleware
+func (sh *strictHandler) DeleteV1OrgnsOrgnIdApiKeysKeyId(w http.ResponseWriter, r *http.Request, orgnId string, keyId string) {
+	var request DeleteV1OrgnsOrgnIdApiKeysKeyIdRequestObject
+
+	request.OrgnId = orgnId
+	request.KeyId = keyId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteV1OrgnsOrgnIdApiKeysKeyId(ctx, request.(DeleteV1OrgnsOrgnIdApiKeysKeyIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteV1OrgnsOrgnIdApiKeysKeyId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteV1OrgnsOrgnIdApiKeysKeyIdResponseObject); ok {
+		if err := validResponse.VisitDeleteV1OrgnsOrgnIdApiKeysKeyIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1OrgnsOrgnIdMembers operation middleware
+func (sh *strictHandler) GetV1OrgnsOrgnIdMembers(w http.ResponseWriter, r *http.Request, orgnId string) {
+	var request GetV1OrgnsOrgnIdMembersRequestObject
+
+	request.OrgnId = orgnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1OrgnsOrgnIdMembers(ctx, request.(GetV1OrgnsOrgnIdMembersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1OrgnsOrgnIdMembers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1OrgnsOrgnIdMembersResponseObject); ok {
+		if err := validResponse.VisitGetV1OrgnsOrgnIdMembersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteV1OrgnsOrgnIdMembersMemberId operation middleware
+func (sh *strictHandler) DeleteV1OrgnsOrgnIdMembersMemberId(w http.ResponseWriter, r *http.Request, orgnId string, memberId string) {
+	var request DeleteV1OrgnsOrgnIdMembersMemberIdRequestObject
+
+	request.OrgnId = orgnId
+	request.MemberId = memberId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteV1OrgnsOrgnIdMembersMemberId(ctx, request.(DeleteV1OrgnsOrgnIdMembersMemberIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteV1OrgnsOrgnIdMembersMemberId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteV1OrgnsOrgnIdMembersMemberIdResponseObject); ok {
+		if err := validResponse.VisitDeleteV1OrgnsOrgnIdMembersMemberIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PatchV1OrgnsOrgnIdMembersMemberId operation middleware
+func (sh *strictHandler) PatchV1OrgnsOrgnIdMembersMemberId(w http.ResponseWriter, r *http.Request, orgnId string, memberId string) {
+	var request PatchV1OrgnsOrgnIdMembersMemberIdRequestObject
+
+	request.OrgnId = orgnId
+	request.MemberId = memberId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PatchV1OrgnsOrgnIdMembersMemberId(ctx, request.(PatchV1OrgnsOrgnIdMembersMemberIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PatchV1OrgnsOrgnIdMembersMemberId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PatchV1OrgnsOrgnIdMembersMemberIdResponseObject); ok {
+		if err := validResponse.VisitPatchV1OrgnsOrgnIdMembersMemberIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1OrgnsOrgnIdTariffs operation middleware
+func (sh *strictHandler) GetV1OrgnsOrgnIdTariffs(w http.ResponseWriter, r *http.Request, orgnId string) {
+	var request GetV1OrgnsOrgnIdTariffsRequestObject
+
+	request.OrgnId = orgnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1OrgnsOrgnIdTariffs(ctx, request.(GetV1OrgnsOrgnIdTariffsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1OrgnsOrgnIdTariffs")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1OrgnsOrgnIdTariffsResponseObject); ok {
+		if err := validResponse.VisitGetV1OrgnsOrgnIdTariffsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostV1OrgnsOrgnIdTariffs operation middleware
+func (sh *strictHandler) PostV1OrgnsOrgnIdTariffs(w http.ResponseWriter, r *http.Request, orgnId string) {
+	var request PostV1OrgnsOrgnIdTariffsRequestObject
+
+	request.OrgnId = orgnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostV1OrgnsOrgnIdTariffs(ctx, request.(PostV1OrgnsOrgnIdTariffsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostV1OrgnsOrgnIdTariffs")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostV1OrgnsOrgnIdTariffsResponseObject); ok {
+		if err := validResponse.VisitPostV1OrgnsOrgnIdTariffsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteV1OrgnsOrgnIdTariffsTariffId operation middleware
+func (sh *strictHandler) DeleteV1OrgnsOrgnIdTariffsTariffId(w http.ResponseWriter, r *http.Request, orgnId string, tariffId string) {
+	var request DeleteV1OrgnsOrgnIdTariffsTariffIdRequestObject
+
+	request.OrgnId = orgnId
+	request.TariffId = tariffId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteV1OrgnsOrgnIdTariffsTariffId(ctx, request.(DeleteV1OrgnsOrgnIdTariffsTariffIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteV1OrgnsOrgnIdTariffsTariffId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteV1OrgnsOrgnIdTariffsTariffIdResponseObject); ok {
+		if err := validResponse.VisitDeleteV1OrgnsOrgnIdTariffsTariffIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PutV1OrgnsOrgnIdTariffsTariffId operation middleware
+func (sh *strictHandler) PutV1OrgnsOrgnIdTariffsTariffId(w http.ResponseWriter, r *http.Request, orgnId string, tariffId string) {
+	var request PutV1OrgnsOrgnIdTariffsTariffIdRequestObject
+
+	request.OrgnId = orgnId
+	request.TariffId = tariffId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PutV1OrgnsOrgnIdTariffsTariffId(ctx, request.(PutV1OrgnsOrgnIdTariffsTariffIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PutV1OrgnsOrgnIdTariffsTariffId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PutV1OrgnsOrgnIdTariffsTariffIdResponseObject); ok {
+		if err := validResponse.VisitPutV1OrgnsOrgnIdTariffsTariffIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetV1Webhook operation middleware
+func (sh *strictHandler) GetV1Webhook(w http.ResponseWriter, r *http.Request) {
+	var request GetV1WebhookRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetV1Webhook(ctx, request.(GetV1WebhookRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetV1Webhook")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetV1WebhookResponseObject); ok {
+		if err := validResponse.VisitGetV1WebhookResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }

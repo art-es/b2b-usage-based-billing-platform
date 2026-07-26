@@ -5,19 +5,17 @@ import (
 )
 
 const (
-	ErrorExistence ErrorType = iota + 1
-	ErrorFormat
-	ErrorLength
-	ErrorIncorrect
-	ErrorUnique
-	ErrorNotVerified
+	ErrorExistence   = 1
+	ErrorFormat      = 2
+	ErrorLength      = 3
+	ErrorIncorrect   = 4
+	ErrorUnique      = 5
+	ErrorNotVerified = 6
 )
-
-type ErrorType int8
 
 type Error struct {
 	Field   string
-	Type    ErrorType
+	Type    int
 	Message string
 }
 
