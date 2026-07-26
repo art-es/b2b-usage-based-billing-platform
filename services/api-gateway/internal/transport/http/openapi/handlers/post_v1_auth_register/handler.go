@@ -19,6 +19,8 @@ func NewHandler(authService AuthService) *Handler {
 	return &Handler{authService: authService}
 }
 
+// PostV1AuthRegister Create a new account and send email verification
+// (POST /v1/auth/register)
 func (h *Handler) PostV1AuthRegister(ctx context.Context, req openapi.PostV1AuthRegisterRequestObject) (openapi.PostV1AuthRegisterResponseObject, error) {
 	err := h.authService.Register(ctx, &dto.RegisterRequest{
 		Name:     req.Body.Name,

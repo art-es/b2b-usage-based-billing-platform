@@ -15,12 +15,6 @@ func (h *serverHandler) PostV1AuthEmailResendVerification(ctx context.Context, r
 	return nil, errUnimplemented
 }
 
-// PostV1AuthEmailVerify Verify email
-// (POST /v1/auth/email/verify)
-func (h *serverHandler) PostV1AuthEmailVerify(ctx context.Context, request openapi.PostV1AuthEmailVerifyRequestObject) (_ openapi.PostV1AuthEmailVerifyResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
 // PostV1AuthPasswordChange Change the password of authorized user
 // (POST /v1/auth/password/change)
 func (h *serverHandler) PostV1AuthPasswordChange(ctx context.Context, request openapi.PostV1AuthPasswordChangeRequestObject) (_ openapi.PostV1AuthPasswordChangeResponseObject, _ error) {

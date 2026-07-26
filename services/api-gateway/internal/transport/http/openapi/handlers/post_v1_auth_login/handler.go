@@ -19,6 +19,8 @@ func NewHandler(authService AuthService) *Handler {
 	return &Handler{authService: authService}
 }
 
+// PostV1AuthLogin Create a new session
+// (POST /v1/auth/login)
 func (h *Handler) PostV1AuthLogin(ctx context.Context, req openapi.PostV1AuthLoginRequestObject) (openapi.PostV1AuthLoginResponseObject, error) {
 	res, err := h.authService.Login(ctx, &dto.LoginRequest{
 		Email:    string(req.Body.Email),

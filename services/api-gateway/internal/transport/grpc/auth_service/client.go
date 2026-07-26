@@ -38,6 +38,13 @@ func (c *Client) Register(ctx context.Context, req *dto.RegisterRequest) error {
 	return grpcutil.HandleError(err)
 }
 
+func (c *Client) VerifyEmail(ctx context.Context, token string) error {
+	_, err := c.client.VerifyEmail(ctx, &pb.VerifyEmailRequest{
+		Token: token,
+	})
+	return grpcutil.HandleError(err)
+}
+
 func (c *Client) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginResponse, error) {
 	res, err := c.client.Login(ctx, &pb.LoginRequest{
 		Email:    req.Email,
