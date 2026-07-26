@@ -66,3 +66,17 @@ func (c *Client) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginRe
 		RefreshToken: res.RefreshToken,
 	}, nil
 }
+
+func (c *Client) RefreshSession(ctx context.Context, token string) (*dto.RefreshSessionResponse, error) {
+	res, err := c.client.RefreshSession(ctx, &pb.RefreshSessionRequest{
+		Token: token,
+	})
+	if err != nil {
+		return nil, grpcutil.HandleError(err)
+	}
+
+	return &dto.RefreshSessionResponse{
+		AccessToken:  res.AccessToken,
+		RefreshToken: res.RefreshToken,
+	}, nil
+}

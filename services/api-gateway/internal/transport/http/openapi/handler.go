@@ -9,6 +9,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_email_resend_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_email_verify"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_login"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_refresh"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_register"
 )
 
@@ -17,6 +18,7 @@ type authService interface {
 	post_v1_auth_email_verify.AuthService
 	post_v1_auth_email_resend_verification.AuthService
 	post_v1_auth_login.AuthService
+	post_v1_auth_refresh.AuthService
 }
 
 // Endpoint handlers
@@ -36,6 +38,10 @@ type (
 	postV1AuthLoginHandler interface {
 		PostV1AuthLogin(context.Context, openapi.PostV1AuthLoginRequestObject) (openapi.PostV1AuthLoginResponseObject, error)
 	}
+
+	postV1AuthRefreshHandler interface {
+		PostV1AuthRefresh(context.Context, openapi.PostV1AuthRefreshRequestObject) (openapi.PostV1AuthRefreshResponseObject, error)
+	}
 )
 
 type serverHandler struct {
@@ -43,6 +49,7 @@ type serverHandler struct {
 	postV1AuthEmailVerifyHandler
 	postV1AuthEmailResendVerificationHandler
 	postV1AuthLoginHandler
+	postV1AuthRefreshHandler
 }
 
 func NewHandler(
@@ -56,6 +63,7 @@ func NewHandler(
 		postV1AuthEmailVerifyHandler:             post_v1_auth_email_verify.NewHandler(authService),
 		postV1AuthEmailResendVerificationHandler: post_v1_auth_email_resend_verification.NewHandler(authService),
 		postV1AuthLoginHandler:                   post_v1_auth_login.NewHandler(authService),
+		postV1AuthRefreshHandler:                 post_v1_auth_refresh.NewHandler(authService),
 	}
 
 	opts := openapi.StrictHTTPServerOptions{

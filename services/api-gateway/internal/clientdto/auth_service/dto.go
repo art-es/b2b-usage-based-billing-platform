@@ -15,3 +15,8 @@ type LoginResponse struct {
 	AccessToken  string
 	RefreshToken string
 }
+
+type RefreshSessionResponse struct {
+	AccessToken  string
+	RefreshToken string
+}
