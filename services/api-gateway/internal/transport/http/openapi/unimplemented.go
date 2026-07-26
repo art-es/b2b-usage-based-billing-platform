@@ -9,12 +9,6 @@ import (
 
 var errUnimplemented = errors.New("unimplemented")
 
-// PostV1AuthEmailResendVerification Resend email verification
-// (POST /v1/auth/email/resend-verification)
-func (h *serverHandler) PostV1AuthEmailResendVerification(ctx context.Context, request openapi.PostV1AuthEmailResendVerificationRequestObject) (_ openapi.PostV1AuthEmailResendVerificationResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
 // PostV1AuthPasswordChange Change the password of authorized user
 // (POST /v1/auth/password/change)
 func (h *serverHandler) PostV1AuthPasswordChange(ctx context.Context, request openapi.PostV1AuthPasswordChangeRequestObject) (_ openapi.PostV1AuthPasswordChangeResponseObject, _ error) {
