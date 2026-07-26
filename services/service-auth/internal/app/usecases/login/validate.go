@@ -10,13 +10,13 @@ import (
 
 var errWrongCredentials = &validate.Error{
 	Field:   "email|password",
-	Type:    validate.ErrorIncorrect,
+	Code:    validate.ErrorIncorrect,
 	Message: "wrong credentials",
 }
 
 var errEmailNotVerified = &validate.Error{
 	Field:   "email",
-	Type:    validate.ErrorNotVerified,
+	Code:    validate.ErrorNotVerified,
 	Message: "email is not verified",
 }
 

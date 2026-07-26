@@ -42,7 +42,7 @@ func (r *lengthRule) Validate(val any) (bool, error) {
 
 func (r *lengthRule) FormError() *validate.Error {
 	return &validate.Error{
-		Type:    validate.ErrorLength,
+		Code:    validate.ErrorLength,
 		Message: r.msg,
 	}
 }

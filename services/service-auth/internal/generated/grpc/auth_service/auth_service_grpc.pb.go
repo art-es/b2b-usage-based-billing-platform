@@ -23,6 +23,7 @@ const (
 	AuthService_VerifyEmail_FullMethodName             = "/auth_service.AuthService/VerifyEmail"
 	AuthService_ResendEmailVerification_FullMethodName = "/auth_service.AuthService/ResendEmailVerification"
 	AuthService_Login_FullMethodName                   = "/auth_service.AuthService/Login"
+	AuthService_RefreshSession_FullMethodName          = "/auth_service.AuthService/RefreshSession"
 	AuthService_GetMe_FullMethodName                   = "/auth_service.AuthService/GetMe"
 )
 
@@ -34,6 +35,7 @@ type AuthServiceClient interface {
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*Empty, error)
 	ResendEmailVerification(ctx context.Context, in *ResendEmailVerificationRequest, opts ...grpc.CallOption) (*Empty, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	RefreshSession(ctx context.Context, in *RefreshSessionRequest, opts ...grpc.CallOption) (*RefreshSessionResponse, error)
 	GetMe(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetMeResponse, error)
 }
 
@@ -85,6 +87,16 @@ func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ..
 	return out, nil
 }
 
+func (c *authServiceClient) RefreshSession(ctx context.Context, in *RefreshSessionRequest, opts ...grpc.CallOption) (*RefreshSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RefreshSessionResponse)
+	err := c.cc.Invoke(ctx, AuthService_RefreshSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) GetMe(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetMeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetMeResponse)
@@ -103,6 +115,7 @@ type AuthServiceServer interface {
 	VerifyEmail(context.Context, *VerifyEmailRequest) (*Empty, error)
 	ResendEmailVerification(context.Context, *ResendEmailVerificationRequest) (*Empty, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	RefreshSession(context.Context, *RefreshSessionRequest) (*RefreshSessionResponse, error)
 	GetMe(context.Context, *Empty) (*GetMeResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -125,6 +138,9 @@ func (UnimplementedAuthServiceServer) ResendEmailVerification(context.Context, *
 }
 func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAuthServiceServer) RefreshSession(context.Context, *RefreshSessionRequest) (*RefreshSessionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RefreshSession not implemented")
 }
 func (UnimplementedAuthServiceServer) GetMe(context.Context, *Empty) (*GetMeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMe not implemented")
@@ -222,6 +238,24 @@ func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_RefreshSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).RefreshSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_RefreshSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).RefreshSession(ctx, req.(*RefreshSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_GetMe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -262,6 +296,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _AuthService_Login_Handler,
+		},
+		{
+			MethodName: "RefreshSession",
+			Handler:    _AuthService_RefreshSession_Handler,
 		},
 		{
 			MethodName: "GetMe",

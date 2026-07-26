@@ -38,6 +38,10 @@ func NewUsecase(
 }
 
 func (u *Usecase) Do(ctx context.Context, token string) error {
+	if err := validateToken(token); err != nil {
+		return err
+	}
+
 	ctx = trx.Begin(ctx)
 
 	err := u.processTrx(ctx, token)
@@ -56,10 +60,6 @@ func (u *Usecase) Do(ctx context.Context, token string) error {
 }
 
 func (u *Usecase) processTrx(ctx context.Context, token string) error {
-	if err := validateToken(token); err != nil {
-		return err
-	}
-
 	ver, err := u.emailVerificationsRepository.GetByToken(ctx, token)
 	if err != nil {
 		return fmt.Errorf("get verification by token: %w", err)

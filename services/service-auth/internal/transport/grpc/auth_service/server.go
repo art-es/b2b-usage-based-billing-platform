@@ -10,6 +10,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_me"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/login"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/refresh_session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/register"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/resend_email_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/verify_email"
@@ -17,7 +18,7 @@ import (
 
 type (
 	authorizer interface {
-		Authorize(ctx context.Context) (*jwt.Claims, error)
+		Authorize(context.Context) (*jwt.Claims, error)
 	}
 
 	registerHandler interface {
@@ -33,7 +34,11 @@ type (
 	}
 
 	loginHandler interface {
-		Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error)
+		Login(context.Context, *pb.LoginRequest) (*pb.LoginResponse, error)
+	}
+
+	refreshSessionHandler interface {
+		RefreshSession(context.Context, *pb.RefreshSessionRequest) (*pb.RefreshSessionResponse, error)
 	}
 
 	getMeHandler interface {
@@ -46,6 +51,7 @@ type serverHandler struct {
 	verifyEmailHandler
 	resendEmailVerificationHandler
 	loginHandler
+	refreshSessionHandler
 	getMeHandler
 	pb.UnsafeAuthServiceServer
 }
@@ -57,6 +63,7 @@ func NewServer(
 	verifyEmailUsecase verify_email.Usecase,
 	resendEmailVerificationUsecase resend_email_verification.Usecase,
 	loginUsecase login.Usecase,
+	refreshSessionUsecase refresh_session.Usecase,
 	getMeUsecase get_me.Usecase,
 ) *grpc.Server {
 	handler := &serverHandler{
@@ -64,6 +71,7 @@ func NewServer(
 		verifyEmailHandler:             verify_email.NewHandler(verifyEmailUsecase, logger),
 		resendEmailVerificationHandler: resend_email_verification.NewHandler(resendEmailVerificationUsecase, logger),
 		loginHandler:                   login.NewHandler(loginUsecase, logger),
+		refreshSessionHandler:          refresh_session.NewHandler(refreshSessionUsecase, logger),
 		getMeHandler:                   get_me.NewHandler(authorizer, getMeUsecase, logger),
 	}
 

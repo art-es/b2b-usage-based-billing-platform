@@ -101,6 +101,10 @@ func build(ctx context.Context) error {
 		jwtService, hmacSha256Service, passwordHashService, timeService, uuidService, sessionRepository,
 		userRepository, envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenHashSecret), logger,
 	)
+	refreshSessionUsecase := usecases.NewRefreshSessionUsecase(
+		jwtService, hmacSha256Service, timeService, uuidService, sessionRepository,
+		envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenHashSecret), logger,
+	)
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnRepository)
 
 	// GRPC Server
@@ -118,6 +122,7 @@ func build(ctx context.Context) error {
 		verifyEmailUsecase,
 		resendEmailVerificationsUsecase,
 		loginUsecase,
+		refreshSessionUsecase,
 		getMeUsecase,
 	)
 	shutdowner.AddFunc(func() error {

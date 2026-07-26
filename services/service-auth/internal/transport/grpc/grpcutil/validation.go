@@ -10,10 +10,6 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/validate"
 )
 
-const (
-	validationErrorReasons = 1000
-)
-
 func ValidationErrors(vErrs validate.Errors) error {
 	details := &errdetails.BadRequest{}
 	for _, vErr := range vErrs {
@@ -46,11 +42,9 @@ func newInvalidArgumentError(details *errdetails.BadRequest) error {
 }
 
 func toValidatonError(vErr *validate.Error) *errdetails.BadRequest_FieldViolation {
-	reason := strconv.Itoa(validationErrorReasons + int(vErr.Type))
-
 	return &errdetails.BadRequest_FieldViolation{
 		Field:       vErr.Field,
 		Description: vErr.Message,
-		Reason:      reason,
+		Reason:      strconv.Itoa(vErr.Code),
 	}
 }

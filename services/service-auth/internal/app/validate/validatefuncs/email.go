@@ -35,7 +35,7 @@ func (*emailRule) Validate(val any) (bool, error) {
 
 func (*emailRule) FormError() *validate.Error {
 	return &validate.Error{
-		Type:    validate.ErrorFormat,
+		Code:    validate.ErrorFormat,
 		Message: "must be a valid email address",
 	}
 }

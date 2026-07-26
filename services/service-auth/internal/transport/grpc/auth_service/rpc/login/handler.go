@@ -22,7 +22,7 @@ func NewHandler(
 	usecase Usecase,
 	logger log.Logger,
 ) *Handler {
-	logger = logger.Set("pkg", "internal/transport/http/endpoints/login")
+	logger = logger.Set("pkg", "internal/transport/grpc/auth_service/rpc/login")
 
 	return &Handler{
 		usecase: usecase,

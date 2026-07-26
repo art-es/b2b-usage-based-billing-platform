@@ -51,6 +51,10 @@ func NewUsecase(
 func (u *Usecase) Do(ctx context.Context, refreshToken string) (*dto.Response, error) {
 	now := u.timeService.GetCurrentTime()
 
+	if err := validateToken(refreshToken); err != nil {
+		return nil, err
+	}
+
 	refreshTokenHash, err := u.keyedHashService.Generate(u.refreshTokenHashSecret, refreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("generate input refresh token hash: %w", err)
@@ -62,7 +66,7 @@ func (u *Usecase) Do(ctx context.Context, refreshToken string) (*dto.Response, e
 		ses, err := u.sessionRepository.GetByRefreshTokenHash(ctx, refreshTokenHash)
 		if err != nil {
 			if errors.Is(err, repository.ErrNotFound) {
-				return dto.ErrInvalidToken
+				return errInvalidToken
 			}
 
 			return fmt.Errorf("get by refresh token: %w", err)

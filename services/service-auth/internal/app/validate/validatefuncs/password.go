@@ -39,7 +39,7 @@ func (*passwordRule) Validate(val any) (bool, error) {
 
 func (*passwordRule) FormError() *validate.Error {
 	return &validate.Error{
-		Type:    validate.ErrorFormat,
+		Code:    validate.ErrorFormat,
 		Message: "must contain at least 1 letter and 1 digit",
 	}
 }

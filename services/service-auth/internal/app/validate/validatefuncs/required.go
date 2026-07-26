@@ -23,7 +23,7 @@ func (*requiredRule) Validate(val any) (bool, error) {
 
 func (*requiredRule) FormError() *validate.Error {
 	return &validate.Error{
-		Type:    validate.ErrorExistence,
+		Code:    validate.ErrorExistence,
 		Message: "required field",
 	}
 }

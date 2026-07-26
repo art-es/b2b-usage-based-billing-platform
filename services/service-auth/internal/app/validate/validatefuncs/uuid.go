@@ -36,7 +36,7 @@ func (*uuidRule) Validate(val any) (bool, error) {
 
 func (r *uuidRule) FormError() *validate.Error {
 	return &validate.Error{
-		Type:    validate.ErrorFormat,
+		Code:    validate.ErrorFormat,
 		Message: r.msg,
 	}
 }

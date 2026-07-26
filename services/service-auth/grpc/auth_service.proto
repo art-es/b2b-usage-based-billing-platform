@@ -9,6 +9,7 @@ service AuthService {
     rpc VerifyEmail (VerifyEmailRequest) returns (Empty) {}
     rpc ResendEmailVerification (ResendEmailVerificationRequest) returns (Empty) {}
     rpc Login (LoginRequest) returns (LoginResponse) {}
+    rpc RefreshSession (RefreshSessionRequest) returns (RefreshSessionResponse) {}
     rpc GetMe (Empty) returns (GetMeResponse) {}
 }
 
@@ -32,6 +33,15 @@ message LoginRequest {
 }
 
 message LoginResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+message RefreshSessionRequest {
+    string token = 1;
+}
+
+message RefreshSessionResponse {
     string access_token = 1;
     string refresh_token = 2;
 }

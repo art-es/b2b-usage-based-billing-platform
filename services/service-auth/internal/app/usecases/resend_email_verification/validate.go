@@ -8,13 +8,13 @@ import (
 
 var errInvalidEmail = &validate.Error{
 	Field:   "email",
-	Type:    validate.ErrorFormat,
+	Code:    validate.ErrorFormat,
 	Message: "invalid email",
 }
 
 var errEmailNotVerified = &validate.Error{
 	Field:   "email",
-	Type:    validate.ErrorNotVerified,
+	Code:    validate.ErrorNotVerified,
 	Message: "email is not verified",
 }
 

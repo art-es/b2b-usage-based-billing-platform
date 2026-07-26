@@ -169,7 +169,7 @@ func TestUsecase(t *testing.T) {
 
 		res, err := d.usecase.Do(ctx, "old-refresh-token")
 		assert.EqualError(t, err, "invalid token")
-		assert.ErrorIs(t, err, dto.ErrInvalidToken)
+		assert.ErrorIs(t, err, errInvalidToken)
 		assert.Nil(t, res)
 		assert.Empty(t, d.logbuf.Logs())
 	})

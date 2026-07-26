@@ -9,7 +9,7 @@ import (
 
 var errEmailInUse = &validate.Error{
 	Field:   "email",
-	Type:    validate.ErrorUnique,
+	Code:    validate.ErrorUnique,
 	Message: "email is already in use",
 }
 

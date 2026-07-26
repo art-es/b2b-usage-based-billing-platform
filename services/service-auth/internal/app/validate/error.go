@@ -5,23 +5,23 @@ import (
 )
 
 const (
-	ErrorExistence   = 1
-	ErrorFormat      = 2
-	ErrorLength      = 3
-	ErrorIncorrect   = 4
-	ErrorUnique      = 5
-	ErrorNotVerified = 6
+	ErrorExistence   = 1001
+	ErrorFormat      = 1002
+	ErrorLength      = 1003
+	ErrorIncorrect   = 1004
+	ErrorUnique      = 1005
+	ErrorNotVerified = 1006
 )
 
 type Error struct {
 	Field   string
-	Type    int
+	Code    int
 	Message string
 }
 
 func (e *Error) Error() string {
 	return fmt.Sprintf(
-		"validation error: field=%q type=%q message=%q",
-		e.Field, e.Type, e.Message,
+		"validation error: field=%q code=%q message=%q",
+		e.Field, e.Code, e.Message,
 	)
 }

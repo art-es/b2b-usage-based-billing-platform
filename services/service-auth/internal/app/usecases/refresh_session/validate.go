@@ -1,4 +1,4 @@
-package verify_email
+package refresh_session
 
 import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/validate"
