@@ -4,8 +4,10 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/auth"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/get_v1_me"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_email_resend_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_email_verify"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_login"
@@ -19,6 +21,7 @@ type authService interface {
 	post_v1_auth_email_resend_verification.AuthService
 	post_v1_auth_login.AuthService
 	post_v1_auth_refresh.AuthService
+	get_v1_me.AuthService
 }
 
 // Endpoint handlers
@@ -42,6 +45,10 @@ type (
 	postV1AuthRefreshHandler interface {
 		PostV1AuthRefresh(context.Context, openapi.PostV1AuthRefreshRequestObject) (openapi.PostV1AuthRefreshResponseObject, error)
 	}
+
+	getV1MeHandler interface {
+		GetV1Me(context.Context, openapi.GetV1MeRequestObject) (openapi.GetV1MeResponseObject, error)
+	}
 )
 
 type serverHandler struct {
@@ -50,6 +57,7 @@ type serverHandler struct {
 	postV1AuthEmailResendVerificationHandler
 	postV1AuthLoginHandler
 	postV1AuthRefreshHandler
+	getV1MeHandler
 }
 
 func NewHandler(
@@ -64,6 +72,7 @@ func NewHandler(
 		postV1AuthEmailResendVerificationHandler: post_v1_auth_email_resend_verification.NewHandler(authService),
 		postV1AuthLoginHandler:                   post_v1_auth_login.NewHandler(authService),
 		postV1AuthRefreshHandler:                 post_v1_auth_refresh.NewHandler(authService),
+		getV1MeHandler:                           get_v1_me.NewHandler(authService),
 	}
 
 	opts := openapi.StrictHTTPServerOptions{
@@ -71,5 +80,19 @@ func NewHandler(
 		ResponseErrorHandlerFunc: getResponseErrorHandlerFunc(logger),
 	}
 
-	return openapi.Handler(openapi.NewStrictHandlerWithOptions(hand, nil, opts))
+	mdlw := []openapi.StrictMiddlewareFunc{
+		parseAccessToken,
+	}
+
+	return openapi.Handler(openapi.NewStrictHandlerWithOptions(hand, mdlw, opts))
+}
+
+func parseAccessToken(f openapi.StrictHandlerFunc, _ string) openapi.StrictHandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error) {
+		if val := r.Header.Get("Authorization"); val != "" {
+			ctx = auth.Set(ctx, val)
+		}
+
+		return f(ctx, w, r, request)
+	}
 }

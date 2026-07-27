@@ -643,13 +643,19 @@ components:
           type: string
           format: email
         orgn:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-            name:
-              type: string
+          $ref: "#/components/schemas/MeResponseOrgn"
+    
+    MeResponseOrgn:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
 
     CreateOrgnRequest:
       type: object

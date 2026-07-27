@@ -99,13 +99,16 @@ type LoginRequest struct {
 
 // MeResponse defines model for MeResponse.
 type MeResponse struct {
-	Email openapi_types.Email `json:"email"`
-	Name  string              `json:"name"`
-	Orgn  *struct {
-		Id   *openapi_types.UUID `json:"id,omitempty"`
-		Name *string             `json:"name,omitempty"`
-	} `json:"orgn,omitempty"`
-	SessionId string `json:"session_id"`
+	Email     openapi_types.Email `json:"email"`
+	Name      string              `json:"name"`
+	Orgn      *MeResponseOrgn     `json:"orgn,omitempty"`
+	SessionId string              `json:"session_id"`
+}
+
+// MeResponseOrgn defines model for MeResponseOrgn.
+type MeResponseOrgn struct {
+	Id   openapi_types.UUID `json:"id"`
+	Name string             `json:"name"`
 }
 
 // RefreshSessionRequest defines model for RefreshSessionRequest.
