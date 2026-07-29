@@ -81,12 +81,6 @@ func (h *serverHandler) PostV1CustomersCustomerIdSubscribe(ctx context.Context, 
 	return nil, errUnimplemented
 }
 
-// GetV1Me Get user info of current session
-// (GET /v1/me)
-func (h *serverHandler) GetV1Me(ctx context.Context, request openapi.GetV1MeRequestObject) (_ openapi.GetV1MeResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
 // GetV1Orgns Get organizations
 // (GET /v1/orgns)
 func (h *serverHandler) GetV1Orgns(ctx context.Context, request openapi.GetV1OrgnsRequestObject) (_ openapi.GetV1OrgnsResponseObject, _ error) {
