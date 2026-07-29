@@ -7,8 +7,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clientdto/auth_service"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/grpc/auth_service"
+	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/grpc/grpcutil"
 )
 

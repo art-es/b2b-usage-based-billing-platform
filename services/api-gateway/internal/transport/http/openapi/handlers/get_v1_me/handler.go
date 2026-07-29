@@ -3,8 +3,8 @@ package get_v1_me
 import (
 	"context"
 
-	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clientdto/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
+	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/openapiutil"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )

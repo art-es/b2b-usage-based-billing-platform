@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"net/http"
 
+	app_errors "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/app/errors"
+	uerrors "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/app/errors"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/ptr"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/httputil"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/uerrors"
 )
 
 var rawBodyInvalidRequestFormat, _ = json.Marshal(&openapi.BadRequestResponse{
@@ -45,11 +46,11 @@ func getResponseErrorHandlerFunc(logger log.Logger) func(w http.ResponseWriter, 
 		}
 
 		{
-			var uErr *uerrors.ValidationError
-			if errors.As(err, &uErr) {
+			var vErr *app_errors.ValidationError
+			if errors.As(err, &vErr) {
 				httputil.Write(w, http.StatusBadRequest, &openapi.BadRequestResponse{
 					Errors: &[]openapi.BadRequestResponseError{
-						convertValidationError(uErr),
+						convertValidationError(vErr),
 					},
 				})
 				return
@@ -57,10 +58,10 @@ func getResponseErrorHandlerFunc(logger log.Logger) func(w http.ResponseWriter, 
 		}
 
 		{
-			var uErrs uerrors.ValidationErrors
-			if errors.As(err, &uErrs) {
+			var vErrs app_errors.ValidationErrors
+			if errors.As(err, &vErrs) {
 				errs := []openapi.BadRequestResponseError{}
-				for _, uErr := range uErrs {
+				for _, uErr := range vErrs {
 					errs = append(errs, convertValidationError(uErr))
 				}
 

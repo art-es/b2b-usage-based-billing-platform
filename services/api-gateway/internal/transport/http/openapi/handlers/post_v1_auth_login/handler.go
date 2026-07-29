@@ -3,7 +3,7 @@ package post_v1_auth_login
 import (
 	"context"
 
-	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clientdto/auth_service"
+	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 )
 

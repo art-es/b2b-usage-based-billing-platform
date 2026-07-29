@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/auth"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/app/auth"
 )
 
 func CallOpts(ctx context.Context) []grpc.CallOption {

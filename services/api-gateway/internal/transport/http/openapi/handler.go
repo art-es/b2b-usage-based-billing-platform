@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/auth"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/app/auth"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/get_v1_me"

@@ -3,10 +3,11 @@ package grpcutil
 import (
 	"strconv"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/uerrors"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	app_errors "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/app/errors"
 )
 
 func HandleError(err error) error {
@@ -28,7 +29,7 @@ func HandleError(err error) error {
 }
 
 func handleInvalidArgument(st *status.Status) error {
-	var vErrs uerrors.ValidationErrors
+	var vErrs app_errors.ValidationErrors
 
 	for _, detail := range st.Details() {
 		switch d := detail.(type) {
@@ -36,7 +37,7 @@ func handleInvalidArgument(st *status.Status) error {
 			for _, violation := range d.FieldViolations {
 				code, _ := strconv.Atoi(violation.Reason)
 
-				vErrs = append(vErrs, &uerrors.ValidationError{
+				vErrs = append(vErrs, &app_errors.ValidationError{
 					Field:   violation.Field,
 					Message: violation.Description,
 					Code:    code,
