@@ -6,9 +6,7 @@ import (
 	"io"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/auth"
 	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clientdto/auth_service"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/grpc/grpcutil"
@@ -38,7 +36,7 @@ func (c *Client) Register(ctx context.Context, dtoReq *dto.RegisterRequest) erro
 		Password: dtoReq.Password,
 	}
 
-	_, err := c.client.Register(ctx, req, callOpts(ctx)...)
+	_, err := c.client.Register(ctx, req, grpcutil.CallOpts(ctx)...)
 
 	return grpcutil.HandleError(err)
 }
@@ -48,7 +46,7 @@ func (c *Client) VerifyEmail(ctx context.Context, token string) error {
 		Token: token,
 	}
 
-	_, err := c.client.VerifyEmail(ctx, req, callOpts(ctx)...)
+	_, err := c.client.VerifyEmail(ctx, req, grpcutil.CallOpts(ctx)...)
 
 	return grpcutil.HandleError(err)
 }
@@ -58,7 +56,7 @@ func (c *Client) ResendEmailVerification(ctx context.Context, email string) erro
 		Email: email,
 	}
 
-	_, err := c.client.ResendEmailVerification(ctx, req, callOpts(ctx)...)
+	_, err := c.client.ResendEmailVerification(ctx, req, grpcutil.CallOpts(ctx)...)
 
 	return grpcutil.HandleError(err)
 }
@@ -69,7 +67,7 @@ func (c *Client) Login(ctx context.Context, dtoReq *dto.LoginRequest) (*dto.Logi
 		Password: dtoReq.Password,
 	}
 
-	res, err := c.client.Login(ctx, req, callOpts(ctx)...)
+	res, err := c.client.Login(ctx, req, grpcutil.CallOpts(ctx)...)
 	if err != nil {
 		return nil, grpcutil.HandleError(err)
 	}
@@ -85,7 +83,7 @@ func (c *Client) RefreshSession(ctx context.Context, token string) (*dto.Refresh
 		Token: token,
 	}
 
-	res, err := c.client.RefreshSession(ctx, req, callOpts(ctx)...)
+	res, err := c.client.RefreshSession(ctx, req, grpcutil.CallOpts(ctx)...)
 	if err != nil {
 		return nil, grpcutil.HandleError(err)
 	}
@@ -97,7 +95,7 @@ func (c *Client) RefreshSession(ctx context.Context, token string) (*dto.Refresh
 }
 
 func (c *Client) GetMe(ctx context.Context) (*dto.GetMeResponse, error) {
-	res, err := c.client.GetMe(ctx, &pb.Empty{}, callOpts(ctx)...)
+	res, err := c.client.GetMe(ctx, &pb.Empty{}, grpcutil.CallOpts(ctx)...)
 	if err != nil {
 		return nil, grpcutil.HandleError(err)
 	}
@@ -116,16 +114,4 @@ func (c *Client) GetMe(ctx context.Context) (*dto.GetMeResponse, error) {
 	}
 
 	return dtoRes, nil
-}
-
-func callOpts(ctx context.Context) []grpc.CallOption {
-	md := metadata.New(map[string]string{})
-
-	if val, ok := auth.Get(ctx); ok {
-		md.Set("authorization", val)
-	}
-
-	return []grpc.CallOption{
-		grpc.Header(&md),
-	}
 }
