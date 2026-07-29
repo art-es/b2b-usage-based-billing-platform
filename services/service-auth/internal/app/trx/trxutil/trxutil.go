@@ -3,8 +3,8 @@ package trxutil
 import (
 	"context"
 
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/trx"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
 )
 
 func RollbackOrLog(ctx context.Context, logger log.Logger, additionalInfo string) {

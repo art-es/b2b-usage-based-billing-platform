@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/trx"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
 )
 
 type trxKey struct{}

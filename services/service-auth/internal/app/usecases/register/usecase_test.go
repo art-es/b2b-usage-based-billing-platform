@@ -11,9 +11,9 @@ import (
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/repository"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/trx"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/register/dto"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/trx"
 )
 
 func TestUsecase(t *testing.T) {
