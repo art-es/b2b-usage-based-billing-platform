@@ -11,6 +11,10 @@ var rawBodyNotImplemented, _ = json.Marshal(map[string]string{
 	"message": "method is not implemented yet",
 })
 
+var rawBodyUnauthorized, _ = json.Marshal(map[string]string{
+	"message": "unauthorized",
+})
+
 func WriteRaw(w http.ResponseWriter, code int, body []byte) {
 	w.WriteHeader(code)
 
@@ -27,6 +31,10 @@ func Write(w http.ResponseWriter, code int, body any) {
 	}
 
 	WriteRaw(w, code, encBody)
+}
+
+func WriteUnauthorized(w http.ResponseWriter) {
+	WriteRaw(w, http.StatusUnauthorized, rawBodyUnauthorized)
 }
 
 func WriteNotImplemented(w http.ResponseWriter, logger log.Logger, endpoint string) {

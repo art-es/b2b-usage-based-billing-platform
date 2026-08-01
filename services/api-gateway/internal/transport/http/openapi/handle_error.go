@@ -45,6 +45,11 @@ func getResponseErrorHandlerFunc(logger log.Logger) func(w http.ResponseWriter, 
 			return
 		}
 
+		if errors.Is(err, app_errors.ErrUnauthorized) {
+			httputil.WriteUnauthorized(w)
+			return
+		}
+
 		{
 			var vErr *app_errors.ValidationError
 			if errors.As(err, &vErr) {
