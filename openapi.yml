@@ -149,9 +149,19 @@ paths:
       summary: Get sessions
       tags: [Auth]
       security: [Bearer: []]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/GetSessionsRequest"
       responses:
         "200":
           description: Session list
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/GetSessionsResponse"
 
     delete:
       summary: Finish all sessions
@@ -609,6 +619,37 @@ components:
         access_token:
           type: string
         refresh_token:
+          type: string
+    
+    GetSessionsRequest:
+      type: object
+      properties:
+        cursor:
+          type: string
+          description: Cursor for sessions batch, first batch is null
+      
+    GetSessionsResponse:
+      type: object
+      required:
+        - sessions
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Session"
+        next_cursor:
+          type: string
+          description: Cursor for next sessions batch, when no more sessions then value is null
+
+    Session:
+      type: object
+      required:
+        - id
+        - created_at
+      properties:
+        id:
+          type: string
+        created_at:
           type: string
 
     SwitchOrgnRequest:

@@ -6,9 +6,10 @@ import (
 	"io"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/grpc/auth_service"
 	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
+	pb "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/grpc/grpcutil"
 )
 
@@ -94,8 +95,32 @@ func (c *Client) RefreshSession(ctx context.Context, token string) (*dto.Refresh
 	}, nil
 }
 
+func (c *Client) GetSessions(ctx context.Context, dtoReq *dto.GetSessionsRequest) (*dto.GetSessionsResponse, error) {
+	req := &pb.GetSessionsRequest{
+		Cursor: dtoReq.Cursor,
+	}
+
+	res, err := c.client.GetSessions(ctx, req, grpcutil.CallOpts(ctx)...)
+	if err != nil {
+		return nil, grpcutil.HandleError(err)
+	}
+
+	sessions := make([]*dto.Session, 0, len(res.Sessions))
+	for _, s := range res.Sessions {
+		sessions = append(sessions, &dto.Session{
+			ID:        s.Id,
+			CreatedAt: s.CreatedAt.AsTime(),
+		})
+	}
+
+	return &dto.GetSessionsResponse{
+		Sessions:   sessions,
+		NextCursor: res.NextCursor,
+	}, nil
+}
+
 func (c *Client) GetMe(ctx context.Context) (*dto.GetMeResponse, error) {
-	res, err := c.client.GetMe(ctx, &pb.Empty{}, grpcutil.CallOpts(ctx)...)
+	res, err := c.client.GetMe(ctx, &emptypb.Empty{}, grpcutil.CallOpts(ctx)...)
 	if err != nil {
 		return nil, grpcutil.HandleError(err)
 	}

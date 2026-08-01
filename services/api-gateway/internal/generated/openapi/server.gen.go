@@ -85,6 +85,19 @@ type CreateOrgnResponse struct {
 	OrgnId      openapi_types.UUID `json:"orgn_id"`
 }
 
+// GetSessionsRequest defines model for GetSessionsRequest.
+type GetSessionsRequest struct {
+	// Cursor Cursor for sessions batch, first batch is null
+	Cursor *string `json:"cursor,omitempty"`
+}
+
+// GetSessionsResponse defines model for GetSessionsResponse.
+type GetSessionsResponse struct {
+	// NextCursor Cursor for next sessions batch, when no more sessions then value is null
+	NextCursor *string   `json:"next_cursor,omitempty"`
+	Sessions   []Session `json:"sessions"`
+}
+
 // InternalErrorResponse defines model for InternalErrorResponse.
 type InternalErrorResponse struct {
 	// Message Example: internal error
@@ -147,6 +160,12 @@ type ResendEmailVerificationRequest struct {
 	Email string `json:"email"`
 }
 
+// Session defines model for Session.
+type Session struct {
+	CreatedAt string `json:"created_at"`
+	Id        string `json:"id"`
+}
+
 // SwitchOrgnRequest defines model for SwitchOrgnRequest.
 type SwitchOrgnRequest struct {
 	OrgnId openapi_types.UUID `json:"orgn_id"`
@@ -182,6 +201,9 @@ type PostV1AuthRefreshJSONRequestBody = RefreshSessionRequest
 
 // PostV1AuthRegisterJSONRequestBody defines body for PostV1AuthRegister for application/json ContentType.
 type PostV1AuthRegisterJSONRequestBody = RegisterRequest
+
+// GetV1AuthSessionsJSONRequestBody defines body for GetV1AuthSessions for application/json ContentType.
+type GetV1AuthSessionsJSONRequestBody = GetSessionsRequest
 
 // PostV1AuthSwitchOrgnJSONRequestBody defines body for PostV1AuthSwitchOrgn for application/json ContentType.
 type PostV1AuthSwitchOrgnJSONRequestBody = SwitchOrgnRequest
@@ -1407,18 +1429,25 @@ func (response DeleteV1AuthSessions204Response) VisitDeleteV1AuthSessionsRespons
 }
 
 type GetV1AuthSessionsRequestObject struct {
+	Body *GetV1AuthSessionsJSONRequestBody
 }
 
 type GetV1AuthSessionsResponseObject interface {
 	VisitGetV1AuthSessionsResponse(w http.ResponseWriter) error
 }
 
-type GetV1AuthSessions200Response struct {
-}
+type GetV1AuthSessions200JSONResponse GetSessionsResponse
 
-func (response GetV1AuthSessions200Response) VisitGetV1AuthSessionsResponse(w http.ResponseWriter) error {
+func (response GetV1AuthSessions200JSONResponse) VisitGetV1AuthSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type DeleteV1AuthSessionsSessionIdRequestObject struct {
@@ -2203,6 +2232,13 @@ func (sh *strictHandler) DeleteV1AuthSessions(w http.ResponseWriter, r *http.Req
 // GetV1AuthSessions operation middleware
 func (sh *strictHandler) GetV1AuthSessions(w http.ResponseWriter, r *http.Request) {
 	var request GetV1AuthSessionsRequestObject
+
+	var body GetV1AuthSessionsJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetV1AuthSessions(ctx, request.(GetV1AuthSessionsRequestObject))
