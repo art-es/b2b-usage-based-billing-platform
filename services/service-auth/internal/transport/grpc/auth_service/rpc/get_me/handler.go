@@ -3,6 +3,8 @@ package get_me
 import (
 	"context"
 
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/get_me/dto"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/auth_service"
@@ -38,7 +40,7 @@ func NewHandler(
 	}
 }
 
-func (h *Handler) GetMe(ctx context.Context, _ *pb.Empty) (*pb.GetMeResponse, error) {
+func (h *Handler) GetMe(ctx context.Context, _ *emptypb.Empty) (*pb.GetMeResponse, error) {
 	claims, err := h.authorizer.Authorize(ctx)
 	if err != nil {
 		return nil, err

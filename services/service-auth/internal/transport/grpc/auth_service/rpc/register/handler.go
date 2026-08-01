@@ -3,6 +3,8 @@ package register
 import (
 	"context"
 
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/register/dto"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
@@ -30,7 +32,7 @@ func NewHandler(
 	}
 }
 
-func (h *Handler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Empty, error) {
+func (h *Handler) Register(ctx context.Context, req *pb.RegisterRequest) (*emptypb.Empty, error) {
 	err := h.usecase.Do(ctx, &dto.Request{
 		Name:     req.Name,
 		Email:    req.Email,
@@ -40,5 +42,5 @@ func (h *Handler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Em
 		return nil, grpcutil.ConvertError(err, h.logger)
 	}
 
-	return &pb.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }

@@ -4,11 +4,13 @@ import (
 	"context"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_me"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/login"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/refresh_session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/register"
@@ -22,15 +24,15 @@ type (
 	}
 
 	registerHandler interface {
-		Register(context.Context, *pb.RegisterRequest) (*pb.Empty, error)
+		Register(context.Context, *pb.RegisterRequest) (*emptypb.Empty, error)
 	}
 
 	verifyEmailHandler interface {
-		VerifyEmail(context.Context, *pb.VerifyEmailRequest) (*pb.Empty, error)
+		VerifyEmail(context.Context, *pb.VerifyEmailRequest) (*emptypb.Empty, error)
 	}
 
 	resendEmailVerificationHandler interface {
-		ResendEmailVerification(context.Context, *pb.ResendEmailVerificationRequest) (*pb.Empty, error)
+		ResendEmailVerification(context.Context, *pb.ResendEmailVerificationRequest) (*emptypb.Empty, error)
 	}
 
 	loginHandler interface {
@@ -41,8 +43,12 @@ type (
 		RefreshSession(context.Context, *pb.RefreshSessionRequest) (*pb.RefreshSessionResponse, error)
 	}
 
+	getSessionsHandler interface {
+		GetSessions(context.Context, *pb.GetSessionsRequest) (*pb.GetSessionsResponse, error)
+	}
+
 	getMeHandler interface {
-		GetMe(context.Context, *pb.Empty) (*pb.GetMeResponse, error)
+		GetMe(context.Context, *emptypb.Empty) (*pb.GetMeResponse, error)
 	}
 )
 
@@ -52,7 +58,9 @@ type serverHandler struct {
 	resendEmailVerificationHandler
 	loginHandler
 	refreshSessionHandler
+	getSessionsHandler
 	getMeHandler
+
 	pb.UnsafeAuthServiceServer
 }
 
@@ -64,6 +72,7 @@ func NewServer(
 	resendEmailVerificationUsecase resend_email_verification.Usecase,
 	loginUsecase login.Usecase,
 	refreshSessionUsecase refresh_session.Usecase,
+	getSessionsUsecase get_sessions.Usecase,
 	getMeUsecase get_me.Usecase,
 ) *grpc.Server {
 	handler := &serverHandler{
@@ -72,6 +81,7 @@ func NewServer(
 		resendEmailVerificationHandler: resend_email_verification.NewHandler(resendEmailVerificationUsecase, logger),
 		loginHandler:                   login.NewHandler(loginUsecase, logger),
 		refreshSessionHandler:          refresh_session.NewHandler(refreshSessionUsecase, logger),
+		getSessionsHandler:             get_sessions.NewHandler(authorizer, getSessionsUsecase, logger),
 		getMeHandler:                   get_me.NewHandler(authorizer, getMeUsecase, logger),
 	}
 

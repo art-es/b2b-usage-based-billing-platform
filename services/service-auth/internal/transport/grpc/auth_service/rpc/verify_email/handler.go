@@ -6,6 +6,7 @@ import (
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/grpcutil"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Usecase interface {
@@ -29,11 +30,11 @@ func NewHandler(
 	}
 }
 
-func (h *Handler) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest) (*pb.Empty, error) {
+func (h *Handler) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest) (*emptypb.Empty, error) {
 	err := h.usecase.Do(ctx, req.Token)
 	if err != nil {
 		return nil, grpcutil.ConvertError(err, h.logger)
 	}
 
-	return &pb.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }

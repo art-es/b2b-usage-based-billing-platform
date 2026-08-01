@@ -69,7 +69,8 @@ func build(ctx context.Context) error {
 	envs, err := env.ParseVars(
 		env.Required(env.FieldPsqlUrl),
 		env.Required(env.FieldJwtSecret),
-		env.Required(env.FieldRefreshTokenHashSecret),
+		env.Required(env.FieldRefreshTokenSecret),
+		env.Required(env.FieldSessionsCursorSecret),
 	)
 	if err != nil {
 		return fmt.Errorf("parse env vars: %w", err)
@@ -99,12 +100,13 @@ func build(ctx context.Context) error {
 	resendEmailVerificationsUsecase := usecases.NewResendEmailVerificationUsecase(emailVerificationRepository)
 	loginUsecase := usecases.NewLoginUsecase(
 		jwtService, hmacSha256Service, passwordHashService, timeService, uuidService, sessionRepository,
-		userRepository, envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenHashSecret), logger,
+		userRepository, envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenSecret), logger,
 	)
 	refreshSessionUsecase := usecases.NewRefreshSessionUsecase(
 		jwtService, hmacSha256Service, timeService, uuidService, sessionRepository,
-		envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenHashSecret), logger,
+		envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenSecret), logger,
 	)
+	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, envs.Get(env.FieldSessionsCursorSecret))
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnRepository)
 
 	// GRPC Server
@@ -123,6 +125,7 @@ func build(ctx context.Context) error {
 		resendEmailVerificationsUsecase,
 		loginUsecase,
 		refreshSessionUsecase,
+		getSessionsUsecase,
 		getMeUsecase,
 	)
 	shutdowner.AddFunc(func() error {

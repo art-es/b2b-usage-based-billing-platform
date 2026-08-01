@@ -6,10 +6,11 @@ import (
 )
 
 const (
-	FieldPsqlUrl                = "PSQL_URL"
-	FieldNatsUrl                = "NATS_URL"
-	FieldJwtSecret              = "JWT_SECRET"
-	FieldRefreshTokenHashSecret = "REFRESH_TOKEN_HASH_SECRET"
+	FieldPsqlUrl              = "PSQL_URL"
+	FieldNatsUrl              = "NATS_URL"
+	FieldJwtSecret            = "JWT_SECRET"
+	FieldRefreshTokenSecret   = "REFRESH_TOKEN_SECRET"
+	FieldSessionsCursorSecret = "SESSIONS_CURSOR_SECRET"
 )
 
 type Vars map[string]string

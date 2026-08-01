@@ -15,6 +15,7 @@ type Session struct {
 	OrganizationID        *string
 	RefreshTokenHash      string
 	RefreshTokenExpiresAt time.Time
+	CreatedAt             time.Time
 }
 
 func NewSession(
