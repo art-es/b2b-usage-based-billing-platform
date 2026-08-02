@@ -57,41 +57,41 @@ func (mr *MockuserRepositoryMockRecorder) Find(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockuserRepository)(nil).Find), ctx, id)
 }
 
-// MockorgnRepository is a mock of orgnRepository interface.
-type MockorgnRepository struct {
+// MockorgnService is a mock of orgnService interface.
+type MockorgnService struct {
 	ctrl     *gomock.Controller
-	recorder *MockorgnRepositoryMockRecorder
+	recorder *MockorgnServiceMockRecorder
 	isgomock struct{}
 }
 
-// MockorgnRepositoryMockRecorder is the mock recorder for MockorgnRepository.
-type MockorgnRepositoryMockRecorder struct {
-	mock *MockorgnRepository
+// MockorgnServiceMockRecorder is the mock recorder for MockorgnService.
+type MockorgnServiceMockRecorder struct {
+	mock *MockorgnService
 }
 
-// NewMockorgnRepository creates a new mock instance.
-func NewMockorgnRepository(ctrl *gomock.Controller) *MockorgnRepository {
-	mock := &MockorgnRepository{ctrl: ctrl}
-	mock.recorder = &MockorgnRepositoryMockRecorder{mock}
+// NewMockorgnService creates a new mock instance.
+func NewMockorgnService(ctrl *gomock.Controller) *MockorgnService {
+	mock := &MockorgnService{ctrl: ctrl}
+	mock.recorder = &MockorgnServiceMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockorgnRepository) EXPECT() *MockorgnRepositoryMockRecorder {
+func (m *MockorgnService) EXPECT() *MockorgnServiceMockRecorder {
 	return m.recorder
 }
 
-// Find mocks base method.
-func (m *MockorgnRepository) Find(ctx context.Context, id string) (*orgn.Orgn, error) {
+// GetByID mocks base method.
+func (m *MockorgnService) GetByID(ctx context.Context, id string) (*orgn.Orgn, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", ctx, id)
+	ret := m.ctrl.Call(m, "GetByID", ctx, id)
 	ret0, _ := ret[0].(*orgn.Orgn)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Find indicates an expected call of Find.
-func (mr *MockorgnRepositoryMockRecorder) Find(ctx, id any) *gomock.Call {
+// GetByID indicates an expected call of GetByID.
+func (mr *MockorgnServiceMockRecorder) GetByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockorgnRepository)(nil).Find), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockorgnService)(nil).GetByID), ctx, id)
 }

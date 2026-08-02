@@ -29,18 +29,18 @@ func TestUsecase(t *testing.T) {
 
 	type deps struct {
 		mockUserRepository *MockuserRepository
-		mockOrgnRepository *MockorgnRepository
+		mockOrgnService    *MockorgnService
 		usecase            *Usecase
 	}
 
 	newDeps := func() *deps {
 		mockCtrl := gomock.NewController(t)
 		mockUserRepository := NewMockuserRepository(mockCtrl)
-		mockOrgnRepository := NewMockorgnRepository(mockCtrl)
+		mockOrgnRepository := NewMockorgnService(mockCtrl)
 
 		return &deps{
 			mockUserRepository: mockUserRepository,
-			mockOrgnRepository: mockOrgnRepository,
+			mockOrgnService:    mockOrgnRepository,
 			usecase:            NewUsecase(mockUserRepository, mockOrgnRepository),
 		}
 	}
@@ -63,8 +63,8 @@ func TestUsecase(t *testing.T) {
 			Name: testOrgnName,
 		}
 
-		d.mockOrgnRepository.EXPECT().
-			Find(gomock.Any(), gomock.Eq(testOrgnID)).
+		d.mockOrgnService.EXPECT().
+			GetByID(gomock.Any(), gomock.Eq(testOrgnID)).
 			Return(expOrgn, nil)
 
 		res, err := d.usecase.Do(ctx, &jwt.Claims{
@@ -136,8 +136,8 @@ func TestUsecase(t *testing.T) {
 			Find(gomock.Any(), gomock.Eq(testUserID)).
 			Return(expUser, nil)
 
-		d.mockOrgnRepository.EXPECT().
-			Find(gomock.Any(), gomock.Eq(testOrgnID)).
+		d.mockOrgnService.EXPECT().
+			GetByID(gomock.Any(), gomock.Eq(testOrgnID)).
 			Return(nil, errors.New("test error"))
 
 		res, err := d.usecase.Do(ctx, &jwt.Claims{

@@ -563,6 +563,50 @@ func (x *FinishSessionRequest) GetSessionId() string {
 	return ""
 }
 
+type SwitchOrgnRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OrgnId        string                 `protobuf:"bytes,1,opt,name=orgn_id,json=orgnId,proto3" json:"orgn_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SwitchOrgnRequest) Reset() {
+	*x = SwitchOrgnRequest{}
+	mi := &file_auth_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SwitchOrgnRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SwitchOrgnRequest) ProtoMessage() {}
+
+func (x *SwitchOrgnRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SwitchOrgnRequest.ProtoReflect.Descriptor instead.
+func (*SwitchOrgnRequest) Descriptor() ([]byte, []int) {
+	return file_auth_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *SwitchOrgnRequest) GetOrgnId() string {
+	if x != nil {
+		return x.OrgnId
+	}
+	return ""
+}
+
 type GetMeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
@@ -575,7 +619,7 @@ type GetMeResponse struct {
 
 func (x *GetMeResponse) Reset() {
 	*x = GetMeResponse{}
-	mi := &file_auth_service_proto_msgTypes[11]
+	mi := &file_auth_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -587,7 +631,7 @@ func (x *GetMeResponse) String() string {
 func (*GetMeResponse) ProtoMessage() {}
 
 func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[11]
+	mi := &file_auth_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -600,7 +644,7 @@ func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMeResponse.ProtoReflect.Descriptor instead.
 func (*GetMeResponse) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{11}
+	return file_auth_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetMeResponse) GetSessionId() string {
@@ -641,7 +685,7 @@ type GetMeResponseOrgn struct {
 
 func (x *GetMeResponseOrgn) Reset() {
 	*x = GetMeResponseOrgn{}
-	mi := &file_auth_service_proto_msgTypes[12]
+	mi := &file_auth_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -653,7 +697,7 @@ func (x *GetMeResponseOrgn) String() string {
 func (*GetMeResponseOrgn) ProtoMessage() {}
 
 func (x *GetMeResponseOrgn) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[12]
+	mi := &file_auth_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -666,7 +710,7 @@ func (x *GetMeResponseOrgn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMeResponseOrgn.ProtoReflect.Descriptor instead.
 func (*GetMeResponseOrgn) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{12}
+	return file_auth_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetMeResponseOrgn) GetId() string {
@@ -721,7 +765,9 @@ const file_auth_service_proto_rawDesc = "" +
 	"created_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"5\n" +
 	"\x14FinishSessionRequest\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\"\x9b\x01\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\",\n" +
+	"\x11SwitchOrgnRequest\x12\x17\n" +
+	"\aorgn_id\x18\x01 \x01(\tR\x06orgnId\"\x9b\x01\n" +
 	"\rGetMeResponse\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x12\n" +
@@ -731,7 +777,7 @@ const file_auth_service_proto_rawDesc = "" +
 	"\x05_orgn\"7\n" +
 	"\x11GetMeResponseOrgn\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name2\xcf\x05\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name2\x98\x06\n" +
 	"\vAuthService\x12C\n" +
 	"\bRegister\x12\x1d.auth_service.RegisterRequest\x1a\x16.google.protobuf.Empty\"\x00\x12I\n" +
 	"\vVerifyEmail\x12 .auth_service.VerifyEmailRequest\x1a\x16.google.protobuf.Empty\"\x00\x12a\n" +
@@ -740,7 +786,9 @@ const file_auth_service_proto_rawDesc = "" +
 	"\x0eRefreshSession\x12#.auth_service.RefreshSessionRequest\x1a$.auth_service.RefreshSessionResponse\"\x00\x12T\n" +
 	"\vGetSessions\x12 .auth_service.GetSessionsRequest\x1a!.auth_service.GetSessionsResponse\"\x00\x12E\n" +
 	"\x11FinishAllSessions\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00\x12M\n" +
-	"\rFinishSession\x12\".auth_service.FinishSessionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12>\n" +
+	"\rFinishSession\x12\".auth_service.FinishSessionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12G\n" +
+	"\n" +
+	"SwitchOrgn\x12\x1f.auth_service.SwitchOrgnRequest\x1a\x16.google.protobuf.Empty\"\x00\x12>\n" +
 	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x1b.auth_service.GetMeResponse\"\x00B&Z$internal/generated/grpc/auth_serviceb\x06proto3"
 
 var (
@@ -755,7 +803,7 @@ func file_auth_service_proto_rawDescGZIP() []byte {
 	return file_auth_service_proto_rawDescData
 }
 
-var file_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_auth_service_proto_goTypes = []any{
 	(*RegisterRequest)(nil),                // 0: auth_service.RegisterRequest
 	(*VerifyEmailRequest)(nil),             // 1: auth_service.VerifyEmailRequest
@@ -768,35 +816,38 @@ var file_auth_service_proto_goTypes = []any{
 	(*GetSessionsResponse)(nil),            // 8: auth_service.GetSessionsResponse
 	(*Session)(nil),                        // 9: auth_service.Session
 	(*FinishSessionRequest)(nil),           // 10: auth_service.FinishSessionRequest
-	(*GetMeResponse)(nil),                  // 11: auth_service.GetMeResponse
-	(*GetMeResponseOrgn)(nil),              // 12: auth_service.GetMeResponseOrgn
-	(*timestamppb.Timestamp)(nil),          // 13: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                  // 14: google.protobuf.Empty
+	(*SwitchOrgnRequest)(nil),              // 11: auth_service.SwitchOrgnRequest
+	(*GetMeResponse)(nil),                  // 12: auth_service.GetMeResponse
+	(*GetMeResponseOrgn)(nil),              // 13: auth_service.GetMeResponseOrgn
+	(*timestamppb.Timestamp)(nil),          // 14: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                  // 15: google.protobuf.Empty
 }
 var file_auth_service_proto_depIdxs = []int32{
 	9,  // 0: auth_service.GetSessionsResponse.sessions:type_name -> auth_service.Session
-	13, // 1: auth_service.Session.created_at:type_name -> google.protobuf.Timestamp
-	12, // 2: auth_service.GetMeResponse.orgn:type_name -> auth_service.GetMeResponseOrgn
+	14, // 1: auth_service.Session.created_at:type_name -> google.protobuf.Timestamp
+	13, // 2: auth_service.GetMeResponse.orgn:type_name -> auth_service.GetMeResponseOrgn
 	0,  // 3: auth_service.AuthService.Register:input_type -> auth_service.RegisterRequest
 	1,  // 4: auth_service.AuthService.VerifyEmail:input_type -> auth_service.VerifyEmailRequest
 	2,  // 5: auth_service.AuthService.ResendEmailVerification:input_type -> auth_service.ResendEmailVerificationRequest
 	3,  // 6: auth_service.AuthService.Login:input_type -> auth_service.LoginRequest
 	5,  // 7: auth_service.AuthService.RefreshSession:input_type -> auth_service.RefreshSessionRequest
 	7,  // 8: auth_service.AuthService.GetSessions:input_type -> auth_service.GetSessionsRequest
-	14, // 9: auth_service.AuthService.FinishAllSessions:input_type -> google.protobuf.Empty
+	15, // 9: auth_service.AuthService.FinishAllSessions:input_type -> google.protobuf.Empty
 	10, // 10: auth_service.AuthService.FinishSession:input_type -> auth_service.FinishSessionRequest
-	14, // 11: auth_service.AuthService.GetMe:input_type -> google.protobuf.Empty
-	14, // 12: auth_service.AuthService.Register:output_type -> google.protobuf.Empty
-	14, // 13: auth_service.AuthService.VerifyEmail:output_type -> google.protobuf.Empty
-	14, // 14: auth_service.AuthService.ResendEmailVerification:output_type -> google.protobuf.Empty
-	4,  // 15: auth_service.AuthService.Login:output_type -> auth_service.LoginResponse
-	6,  // 16: auth_service.AuthService.RefreshSession:output_type -> auth_service.RefreshSessionResponse
-	8,  // 17: auth_service.AuthService.GetSessions:output_type -> auth_service.GetSessionsResponse
-	14, // 18: auth_service.AuthService.FinishAllSessions:output_type -> google.protobuf.Empty
-	14, // 19: auth_service.AuthService.FinishSession:output_type -> google.protobuf.Empty
-	11, // 20: auth_service.AuthService.GetMe:output_type -> auth_service.GetMeResponse
-	12, // [12:21] is the sub-list for method output_type
-	3,  // [3:12] is the sub-list for method input_type
+	11, // 11: auth_service.AuthService.SwitchOrgn:input_type -> auth_service.SwitchOrgnRequest
+	15, // 12: auth_service.AuthService.GetMe:input_type -> google.protobuf.Empty
+	15, // 13: auth_service.AuthService.Register:output_type -> google.protobuf.Empty
+	15, // 14: auth_service.AuthService.VerifyEmail:output_type -> google.protobuf.Empty
+	15, // 15: auth_service.AuthService.ResendEmailVerification:output_type -> google.protobuf.Empty
+	4,  // 16: auth_service.AuthService.Login:output_type -> auth_service.LoginResponse
+	6,  // 17: auth_service.AuthService.RefreshSession:output_type -> auth_service.RefreshSessionResponse
+	8,  // 18: auth_service.AuthService.GetSessions:output_type -> auth_service.GetSessionsResponse
+	15, // 19: auth_service.AuthService.FinishAllSessions:output_type -> google.protobuf.Empty
+	15, // 20: auth_service.AuthService.FinishSession:output_type -> google.protobuf.Empty
+	15, // 21: auth_service.AuthService.SwitchOrgn:output_type -> google.protobuf.Empty
+	12, // 22: auth_service.AuthService.GetMe:output_type -> auth_service.GetMeResponse
+	13, // [13:23] is the sub-list for method output_type
+	3,  // [3:13] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -809,14 +860,14 @@ func file_auth_service_proto_init() {
 	}
 	file_auth_service_proto_msgTypes[7].OneofWrappers = []any{}
 	file_auth_service_proto_msgTypes[8].OneofWrappers = []any{}
-	file_auth_service_proto_msgTypes[11].OneofWrappers = []any{}
+	file_auth_service_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_service_proto_rawDesc), len(file_auth_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

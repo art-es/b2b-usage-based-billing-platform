@@ -6,8 +6,9 @@ import (
 )
 
 const (
-	FieldPsqlUrl              = "PSQL_URL"
-	FieldNatsUrl              = "NATS_URL"
+	FieldPsqlAddr             = "PSQL_ADDR"
+	FieldNatsAddr             = "NATS_ADDR"
+	FieldOrgnServiceAddr      = "ORGN_SERVICE_ADDR"
 	FieldJwtSecret            = "JWT_SECRET"
 	FieldRefreshTokenSecret   = "REFRESH_TOKEN_SECRET"
 	FieldSessionsCursorSecret = "SESSIONS_CURSOR_SECRET"

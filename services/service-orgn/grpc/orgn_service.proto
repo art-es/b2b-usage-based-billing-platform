@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package orgn_service;
+
+option go_package = "internal/generated/grpc/orgn_service";
+
+service OrgnService {
+    rpc GetById (GetByIdRequest) returns (Orgn) {}
+}
+
+message GetByIdRequest {
+    string id = 1;
+}
+
+message Orgn {
+    string id = 1;
+    string name = 2;
+    string user_id = 3;
+}

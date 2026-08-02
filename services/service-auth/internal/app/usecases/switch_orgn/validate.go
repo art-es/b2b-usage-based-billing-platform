@@ -1,9 +1,9 @@
-package finish_session
+package switch_orgn
 
 import "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/validate"
 
-var errIncorrectSessionID = &validate.Error{
-	Field:   "session_id",
+var errIncorrectOrgnID = &validate.Error{
+	Field:   "orgn_id",
 	Code:    validate.ErrorIncorrect,
 	Message: "incorrect",
 }

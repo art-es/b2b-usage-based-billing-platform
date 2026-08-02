@@ -213,3 +213,29 @@ func (r *Repository) Delete(ctx context.Context, userID, sessionID string) error
 
 	return nil
 }
+
+func (r *Repository) SetOrgnID(ctx context.Context, sessID, orgnID string) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `UPDATE sessions SET organization_id = $2 WHERE id = $1`
+	args := []any{sessID, orgnID}
+
+	res, err := conn.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("get rows affected: %w", err)
+	}
+
+	if n == 0 {
+		return repository.ErrNotFound
+	}
+
+	return nil
+}

@@ -15,6 +15,10 @@ func ConvertError(err error, logger log.Logger) error {
 		return nil
 	}
 
+	if errors.Is(err, validate.ErrUnauthorized) {
+		return Unauthenticated()
+	}
+
 	{
 		var e *validate.Error
 		if errors.As(err, &e) {

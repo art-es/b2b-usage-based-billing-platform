@@ -17,6 +17,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/refresh_session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/register"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/resend_email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/switch_orgn"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/verify_email"
 )
 
@@ -57,6 +58,10 @@ type (
 		FinishSession(context.Context, *pb.FinishSessionRequest) (*emptypb.Empty, error)
 	}
 
+	switchOrgnHandler interface {
+		SwitchOrgn(context.Context, *pb.SwitchOrgnRequest) (*emptypb.Empty, error)
+	}
+
 	getMeHandler interface {
 		GetMe(context.Context, *emptypb.Empty) (*pb.GetMeResponse, error)
 	}
@@ -71,6 +76,7 @@ type serverHandler struct {
 	getSessionsHandler
 	finishAllSessionsHandler
 	finishSessionHandler
+	switchOrgnHandler
 	getMeHandler
 
 	pb.UnsafeAuthServiceServer
@@ -87,6 +93,7 @@ func NewServer(
 	getSessionsUsecase get_sessions.Usecase,
 	finishAllSessionsUsecase finish_all_sessions.Usecase,
 	finishSessionUsecase finish_session.Usecase,
+	switchOrgnUsecase switch_orgn.Usecase,
 	getMeUsecase get_me.Usecase,
 ) *grpc.Server {
 	handler := &serverHandler{
@@ -98,6 +105,7 @@ func NewServer(
 		getSessionsHandler:             get_sessions.NewHandler(authorizer, getSessionsUsecase, logger),
 		finishAllSessionsHandler:       finish_all_sessions.NewHandler(authorizer, finishAllSessionsUsecase, logger),
 		finishSessionHandler:           finish_session.NewHandler(authorizer, finishSessionUsecase, logger),
+		switchOrgnHandler:              switch_orgn.NewHandler(authorizer, switchOrgnUsecase, logger),
 		getMeHandler:                   get_me.NewHandler(authorizer, getMeUsecase, logger),
 	}
 

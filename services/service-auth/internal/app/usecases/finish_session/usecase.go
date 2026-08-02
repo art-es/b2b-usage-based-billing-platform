@@ -29,7 +29,7 @@ func (u *Usecase) Do(ctx context.Context, req *dto.Request) error {
 	err := u.sessionsRepository.Delete(ctx, req.Auth.UserID, req.SessionID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return errIncorrectSessionId
+			return errIncorrectSessionID
 		}
 
 		return fmt.Errorf("delete session: %w", err)

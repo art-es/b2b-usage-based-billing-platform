@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 
+	"golang.org/x/sync/errgroup"
+
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/orgn"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
@@ -15,37 +17,53 @@ type userRepository interface {
 	Find(ctx context.Context, id string) (*user.User, error)
 }
 
-type orgnRepository interface {
-	Find(ctx context.Context, id string) (*orgn.Orgn, error)
+type orgnService interface {
+	GetByID(ctx context.Context, id string) (*orgn.Orgn, error)
 }
 
 type Usecase struct {
 	userRepository userRepository
-	orgnRepository orgnRepository
+	orgnService    orgnService
 }
 
 func NewUsecase(
 	userRepository userRepository,
-	orgnRepository orgnRepository,
+	orgnService orgnService,
 ) *Usecase {
 	return &Usecase{
 		userRepository: userRepository,
-		orgnRepository: orgnRepository,
+		orgnService:    orgnService,
 	}
 }
 
 func (u *Usecase) Do(ctx context.Context, claims *jwt.Claims) (*dto.Response, error) {
-	usr, err := u.userRepository.Find(ctx, claims.UserID)
-	if err != nil {
-		return nil, fmt.Errorf("find user: %w", err)
+	var usr *user.User
+	var org *orgn.Orgn
+
+	eg, egCtx := errgroup.WithContext(ctx)
+
+	eg.Go(func() (err error) {
+		usr, err = u.userRepository.Find(egCtx, claims.UserID)
+		if err != nil {
+			return fmt.Errorf("find user: %w", err)
+		}
+
+		return nil
+	})
+
+	if claims.OrgnID != nil {
+		eg.Go(func() (err error) {
+			org, err = u.orgnService.GetByID(egCtx, *claims.OrgnID)
+			if err != nil {
+				return fmt.Errorf("get orgn by id: %w", err)
+			}
+
+			return nil
+		})
 	}
 
-	var org *orgn.Orgn
-	if claims.OrgnID != nil {
-		org, err = u.orgnRepository.Find(ctx, *claims.OrgnID)
-		if err != nil {
-			return nil, fmt.Errorf("find orgn: %w", err)
-		}
+	if err := eg.Wait(); err != nil {
+		return nil, err
 	}
 
 	return &dto.Response{

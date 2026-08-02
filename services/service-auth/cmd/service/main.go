@@ -20,6 +20,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/uuid"
 	grpc_auth_service "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service"
 	grpc_auth "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/auth"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/orgn_service"
 )
 
 var (
@@ -67,7 +68,8 @@ func main() {
 
 func build(ctx context.Context) error {
 	envs, err := env.ParseVars(
-		env.Required(env.FieldPsqlUrl),
+		env.Required(env.FieldPsqlAddr),
+		env.Required(env.FieldOrgnServiceAddr),
 		env.Required(env.FieldJwtSecret),
 		env.Required(env.FieldRefreshTokenSecret),
 		env.Required(env.FieldSessionsCursorSecret),
@@ -76,12 +78,20 @@ func build(ctx context.Context) error {
 		return fmt.Errorf("parse env vars: %w", err)
 	}
 
-	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlUrl), logger)
+	// Clients
+	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlAddr), logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
 	shutdowner.Add(psqlConn)
 
+	orgnService, err := orgn_service.NewClient(envs.Get(env.FieldOrgnServiceAddr))
+	if err != nil {
+		return fmt.Errorf("connect orgn-service: %w", err)
+	}
+	shutdowner.Add(orgnService)
+
+	// Utils
 	timeService := time.NewService()
 	uuidService := uuid.NewService()
 	jwtService := jwt.NewService(timeService, logger)
@@ -90,7 +100,6 @@ func build(ctx context.Context) error {
 
 	// Repositories
 	userRepository := repositories.NewUserRepository(psqlConn)
-	orgnRepository := repositories.NewOrgnRepository(psqlConn)
 	emailVerificationRepository := repositories.NewEmailVerificationRepository(psqlConn)
 	sessionRepository := repositories.NewSessionsRepository(psqlConn)
 
@@ -109,7 +118,8 @@ func build(ctx context.Context) error {
 	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, envs.Get(env.FieldSessionsCursorSecret))
 	finishAllSessionsUsecase := usecases.NewFinishAllSessionsUsecase(sessionRepository)
 	finishSessionUsecase := usecases.NewFinishSessionUsecase(sessionRepository)
-	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnRepository)
+	switchOrgnUsecase := usecases.NewSwitchOrgnUsecase(sessionRepository, orgnService)
+	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnService)
 
 	// GRPC Server
 	grpcServerListener, err := net.Listen("tcp", ":8080")
@@ -130,6 +140,7 @@ func build(ctx context.Context) error {
 		getSessionsUsecase,
 		finishAllSessionsUsecase,
 		finishSessionUsecase,
+		switchOrgnUsecase,
 		getMeUsecase,
 	)
 	shutdowner.AddFunc(func() error {

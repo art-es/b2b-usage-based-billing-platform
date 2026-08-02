@@ -9,6 +9,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/refresh_session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/register"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/resend_email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/switch_orgn"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/verify_email"
 )
 
@@ -21,5 +22,6 @@ var (
 	NewGetSessionsUsecase             = get_sessions.NewUsecase
 	NewFinishAllSessionsUsecase       = finish_all_sessions.NewUsecase
 	NewFinishSessionUsecase           = finish_session.NewUsecase
+	NewSwitchOrgnUsecase              = switch_orgn.NewUsecase
 	NewGetMeUsecase                   = get_me.NewUsecase
 )

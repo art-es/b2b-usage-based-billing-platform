@@ -76,20 +76,20 @@ func build(ctx context.Context) error {
 	}
 
 	envs, err := env.ParseVars(
-		env.Required(env.FieldPsqlUrl),
-		env.Required(env.FieldNatsUrl),
+		env.Required(env.FieldPsqlAddr),
+		env.Required(env.FieldNatsAddr),
 	)
 	if err != nil {
 		return fmt.Errorf("parse env vars: %w", err)
 	}
 
-	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlUrl), logger)
+	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlAddr), logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
 	shutdowner.Add(psqlConn)
 
-	natsConn, err := nats.Connect(envs.Get(env.FieldNatsUrl))
+	natsConn, err := nats.Connect(envs.Get(env.FieldNatsAddr))
 	if err != nil {
 		return fmt.Errorf("connect nats: %w", err)
 	}

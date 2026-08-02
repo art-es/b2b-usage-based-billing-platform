@@ -16,6 +16,7 @@ service AuthService {
     rpc GetSessions (GetSessionsRequest) returns (GetSessionsResponse) {}
     rpc FinishAllSessions (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc FinishSession (FinishSessionRequest) returns (google.protobuf.Empty) {}
+    rpc SwitchOrgn (SwitchOrgnRequest) returns (google.protobuf.Empty) {}
     rpc GetMe (google.protobuf.Empty) returns (GetMeResponse) {}
 }
 
@@ -68,6 +69,10 @@ message Session {
 
 message FinishSessionRequest {
     string session_id = 1;
+}
+
+message SwitchOrgnRequest {
+    string orgn_id = 1;
 }
 
 message GetMeResponse {
