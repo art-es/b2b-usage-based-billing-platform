@@ -9,6 +9,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/finish_all_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_me"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/login"
@@ -47,6 +48,10 @@ type (
 		GetSessions(context.Context, *pb.GetSessionsRequest) (*pb.GetSessionsResponse, error)
 	}
 
+	finishAllSessionsHandler interface {
+		FinishAllSessions(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error)
+	}
+
 	getMeHandler interface {
 		GetMe(context.Context, *emptypb.Empty) (*pb.GetMeResponse, error)
 	}
@@ -59,6 +64,7 @@ type serverHandler struct {
 	loginHandler
 	refreshSessionHandler
 	getSessionsHandler
+	finishAllSessionsHandler
 	getMeHandler
 
 	pb.UnsafeAuthServiceServer
@@ -73,6 +79,7 @@ func NewServer(
 	loginUsecase login.Usecase,
 	refreshSessionUsecase refresh_session.Usecase,
 	getSessionsUsecase get_sessions.Usecase,
+	finishAllSessionsUsecase finish_all_sessions.Usecase,
 	getMeUsecase get_me.Usecase,
 ) *grpc.Server {
 	handler := &serverHandler{
@@ -82,6 +89,7 @@ func NewServer(
 		loginHandler:                   login.NewHandler(loginUsecase, logger),
 		refreshSessionHandler:          refresh_session.NewHandler(refreshSessionUsecase, logger),
 		getSessionsHandler:             get_sessions.NewHandler(authorizer, getSessionsUsecase, logger),
+		finishAllSessionsHandler:       finish_all_sessions.NewHandler(authorizer, finishAllSessionsUsecase, logger),
 		getMeHandler:                   get_me.NewHandler(authorizer, getMeUsecase, logger),
 	}
 

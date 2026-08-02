@@ -107,6 +107,7 @@ func build(ctx context.Context) error {
 		envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenSecret), logger,
 	)
 	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, envs.Get(env.FieldSessionsCursorSecret))
+	finishAllSessionsUsecase := usecases.NewFinishAllSessionsUsecase(sessionRepository)
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnRepository)
 
 	// GRPC Server
@@ -126,6 +127,7 @@ func build(ctx context.Context) error {
 		loginUsecase,
 		refreshSessionUsecase,
 		getSessionsUsecase,
+		finishAllSessionsUsecase,
 		getMeUsecase,
 	)
 	shutdowner.AddFunc(func() error {

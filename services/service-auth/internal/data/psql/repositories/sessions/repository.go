@@ -169,3 +169,20 @@ func (r *Repository) update(ctx context.Context, s *session.Session) error {
 
 	return nil
 }
+
+func (r *Repository) DeleteAll(ctx context.Context, userID string) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `DELETE FROM sessions WHERE user_id = $1`
+	args := []any{userID}
+
+	_, err = conn.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	return nil
+}

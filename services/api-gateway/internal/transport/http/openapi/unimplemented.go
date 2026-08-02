@@ -27,12 +27,6 @@ func (h *serverHandler) PostV1AuthPasswordReset(ctx context.Context, request ope
 	return nil, errUnimplemented
 }
 
-// DeleteV1AuthSessions Finish all sessions
-// (DELETE /v1/auth/sessions)
-func (h *serverHandler) DeleteV1AuthSessions(ctx context.Context, request openapi.DeleteV1AuthSessionsRequestObject) (_ openapi.DeleteV1AuthSessionsResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
 // DeleteV1AuthSessionsSessionId Finish the session
 // (DELETE /v1/auth/sessions/{sessionId})
 func (h *serverHandler) DeleteV1AuthSessionsSessionId(ctx context.Context, request openapi.DeleteV1AuthSessionsSessionIdRequestObject) (_ openapi.DeleteV1AuthSessionsSessionIdResponseObject, _ error) {

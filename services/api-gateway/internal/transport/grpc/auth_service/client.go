@@ -119,6 +119,12 @@ func (c *Client) GetSessions(ctx context.Context, dtoReq *dto.GetSessionsRequest
 	}, nil
 }
 
+func (c *Client) FinishAllSessions(ctx context.Context) error {
+	_, err := c.client.FinishAllSessions(ctx, &emptypb.Empty{}, grpcutil.CallOpts(ctx)...)
+
+	return grpcutil.HandleError(err)
+}
+
 func (c *Client) GetMe(ctx context.Context) (*dto.GetMeResponse, error) {
 	res, err := c.client.GetMe(ctx, &emptypb.Empty{}, grpcutil.CallOpts(ctx)...)
 	if err != nil {

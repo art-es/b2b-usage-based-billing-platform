@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/finish_all_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/get_me"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/get_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/login"
@@ -17,5 +18,6 @@ var (
 	NewLoginUsecase                   = login.NewUsecase
 	NewRefreshSessionUsecase          = refresh_session.NewUsecase
 	NewGetSessionsUsecase             = get_sessions.NewUsecase
+	NewFinishAllSessionsUsecase       = finish_all_sessions.NewUsecase
 	NewGetMeUsecase                   = get_me.NewUsecase
 )
