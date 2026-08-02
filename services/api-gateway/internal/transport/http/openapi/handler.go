@@ -8,6 +8,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/delete_v1_auth_sessions"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/delete_v1_auth_sessions_session_id"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/get_v1_auth_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/get_v1_me"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_email_resend_verification"
@@ -25,6 +26,7 @@ type authService interface {
 	post_v1_auth_refresh.AuthService
 	get_v1_auth_sessions.AuthService
 	delete_v1_auth_sessions.AuthService
+	delete_v1_auth_sessions_session_id.AuthService
 	get_v1_me.AuthService
 }
 
@@ -58,6 +60,10 @@ type (
 		DeleteV1AuthSessions(context.Context, openapi.DeleteV1AuthSessionsRequestObject) (openapi.DeleteV1AuthSessionsResponseObject, error)
 	}
 
+	deleteV1AuthSessionsSessionIdHandler interface {
+		DeleteV1AuthSessionsSessionId(ctx context.Context, req openapi.DeleteV1AuthSessionsSessionIdRequestObject) (openapi.DeleteV1AuthSessionsSessionIdResponseObject, error)
+	}
+
 	getV1MeHandler interface {
 		GetV1Me(context.Context, openapi.GetV1MeRequestObject) (openapi.GetV1MeResponseObject, error)
 	}
@@ -71,6 +77,7 @@ type serverHandler struct {
 	postV1AuthRefreshHandler
 	getV1AuthSessionsHandler
 	deleteV1AuthSessionsHandler
+	deleteV1AuthSessionsSessionIdHandler
 	getV1MeHandler
 }
 
@@ -88,6 +95,7 @@ func NewHandler(
 		postV1AuthRefreshHandler:                 post_v1_auth_refresh.NewHandler(authService),
 		getV1AuthSessionsHandler:                 get_v1_auth_sessions.NewHandler(authService),
 		deleteV1AuthSessionsHandler:              delete_v1_auth_sessions.NewHandler(authService),
+		deleteV1AuthSessionsSessionIdHandler:     delete_v1_auth_sessions_session_id.NewHandler(authService),
 		getV1MeHandler:                           get_v1_me.NewHandler(authService),
 	}
 

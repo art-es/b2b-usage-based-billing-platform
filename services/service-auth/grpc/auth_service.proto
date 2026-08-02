@@ -15,6 +15,7 @@ service AuthService {
     rpc RefreshSession (RefreshSessionRequest) returns (RefreshSessionResponse) {}
     rpc GetSessions (GetSessionsRequest) returns (GetSessionsResponse) {}
     rpc FinishAllSessions (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc FinishSession (FinishSessionRequest) returns (google.protobuf.Empty) {}
     rpc GetMe (google.protobuf.Empty) returns (GetMeResponse) {}
 }
 
@@ -63,6 +64,10 @@ message GetSessionsResponse {
 message Session {
     string id = 1;
     google.protobuf.Timestamp created_at = 2;
+}
+
+message FinishSessionRequest {
+    string session_id = 1;
 }
 
 message GetMeResponse {

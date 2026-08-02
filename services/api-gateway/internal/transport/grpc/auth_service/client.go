@@ -125,6 +125,16 @@ func (c *Client) FinishAllSessions(ctx context.Context) error {
 	return grpcutil.HandleError(err)
 }
 
+func (c *Client) FinishSession(ctx context.Context, sessionID string) error {
+	req := &pb.FinishSessionRequest{
+		SessionId: sessionID,
+	}
+
+	_, err := c.client.FinishSession(ctx, req, grpcutil.CallOpts(ctx)...)
+
+	return grpcutil.HandleError(err)
+}
+
 func (c *Client) GetMe(ctx context.Context) (*dto.GetMeResponse, error) {
 	res, err := c.client.GetMe(ctx, &emptypb.Empty{}, grpcutil.CallOpts(ctx)...)
 	if err != nil {

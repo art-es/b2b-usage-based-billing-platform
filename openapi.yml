@@ -171,13 +171,13 @@ paths:
         "204":
           description: Sessions finished
 
-  /v1/auth/sessions/{sessionId}:
+  /v1/auth/sessions/{session_id}:
     delete:
       summary: Finish the session
       tags: [Auth]
       security: [Bearer: []]
       parameters:
-        - name: sessionId
+        - name: session_id
           in: path
           required: true
           schema:
@@ -249,7 +249,7 @@ paths:
       tags: [Organization]
       security: [Bearer: []]
       parameters:
-        - name: fromId
+        - name: from_id
           in: query
           description: last id of previous organization list
           schema:
@@ -276,9 +276,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateOrgnResponse"
   
-  /v1/orgns/{orgnId}:
+  /v1/orgns/{orgn_id}:
     parameters:
-      - name: orgnId
+      - name: orgn_id
         in: path
         required: true
         schema:
@@ -298,12 +298,12 @@ paths:
         "200":
           description: Organization deleted
 
-  /v1/orgns/{orgnId}/members:
+  /v1/orgns/{orgn_id}/members:
     get:
       summary: Get organization members
       tags: [Organization]
       parameters:
-        - name: orgnId
+        - name: orgn_id
           in: path
           required: true
           schema:
@@ -312,14 +312,14 @@ paths:
         "200":
           description: Organization member list
 
-  /v1/orgns/{orgnId}/members/{memberId}:
+  /v1/orgns/{orgn_id}/members/{member_id}:
     parameters:
-      - name: orgnId
+      - name: orgn_id
         in: path
         required: true
         schema:
           type: string
-      - name: memberId
+      - name: member_id
         in: path
         required: true
         schema:
@@ -339,9 +339,9 @@ paths:
         "200":
           description: Organization member deleted
 
-  /v1/orgns/{orgnId}/api-keys:
+  /v1/orgns/{orgn_id}/api-keys:
     parameters:
-      - name: orgnId
+      - name: orgn_id
         in: path
         required: true
         schema:
@@ -361,17 +361,17 @@ paths:
         "201":
           description: Organization API key created
 
-  /v1/orgns/{orgnId}/api-keys/{keyId}:
+  /v1/orgns/{orgn_id}/api-keys/{key_id}:
     delete:
       summary: Delete organization API key
       tags: [Organization]
       parameters:
-        - name: orgnId
+        - name: orgn_id
           in: path
           required: true
           schema:
             type: string
-        - name: keyId
+        - name: key_id
           in: path
           required: true
           schema:
@@ -380,9 +380,9 @@ paths:
         "200":
           description: Organization API key deleted
 
-  /v1/orgns/{orgnId}/tariffs:
+  /v1/orgns/{orgn_id}/tariffs:
     parameters:
-      - name: orgnId
+      - name: orgn_id
         in: path
         required: true
         schema:
@@ -402,14 +402,14 @@ paths:
         "201":
           description: Tariff created
   
-  /v1/orgns/{orgnId}/tariffs/{tariffId}:
+  /v1/orgns/{orgn_id}/tariffs/{tariff_id}:
     parameters:
-      - name: orgnId
+      - name: orgn_id
         in: path
         required: true
         schema:
           type: string
-      - name: tariffId
+      - name: tariff_id
         in: path
         required: true
         schema:
@@ -437,12 +437,12 @@ paths:
         "201":
           description: Tariff created
 
-  /v1/customers/{customerId}/subscribe:
+  /v1/customers/{customer_id}/subscribe:
     post:
       summary: Subscribe customer to tariff
       tags: [Customer]
       parameters:
-        - name: customerId
+        - name: customer_id
           in: path
           required: true
           schema:
@@ -451,12 +451,12 @@ paths:
         "200":
           description: Customer subscribed
   
-  /v1/customer/{customerId}/usage:
+  /v1/customer/{customer_id}/usage:
     post:
       summary: Add new usage
       tags: [Customer]
       parameters:
-        - name: customerId
+        - name: customer_id
           in: path
           required: true
           schema:

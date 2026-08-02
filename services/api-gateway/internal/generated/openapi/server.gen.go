@@ -184,7 +184,7 @@ type VerifyEmailRequest struct {
 // GetV1OrgnsParams defines parameters for GetV1Orgns.
 type GetV1OrgnsParams struct {
 	// FromId last id of previous organization list
-	FromId *string `form:"fromId,omitempty" json:"fromId,omitempty"`
+	FromId *string `form:"from_id,omitempty" json:"from_id,omitempty"`
 }
 
 // PostV1AuthEmailResendVerificationJSONRequestBody defines body for PostV1AuthEmailResendVerification for application/json ContentType.
@@ -244,7 +244,7 @@ type ServerInterface interface {
 	// (GET /v1/auth/sessions)
 	GetV1AuthSessions(w http.ResponseWriter, r *http.Request)
 	// DeleteV1AuthSessionsSessionId Finish the session
-	// (DELETE /v1/auth/sessions/{sessionId})
+	// (DELETE /v1/auth/sessions/{session_id})
 	DeleteV1AuthSessionsSessionId(w http.ResponseWriter, r *http.Request, sessionId string)
 	// PostV1AuthSwitchOrgn Switch an organization in session
 	// (POST /v1/auth/switch-orgn)
@@ -256,13 +256,13 @@ type ServerInterface interface {
 	// (POST /v1/billing/payments)
 	PostV1BillingPayments(w http.ResponseWriter, r *http.Request)
 	// PostV1CustomerCustomerIdUsage Add new usage
-	// (POST /v1/customer/{customerId}/usage)
+	// (POST /v1/customer/{customer_id}/usage)
 	PostV1CustomerCustomerIdUsage(w http.ResponseWriter, r *http.Request, customerId string)
 	// PostV1Customers Create a new customer
 	// (POST /v1/customers)
 	PostV1Customers(w http.ResponseWriter, r *http.Request)
 	// PostV1CustomersCustomerIdSubscribe Subscribe customer to tariff
-	// (POST /v1/customers/{customerId}/subscribe)
+	// (POST /v1/customers/{customer_id}/subscribe)
 	PostV1CustomersCustomerIdSubscribe(w http.ResponseWriter, r *http.Request, customerId string)
 	// GetV1Me Get user info of current session
 	// (GET /v1/me)
@@ -274,40 +274,40 @@ type ServerInterface interface {
 	// (POST /v1/orgns)
 	PostV1Orgns(w http.ResponseWriter, r *http.Request)
 	// DeleteV1OrgnsOrgnId Delete the organization
-	// (DELETE /v1/orgns/{orgnId})
+	// (DELETE /v1/orgns/{orgn_id})
 	DeleteV1OrgnsOrgnId(w http.ResponseWriter, r *http.Request, orgnId string)
 	// PutV1OrgnsOrgnId Update the organization
-	// (PUT /v1/orgns/{orgnId})
+	// (PUT /v1/orgns/{orgn_id})
 	PutV1OrgnsOrgnId(w http.ResponseWriter, r *http.Request, orgnId string)
 	// GetV1OrgnsOrgnIdApiKeys Get orgn API keys
-	// (GET /v1/orgns/{orgnId}/api-keys)
+	// (GET /v1/orgns/{orgn_id}/api-keys)
 	GetV1OrgnsOrgnIdApiKeys(w http.ResponseWriter, r *http.Request, orgnId string)
 	// PostV1OrgnsOrgnIdApiKeys Create a new organization API key
-	// (POST /v1/orgns/{orgnId}/api-keys)
+	// (POST /v1/orgns/{orgn_id}/api-keys)
 	PostV1OrgnsOrgnIdApiKeys(w http.ResponseWriter, r *http.Request, orgnId string)
 	// DeleteV1OrgnsOrgnIdApiKeysKeyId Delete organization API key
-	// (DELETE /v1/orgns/{orgnId}/api-keys/{keyId})
+	// (DELETE /v1/orgns/{orgn_id}/api-keys/{key_id})
 	DeleteV1OrgnsOrgnIdApiKeysKeyId(w http.ResponseWriter, r *http.Request, orgnId string, keyId string)
 	// GetV1OrgnsOrgnIdMembers Get organization members
-	// (GET /v1/orgns/{orgnId}/members)
+	// (GET /v1/orgns/{orgn_id}/members)
 	GetV1OrgnsOrgnIdMembers(w http.ResponseWriter, r *http.Request, orgnId string)
 	// DeleteV1OrgnsOrgnIdMembersMemberId Delete organization member
-	// (DELETE /v1/orgns/{orgnId}/members/{memberId})
+	// (DELETE /v1/orgns/{orgn_id}/members/{member_id})
 	DeleteV1OrgnsOrgnIdMembersMemberId(w http.ResponseWriter, r *http.Request, orgnId string, memberId string)
 	// PatchV1OrgnsOrgnIdMembersMemberId Update organization member
-	// (PATCH /v1/orgns/{orgnId}/members/{memberId})
+	// (PATCH /v1/orgns/{orgn_id}/members/{member_id})
 	PatchV1OrgnsOrgnIdMembersMemberId(w http.ResponseWriter, r *http.Request, orgnId string, memberId string)
 	// GetV1OrgnsOrgnIdTariffs Get tariffs
-	// (GET /v1/orgns/{orgnId}/tariffs)
+	// (GET /v1/orgns/{orgn_id}/tariffs)
 	GetV1OrgnsOrgnIdTariffs(w http.ResponseWriter, r *http.Request, orgnId string)
 	// PostV1OrgnsOrgnIdTariffs Create a new tariff
-	// (POST /v1/orgns/{orgnId}/tariffs)
+	// (POST /v1/orgns/{orgn_id}/tariffs)
 	PostV1OrgnsOrgnIdTariffs(w http.ResponseWriter, r *http.Request, orgnId string)
 	// DeleteV1OrgnsOrgnIdTariffsTariffId Delete the tariff
-	// (DELETE /v1/orgns/{orgnId}/tariffs/{tariffId})
+	// (DELETE /v1/orgns/{orgn_id}/tariffs/{tariff_id})
 	DeleteV1OrgnsOrgnIdTariffsTariffId(w http.ResponseWriter, r *http.Request, orgnId string, tariffId string)
 	// PutV1OrgnsOrgnIdTariffsTariffId Update the tariff
-	// (PUT /v1/orgns/{orgnId}/tariffs/{tariffId})
+	// (PUT /v1/orgns/{orgn_id}/tariffs/{tariff_id})
 	PutV1OrgnsOrgnIdTariffsTariffId(w http.ResponseWriter, r *http.Request, orgnId string, tariffId string)
 	// GetV1Webhook Connect to webhook to receive events
 	// (GET /v1/webhook)
@@ -469,12 +469,12 @@ func (siw *ServerInterfaceWrapper) DeleteV1AuthSessionsSessionId(w http.Response
 	var err error
 	_ = err
 
-	// ------------- Path parameter "sessionId" -------------
+	// ------------- Path parameter "session_id" -------------
 	var sessionId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "sessionId", r.PathValue("sessionId"), &sessionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "session_id", r.PathValue("session_id"), &sessionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sessionId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "session_id", Err: err})
 		return
 	}
 
@@ -537,12 +537,12 @@ func (siw *ServerInterfaceWrapper) PostV1CustomerCustomerIdUsage(w http.Response
 	var err error
 	_ = err
 
-	// ------------- Path parameter "customerId" -------------
+	// ------------- Path parameter "customer_id" -------------
 	var customerId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "customerId", r.PathValue("customerId"), &customerId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "customer_id", r.PathValue("customer_id"), &customerId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "customerId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "customer_id", Err: err})
 		return
 	}
 
@@ -577,12 +577,12 @@ func (siw *ServerInterfaceWrapper) PostV1CustomersCustomerIdSubscribe(w http.Res
 	var err error
 	_ = err
 
-	// ------------- Path parameter "customerId" -------------
+	// ------------- Path parameter "customer_id" -------------
 	var customerId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "customerId", r.PathValue("customerId"), &customerId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "customer_id", r.PathValue("customer_id"), &customerId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "customerId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "customer_id", Err: err})
 		return
 	}
 
@@ -620,15 +620,15 @@ func (siw *ServerInterfaceWrapper) GetV1Orgns(w http.ResponseWriter, r *http.Req
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetV1OrgnsParams
 
-	// ------------- Optional query parameter "fromId" -------------
+	// ------------- Optional query parameter "from_id" -------------
 
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "fromId", r.URL.Query(), &params.FromId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from_id", r.URL.Query(), &params.FromId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
 	if err != nil {
 		var requiredError *runtime.RequiredParameterError
 		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "fromId"})
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from_id"})
 		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fromId", Err: err})
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from_id", Err: err})
 		}
 		return
 	}
@@ -664,12 +664,12 @@ func (siw *ServerInterfaceWrapper) DeleteV1OrgnsOrgnId(w http.ResponseWriter, r 
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
@@ -690,12 +690,12 @@ func (siw *ServerInterfaceWrapper) PutV1OrgnsOrgnId(w http.ResponseWriter, r *ht
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
@@ -716,12 +716,12 @@ func (siw *ServerInterfaceWrapper) GetV1OrgnsOrgnIdApiKeys(w http.ResponseWriter
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
@@ -742,12 +742,12 @@ func (siw *ServerInterfaceWrapper) PostV1OrgnsOrgnIdApiKeys(w http.ResponseWrite
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
@@ -768,21 +768,21 @@ func (siw *ServerInterfaceWrapper) DeleteV1OrgnsOrgnIdApiKeysKeyId(w http.Respon
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
-	// ------------- Path parameter "keyId" -------------
+	// ------------- Path parameter "key_id" -------------
 	var keyId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "keyId", r.PathValue("keyId"), &keyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "key_id", r.PathValue("key_id"), &keyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "keyId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "key_id", Err: err})
 		return
 	}
 
@@ -803,12 +803,12 @@ func (siw *ServerInterfaceWrapper) GetV1OrgnsOrgnIdMembers(w http.ResponseWriter
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
@@ -829,21 +829,21 @@ func (siw *ServerInterfaceWrapper) DeleteV1OrgnsOrgnIdMembersMemberId(w http.Res
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
-	// ------------- Path parameter "memberId" -------------
+	// ------------- Path parameter "member_id" -------------
 	var memberId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "memberId", r.PathValue("memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "member_id", r.PathValue("member_id"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "member_id", Err: err})
 		return
 	}
 
@@ -864,21 +864,21 @@ func (siw *ServerInterfaceWrapper) PatchV1OrgnsOrgnIdMembersMemberId(w http.Resp
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
-	// ------------- Path parameter "memberId" -------------
+	// ------------- Path parameter "member_id" -------------
 	var memberId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "memberId", r.PathValue("memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "member_id", r.PathValue("member_id"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "member_id", Err: err})
 		return
 	}
 
@@ -899,12 +899,12 @@ func (siw *ServerInterfaceWrapper) GetV1OrgnsOrgnIdTariffs(w http.ResponseWriter
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
@@ -925,12 +925,12 @@ func (siw *ServerInterfaceWrapper) PostV1OrgnsOrgnIdTariffs(w http.ResponseWrite
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
@@ -951,21 +951,21 @@ func (siw *ServerInterfaceWrapper) DeleteV1OrgnsOrgnIdTariffsTariffId(w http.Res
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
-	// ------------- Path parameter "tariffId" -------------
+	// ------------- Path parameter "tariff_id" -------------
 	var tariffId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "tariffId", r.PathValue("tariffId"), &tariffId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "tariff_id", r.PathValue("tariff_id"), &tariffId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tariffId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tariff_id", Err: err})
 		return
 	}
 
@@ -986,21 +986,21 @@ func (siw *ServerInterfaceWrapper) PutV1OrgnsOrgnIdTariffsTariffId(w http.Respon
 	var err error
 	_ = err
 
-	// ------------- Path parameter "orgnId" -------------
+	// ------------- Path parameter "orgn_id" -------------
 	var orgnId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "orgnId", r.PathValue("orgnId"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "orgn_id", r.PathValue("orgn_id"), &orgnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgnId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgn_id", Err: err})
 		return
 	}
 
-	// ------------- Path parameter "tariffId" -------------
+	// ------------- Path parameter "tariff_id" -------------
 	var tariffId string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "tariffId", r.PathValue("tariffId"), &tariffId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "tariff_id", r.PathValue("tariff_id"), &tariffId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: true})
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tariffId", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tariff_id", Err: err})
 		return
 	}
 
@@ -1156,7 +1156,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/auth/refresh", wrapper.PostV1AuthRefresh)
 	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/auth/sessions", wrapper.DeleteV1AuthSessions)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/auth/sessions", wrapper.GetV1AuthSessions)
-	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/auth/sessions/{sessionId}", wrapper.DeleteV1AuthSessionsSessionId)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/auth/sessions/{session_id}", wrapper.DeleteV1AuthSessionsSessionId)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/auth/password/forgot", wrapper.PostV1AuthPasswordForgot)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/auth/password/reset", wrapper.PostV1AuthPasswordReset)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/auth/password/change", wrapper.PostV1AuthPasswordChange)
@@ -1164,21 +1164,21 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/me", wrapper.GetV1Me)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/orgns", wrapper.GetV1Orgns)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/orgns", wrapper.PostV1Orgns)
-	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgnId}", wrapper.DeleteV1OrgnsOrgnId)
-	m.HandleFunc(http.MethodPut+" "+options.BaseURL+"/v1/orgns/{orgnId}", wrapper.PutV1OrgnsOrgnId)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/orgns/{orgnId}/members", wrapper.GetV1OrgnsOrgnIdMembers)
-	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgnId}/members/{memberId}", wrapper.DeleteV1OrgnsOrgnIdMembersMemberId)
-	m.HandleFunc(http.MethodPatch+" "+options.BaseURL+"/v1/orgns/{orgnId}/members/{memberId}", wrapper.PatchV1OrgnsOrgnIdMembersMemberId)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/orgns/{orgnId}/api-keys", wrapper.GetV1OrgnsOrgnIdApiKeys)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/orgns/{orgnId}/api-keys", wrapper.PostV1OrgnsOrgnIdApiKeys)
-	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgnId}/api-keys/{keyId}", wrapper.DeleteV1OrgnsOrgnIdApiKeysKeyId)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/orgns/{orgnId}/tariffs", wrapper.GetV1OrgnsOrgnIdTariffs)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/orgns/{orgnId}/tariffs", wrapper.PostV1OrgnsOrgnIdTariffs)
-	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgnId}/tariffs/{tariffId}", wrapper.DeleteV1OrgnsOrgnIdTariffsTariffId)
-	m.HandleFunc(http.MethodPut+" "+options.BaseURL+"/v1/orgns/{orgnId}/tariffs/{tariffId}", wrapper.PutV1OrgnsOrgnIdTariffsTariffId)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgn_id}", wrapper.DeleteV1OrgnsOrgnId)
+	m.HandleFunc(http.MethodPut+" "+options.BaseURL+"/v1/orgns/{orgn_id}", wrapper.PutV1OrgnsOrgnId)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/orgns/{orgn_id}/members", wrapper.GetV1OrgnsOrgnIdMembers)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgn_id}/members/{member_id}", wrapper.DeleteV1OrgnsOrgnIdMembersMemberId)
+	m.HandleFunc(http.MethodPatch+" "+options.BaseURL+"/v1/orgns/{orgn_id}/members/{member_id}", wrapper.PatchV1OrgnsOrgnIdMembersMemberId)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/orgns/{orgn_id}/api-keys", wrapper.GetV1OrgnsOrgnIdApiKeys)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/orgns/{orgn_id}/api-keys", wrapper.PostV1OrgnsOrgnIdApiKeys)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgn_id}/api-keys/{key_id}", wrapper.DeleteV1OrgnsOrgnIdApiKeysKeyId)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/orgns/{orgn_id}/tariffs", wrapper.GetV1OrgnsOrgnIdTariffs)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/orgns/{orgn_id}/tariffs", wrapper.PostV1OrgnsOrgnIdTariffs)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/orgns/{orgn_id}/tariffs/{tariff_id}", wrapper.DeleteV1OrgnsOrgnIdTariffsTariffId)
+	m.HandleFunc(http.MethodPut+" "+options.BaseURL+"/v1/orgns/{orgn_id}/tariffs/{tariff_id}", wrapper.PutV1OrgnsOrgnIdTariffsTariffId)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/customers", wrapper.PostV1Customers)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/customers/{customerId}/subscribe", wrapper.PostV1CustomersCustomerIdSubscribe)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/customer/{customerId}/usage", wrapper.PostV1CustomerCustomerIdUsage)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/customers/{customer_id}/subscribe", wrapper.PostV1CustomersCustomerIdSubscribe)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/customer/{customer_id}/usage", wrapper.PostV1CustomerCustomerIdUsage)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/billing/payments", wrapper.GetV1BillingPayments)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/billing/payments", wrapper.PostV1BillingPayments)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/webhook", wrapper.GetV1Webhook)
@@ -1451,7 +1451,7 @@ func (response GetV1AuthSessions200JSONResponse) VisitGetV1AuthSessionsResponse(
 }
 
 type DeleteV1AuthSessionsSessionIdRequestObject struct {
-	SessionId string `json:"sessionId"`
+	SessionId string `json:"session_id"`
 }
 
 type DeleteV1AuthSessionsSessionIdResponseObject interface {
@@ -1519,7 +1519,7 @@ func (response PostV1BillingPayments200Response) VisitPostV1BillingPaymentsRespo
 }
 
 type PostV1CustomerCustomerIdUsageRequestObject struct {
-	CustomerId string `json:"customerId"`
+	CustomerId string `json:"customer_id"`
 }
 
 type PostV1CustomerCustomerIdUsageResponseObject interface {
@@ -1550,7 +1550,7 @@ func (response PostV1Customers201Response) VisitPostV1CustomersResponse(w http.R
 }
 
 type PostV1CustomersCustomerIdSubscribeRequestObject struct {
-	CustomerId string `json:"customerId"`
+	CustomerId string `json:"customer_id"`
 }
 
 type PostV1CustomersCustomerIdSubscribeResponseObject interface {
@@ -1625,7 +1625,7 @@ func (response PostV1Orgns201JSONResponse) VisitPostV1OrgnsResponse(w http.Respo
 }
 
 type DeleteV1OrgnsOrgnIdRequestObject struct {
-	OrgnId string `json:"orgnId"`
+	OrgnId string `json:"orgn_id"`
 }
 
 type DeleteV1OrgnsOrgnIdResponseObject interface {
@@ -1641,7 +1641,7 @@ func (response DeleteV1OrgnsOrgnId200Response) VisitDeleteV1OrgnsOrgnIdResponse(
 }
 
 type PutV1OrgnsOrgnIdRequestObject struct {
-	OrgnId string `json:"orgnId"`
+	OrgnId string `json:"orgn_id"`
 }
 
 type PutV1OrgnsOrgnIdResponseObject interface {
@@ -1657,7 +1657,7 @@ func (response PutV1OrgnsOrgnId200Response) VisitPutV1OrgnsOrgnIdResponse(w http
 }
 
 type GetV1OrgnsOrgnIdApiKeysRequestObject struct {
-	OrgnId string `json:"orgnId"`
+	OrgnId string `json:"orgn_id"`
 }
 
 type GetV1OrgnsOrgnIdApiKeysResponseObject interface {
@@ -1673,7 +1673,7 @@ func (response GetV1OrgnsOrgnIdApiKeys200Response) VisitGetV1OrgnsOrgnIdApiKeysR
 }
 
 type PostV1OrgnsOrgnIdApiKeysRequestObject struct {
-	OrgnId string `json:"orgnId"`
+	OrgnId string `json:"orgn_id"`
 }
 
 type PostV1OrgnsOrgnIdApiKeysResponseObject interface {
@@ -1689,8 +1689,8 @@ func (response PostV1OrgnsOrgnIdApiKeys201Response) VisitPostV1OrgnsOrgnIdApiKey
 }
 
 type DeleteV1OrgnsOrgnIdApiKeysKeyIdRequestObject struct {
-	OrgnId string `json:"orgnId"`
-	KeyId  string `json:"keyId"`
+	OrgnId string `json:"orgn_id"`
+	KeyId  string `json:"key_id"`
 }
 
 type DeleteV1OrgnsOrgnIdApiKeysKeyIdResponseObject interface {
@@ -1706,7 +1706,7 @@ func (response DeleteV1OrgnsOrgnIdApiKeysKeyId200Response) VisitDeleteV1OrgnsOrg
 }
 
 type GetV1OrgnsOrgnIdMembersRequestObject struct {
-	OrgnId string `json:"orgnId"`
+	OrgnId string `json:"orgn_id"`
 }
 
 type GetV1OrgnsOrgnIdMembersResponseObject interface {
@@ -1722,8 +1722,8 @@ func (response GetV1OrgnsOrgnIdMembers200Response) VisitGetV1OrgnsOrgnIdMembersR
 }
 
 type DeleteV1OrgnsOrgnIdMembersMemberIdRequestObject struct {
-	OrgnId   string `json:"orgnId"`
-	MemberId string `json:"memberId"`
+	OrgnId   string `json:"orgn_id"`
+	MemberId string `json:"member_id"`
 }
 
 type DeleteV1OrgnsOrgnIdMembersMemberIdResponseObject interface {
@@ -1739,8 +1739,8 @@ func (response DeleteV1OrgnsOrgnIdMembersMemberId200Response) VisitDeleteV1Orgns
 }
 
 type PatchV1OrgnsOrgnIdMembersMemberIdRequestObject struct {
-	OrgnId   string `json:"orgnId"`
-	MemberId string `json:"memberId"`
+	OrgnId   string `json:"orgn_id"`
+	MemberId string `json:"member_id"`
 }
 
 type PatchV1OrgnsOrgnIdMembersMemberIdResponseObject interface {
@@ -1756,7 +1756,7 @@ func (response PatchV1OrgnsOrgnIdMembersMemberId200Response) VisitPatchV1OrgnsOr
 }
 
 type GetV1OrgnsOrgnIdTariffsRequestObject struct {
-	OrgnId string `json:"orgnId"`
+	OrgnId string `json:"orgn_id"`
 }
 
 type GetV1OrgnsOrgnIdTariffsResponseObject interface {
@@ -1772,7 +1772,7 @@ func (response GetV1OrgnsOrgnIdTariffs200Response) VisitGetV1OrgnsOrgnIdTariffsR
 }
 
 type PostV1OrgnsOrgnIdTariffsRequestObject struct {
-	OrgnId string `json:"orgnId"`
+	OrgnId string `json:"orgn_id"`
 }
 
 type PostV1OrgnsOrgnIdTariffsResponseObject interface {
@@ -1788,8 +1788,8 @@ func (response PostV1OrgnsOrgnIdTariffs201Response) VisitPostV1OrgnsOrgnIdTariff
 }
 
 type DeleteV1OrgnsOrgnIdTariffsTariffIdRequestObject struct {
-	OrgnId   string `json:"orgnId"`
-	TariffId string `json:"tariffId"`
+	OrgnId   string `json:"orgn_id"`
+	TariffId string `json:"tariff_id"`
 }
 
 type DeleteV1OrgnsOrgnIdTariffsTariffIdResponseObject interface {
@@ -1805,8 +1805,8 @@ func (response DeleteV1OrgnsOrgnIdTariffsTariffId200Response) VisitDeleteV1Orgns
 }
 
 type PutV1OrgnsOrgnIdTariffsTariffIdRequestObject struct {
-	OrgnId   string `json:"orgnId"`
-	TariffId string `json:"tariffId"`
+	OrgnId   string `json:"orgn_id"`
+	TariffId string `json:"tariff_id"`
 }
 
 type PutV1OrgnsOrgnIdTariffsTariffIdResponseObject interface {
@@ -1869,7 +1869,7 @@ type StrictServerInterface interface {
 	// (GET /v1/auth/sessions)
 	GetV1AuthSessions(ctx context.Context, request GetV1AuthSessionsRequestObject) (GetV1AuthSessionsResponseObject, error)
 	// DeleteV1AuthSessionsSessionId Finish the session
-	// (DELETE /v1/auth/sessions/{sessionId})
+	// (DELETE /v1/auth/sessions/{session_id})
 	DeleteV1AuthSessionsSessionId(ctx context.Context, request DeleteV1AuthSessionsSessionIdRequestObject) (DeleteV1AuthSessionsSessionIdResponseObject, error)
 	// PostV1AuthSwitchOrgn Switch an organization in session
 	// (POST /v1/auth/switch-orgn)
@@ -1881,13 +1881,13 @@ type StrictServerInterface interface {
 	// (POST /v1/billing/payments)
 	PostV1BillingPayments(ctx context.Context, request PostV1BillingPaymentsRequestObject) (PostV1BillingPaymentsResponseObject, error)
 	// PostV1CustomerCustomerIdUsage Add new usage
-	// (POST /v1/customer/{customerId}/usage)
+	// (POST /v1/customer/{customer_id}/usage)
 	PostV1CustomerCustomerIdUsage(ctx context.Context, request PostV1CustomerCustomerIdUsageRequestObject) (PostV1CustomerCustomerIdUsageResponseObject, error)
 	// PostV1Customers Create a new customer
 	// (POST /v1/customers)
 	PostV1Customers(ctx context.Context, request PostV1CustomersRequestObject) (PostV1CustomersResponseObject, error)
 	// PostV1CustomersCustomerIdSubscribe Subscribe customer to tariff
-	// (POST /v1/customers/{customerId}/subscribe)
+	// (POST /v1/customers/{customer_id}/subscribe)
 	PostV1CustomersCustomerIdSubscribe(ctx context.Context, request PostV1CustomersCustomerIdSubscribeRequestObject) (PostV1CustomersCustomerIdSubscribeResponseObject, error)
 	// GetV1Me Get user info of current session
 	// (GET /v1/me)
@@ -1899,40 +1899,40 @@ type StrictServerInterface interface {
 	// (POST /v1/orgns)
 	PostV1Orgns(ctx context.Context, request PostV1OrgnsRequestObject) (PostV1OrgnsResponseObject, error)
 	// DeleteV1OrgnsOrgnId Delete the organization
-	// (DELETE /v1/orgns/{orgnId})
+	// (DELETE /v1/orgns/{orgn_id})
 	DeleteV1OrgnsOrgnId(ctx context.Context, request DeleteV1OrgnsOrgnIdRequestObject) (DeleteV1OrgnsOrgnIdResponseObject, error)
 	// PutV1OrgnsOrgnId Update the organization
-	// (PUT /v1/orgns/{orgnId})
+	// (PUT /v1/orgns/{orgn_id})
 	PutV1OrgnsOrgnId(ctx context.Context, request PutV1OrgnsOrgnIdRequestObject) (PutV1OrgnsOrgnIdResponseObject, error)
 	// GetV1OrgnsOrgnIdApiKeys Get orgn API keys
-	// (GET /v1/orgns/{orgnId}/api-keys)
+	// (GET /v1/orgns/{orgn_id}/api-keys)
 	GetV1OrgnsOrgnIdApiKeys(ctx context.Context, request GetV1OrgnsOrgnIdApiKeysRequestObject) (GetV1OrgnsOrgnIdApiKeysResponseObject, error)
 	// PostV1OrgnsOrgnIdApiKeys Create a new organization API key
-	// (POST /v1/orgns/{orgnId}/api-keys)
+	// (POST /v1/orgns/{orgn_id}/api-keys)
 	PostV1OrgnsOrgnIdApiKeys(ctx context.Context, request PostV1OrgnsOrgnIdApiKeysRequestObject) (PostV1OrgnsOrgnIdApiKeysResponseObject, error)
 	// DeleteV1OrgnsOrgnIdApiKeysKeyId Delete organization API key
-	// (DELETE /v1/orgns/{orgnId}/api-keys/{keyId})
+	// (DELETE /v1/orgns/{orgn_id}/api-keys/{key_id})
 	DeleteV1OrgnsOrgnIdApiKeysKeyId(ctx context.Context, request DeleteV1OrgnsOrgnIdApiKeysKeyIdRequestObject) (DeleteV1OrgnsOrgnIdApiKeysKeyIdResponseObject, error)
 	// GetV1OrgnsOrgnIdMembers Get organization members
-	// (GET /v1/orgns/{orgnId}/members)
+	// (GET /v1/orgns/{orgn_id}/members)
 	GetV1OrgnsOrgnIdMembers(ctx context.Context, request GetV1OrgnsOrgnIdMembersRequestObject) (GetV1OrgnsOrgnIdMembersResponseObject, error)
 	// DeleteV1OrgnsOrgnIdMembersMemberId Delete organization member
-	// (DELETE /v1/orgns/{orgnId}/members/{memberId})
+	// (DELETE /v1/orgns/{orgn_id}/members/{member_id})
 	DeleteV1OrgnsOrgnIdMembersMemberId(ctx context.Context, request DeleteV1OrgnsOrgnIdMembersMemberIdRequestObject) (DeleteV1OrgnsOrgnIdMembersMemberIdResponseObject, error)
 	// PatchV1OrgnsOrgnIdMembersMemberId Update organization member
-	// (PATCH /v1/orgns/{orgnId}/members/{memberId})
+	// (PATCH /v1/orgns/{orgn_id}/members/{member_id})
 	PatchV1OrgnsOrgnIdMembersMemberId(ctx context.Context, request PatchV1OrgnsOrgnIdMembersMemberIdRequestObject) (PatchV1OrgnsOrgnIdMembersMemberIdResponseObject, error)
 	// GetV1OrgnsOrgnIdTariffs Get tariffs
-	// (GET /v1/orgns/{orgnId}/tariffs)
+	// (GET /v1/orgns/{orgn_id}/tariffs)
 	GetV1OrgnsOrgnIdTariffs(ctx context.Context, request GetV1OrgnsOrgnIdTariffsRequestObject) (GetV1OrgnsOrgnIdTariffsResponseObject, error)
 	// PostV1OrgnsOrgnIdTariffs Create a new tariff
-	// (POST /v1/orgns/{orgnId}/tariffs)
+	// (POST /v1/orgns/{orgn_id}/tariffs)
 	PostV1OrgnsOrgnIdTariffs(ctx context.Context, request PostV1OrgnsOrgnIdTariffsRequestObject) (PostV1OrgnsOrgnIdTariffsResponseObject, error)
 	// DeleteV1OrgnsOrgnIdTariffsTariffId Delete the tariff
-	// (DELETE /v1/orgns/{orgnId}/tariffs/{tariffId})
+	// (DELETE /v1/orgns/{orgn_id}/tariffs/{tariff_id})
 	DeleteV1OrgnsOrgnIdTariffsTariffId(ctx context.Context, request DeleteV1OrgnsOrgnIdTariffsTariffIdRequestObject) (DeleteV1OrgnsOrgnIdTariffsTariffIdResponseObject, error)
 	// PutV1OrgnsOrgnIdTariffsTariffId Update the tariff
-	// (PUT /v1/orgns/{orgnId}/tariffs/{tariffId})
+	// (PUT /v1/orgns/{orgn_id}/tariffs/{tariff_id})
 	PutV1OrgnsOrgnIdTariffsTariffId(ctx context.Context, request PutV1OrgnsOrgnIdTariffsTariffIdRequestObject) (PutV1OrgnsOrgnIdTariffsTariffIdResponseObject, error)
 	// GetV1Webhook Connect to webhook to receive events
 	// (GET /v1/webhook)

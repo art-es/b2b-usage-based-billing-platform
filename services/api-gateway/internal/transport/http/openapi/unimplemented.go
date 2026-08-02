@@ -27,12 +27,6 @@ func (h *serverHandler) PostV1AuthPasswordReset(ctx context.Context, request ope
 	return nil, errUnimplemented
 }
 
-// DeleteV1AuthSessionsSessionId Finish the session
-// (DELETE /v1/auth/sessions/{sessionId})
-func (h *serverHandler) DeleteV1AuthSessionsSessionId(ctx context.Context, request openapi.DeleteV1AuthSessionsSessionIdRequestObject) (_ openapi.DeleteV1AuthSessionsSessionIdResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
 // PostV1AuthSwitchOrgn Switch an organization in session
 // (POST /v1/auth/switch-orgn)
 func (h *serverHandler) PostV1AuthSwitchOrgn(ctx context.Context, request openapi.PostV1AuthSwitchOrgnRequestObject) (_ openapi.PostV1AuthSwitchOrgnResponseObject, _ error) {
