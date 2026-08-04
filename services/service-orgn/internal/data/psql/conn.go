@@ -7,8 +7,8 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/trx"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/app/trx"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/pkg/log"
 )
 
 type trxKey struct{}

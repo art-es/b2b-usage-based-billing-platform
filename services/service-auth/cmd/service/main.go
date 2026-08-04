@@ -69,6 +69,7 @@ func main() {
 func build(ctx context.Context) error {
 	envs, err := env.ParseVars(
 		env.Required(env.FieldPsqlAddr),
+		env.FieldAuthServiceAddr,
 		env.Required(env.FieldOrgnServiceAddr),
 		env.Required(env.FieldJwtSecret),
 		env.Required(env.FieldRefreshTokenSecret),
@@ -122,7 +123,12 @@ func build(ctx context.Context) error {
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnService)
 
 	// GRPC Server
-	grpcServerListener, err := net.Listen("tcp", ":8080")
+	grpcServerAddr := envs.Get(env.FieldAuthServiceAddr)
+	if grpcServerAddr == "" {
+		grpcServerAddr = ":8080"
+	}
+
+	grpcServerListener, err := net.Listen("tcp", grpcServerAddr)
 	if err != nil {
 		return fmt.Errorf("listen grpc server port: %w", err)
 	}
