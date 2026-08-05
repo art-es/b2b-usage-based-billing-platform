@@ -16,6 +16,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_login"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_refresh"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_register"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_switch_orgn"
 )
 
 type authService interface {
@@ -27,6 +28,7 @@ type authService interface {
 	get_v1_auth_sessions.AuthService
 	delete_v1_auth_sessions.AuthService
 	delete_v1_auth_sessions_session_id.AuthService
+	post_v1_auth_switch_orgn.AuthService
 	get_v1_me.AuthService
 }
 
@@ -64,6 +66,10 @@ type (
 		DeleteV1AuthSessionsSessionId(ctx context.Context, req openapi.DeleteV1AuthSessionsSessionIdRequestObject) (openapi.DeleteV1AuthSessionsSessionIdResponseObject, error)
 	}
 
+	postV1AuthSwitchOrgnHandler interface {
+		PostV1AuthSwitchOrgn(context.Context, openapi.PostV1AuthSwitchOrgnRequestObject) (openapi.PostV1AuthSwitchOrgnResponseObject, error)
+	}
+
 	getV1MeHandler interface {
 		GetV1Me(context.Context, openapi.GetV1MeRequestObject) (openapi.GetV1MeResponseObject, error)
 	}
@@ -78,6 +84,7 @@ type serverHandler struct {
 	getV1AuthSessionsHandler
 	deleteV1AuthSessionsHandler
 	deleteV1AuthSessionsSessionIdHandler
+	postV1AuthSwitchOrgnHandler
 	getV1MeHandler
 }
 
@@ -96,6 +103,7 @@ func NewHandler(
 		getV1AuthSessionsHandler:                 get_v1_auth_sessions.NewHandler(authService),
 		deleteV1AuthSessionsHandler:              delete_v1_auth_sessions.NewHandler(authService),
 		deleteV1AuthSessionsSessionIdHandler:     delete_v1_auth_sessions_session_id.NewHandler(authService),
+		postV1AuthSwitchOrgnHandler:              post_v1_auth_switch_orgn.NewHandler(authService),
 		getV1MeHandler:                           get_v1_me.NewHandler(authService),
 	}
 

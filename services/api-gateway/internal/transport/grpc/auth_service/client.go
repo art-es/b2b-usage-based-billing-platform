@@ -135,6 +135,19 @@ func (c *Client) FinishSession(ctx context.Context, sessionID string) error {
 	return grpcutil.HandleError(err)
 }
 
+func (c *Client) SwitchOrgn(ctx context.Context, orgnID string) (string, error) {
+	req := &pb.SwitchOrgnRequest{
+		OrgnId: orgnID,
+	}
+
+	res, err := c.client.SwitchOrgn(ctx, req, grpcutil.CallOpts(ctx)...)
+	if err != nil {
+		return "", grpcutil.HandleError(err)
+	}
+
+	return res.AccessToken, nil
+}
+
 func (c *Client) GetMe(ctx context.Context) (*dto.GetMeResponse, error) {
 	res, err := c.client.GetMe(ctx, &emptypb.Empty{}, grpcutil.CallOpts(ctx)...)
 	if err != nil {

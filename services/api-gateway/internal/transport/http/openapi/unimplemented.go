@@ -27,12 +27,6 @@ func (h *serverHandler) PostV1AuthPasswordReset(ctx context.Context, request ope
 	return nil, errUnimplemented
 }
 
-// PostV1AuthSwitchOrgn Switch an organization in session
-// (POST /v1/auth/switch-orgn)
-func (h *serverHandler) PostV1AuthSwitchOrgn(ctx context.Context, request openapi.PostV1AuthSwitchOrgnRequestObject) (_ openapi.PostV1AuthSwitchOrgnResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
 // GetV1BillingPayments Get payment status
 // (GET /v1/billing/payments)
 func (h *serverHandler) GetV1BillingPayments(ctx context.Context, request openapi.GetV1BillingPaymentsRequestObject) (_ openapi.GetV1BillingPaymentsResponseObject, _ error) {
