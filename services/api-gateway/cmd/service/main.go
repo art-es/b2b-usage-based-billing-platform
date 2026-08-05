@@ -61,6 +61,7 @@ func main() {
 func build(ctx context.Context) error {
 	envs, err := env.ParseVars(
 		env.Required(env.FieldApiGatewayAddr),
+		env.Required(env.FieldAuthServiceAddr),
 	)
 	if err != nil {
 		return fmt.Errorf("parse env vars: %w", err)
