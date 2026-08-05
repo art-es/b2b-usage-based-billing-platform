@@ -119,7 +119,7 @@ func build(ctx context.Context) error {
 	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, envs.Get(env.FieldSessionsCursorSecret))
 	finishAllSessionsUsecase := usecases.NewFinishAllSessionsUsecase(sessionRepository)
 	finishSessionUsecase := usecases.NewFinishSessionUsecase(sessionRepository)
-	switchOrgnUsecase := usecases.NewSwitchOrgnUsecase(sessionRepository, orgnService)
+	switchOrgnUsecase := usecases.NewSwitchOrgnUsecase(sessionRepository, orgnService, jwtService, envs.Get(env.FieldJwtSecret), logger)
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnService)
 
 	// GRPC Server

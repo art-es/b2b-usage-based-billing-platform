@@ -63,13 +63,13 @@ func (u *Usecase) Do(ctx context.Context, refreshToken string) (*dto.Response, e
 	res := &dto.Response{}
 	ctx = trx.Begin(ctx)
 	err = func() error {
-		ses, err := u.sessionRepository.GetByRefreshTokenHash(ctx, refreshTokenHash)
+		ses, err := u.sessionRepository.FindByRefreshTokenHash(ctx, refreshTokenHash)
 		if err != nil {
 			if errors.Is(err, repository.ErrNotFound) {
 				return errInvalidToken
 			}
 
-			return fmt.Errorf("get by refresh token: %w", err)
+			return fmt.Errorf("find by refresh token: %w", err)
 		}
 
 		res.RefreshToken = u.uuidService.Generate()

@@ -19,101 +19,6 @@ func NewRepository(conns psql.Conns) *Repository {
 	}
 }
 
-func (r *Repository) Get(ctx context.Context, userID string, cursor *session.ListCursor) ([]*session.Session, *session.ListCursor, error) {
-	conn, err := r.conns.Conn(ctx)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	args := make([]any, 0, 3)
-	args = append(args, userID)
-
-	var whereCursor string
-	if cursor != nil {
-		whereCursor = "(created_at, id) < ($2, $3)"
-		args = append(args, cursor.CreatedAt, cursor.ID)
-	}
-
-	const limit = 10
-	query := fmt.Sprintf(
-		`SELECT *
-		FROM sessions
-		WHERE user_id = $1%s
-		ORDER BY created_at DESC, id DESC
-		LIMIT %d`,
-		whereCursor, limit+1,
-	)
-
-	rows, err := conn.Query(ctx, query, args...)
-	if err != nil {
-		return nil, nil, fmt.Errorf("query execute: %w", err)
-	}
-
-	defer rows.Close()
-
-	var list []*session.Session
-
-	for rows.Next() {
-		s := &session.Session{}
-		err = rows.Scan(
-			&s.ID,
-			&s.UserID,
-			&s.OrganizationID,
-			&s.RefreshTokenHash,
-			&s.RefreshTokenExpiresAt,
-			&s.CreatedAt,
-		)
-		if err != nil {
-			return nil, nil, fmt.Errorf("scan row: %w", err)
-		}
-
-		list = append(list, s)
-	}
-
-	hasMore := len(list) == limit+1
-	list = list[:limit]
-	nextCursor := session.GetNextCursor(list, hasMore)
-
-	return list, nextCursor, nil
-}
-
-func (r *Repository) GetByRefreshTokenHash(ctx context.Context, refreshTokenHash string) (*session.Session, error) {
-	conn, err := r.conns.Conn(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	query := `
-		SELECT 
-			id, 
-			user_id, 
-			organization_id, 
-			refresh_token_hash,
-			refresh_token_expires_at,
-			created_at
-		FROM sessions
-		WHERE refresh_token_hash = $1 
-		FOR UPDATE SKIP LOCKED`
-	args := []any{refreshTokenHash}
-
-	s := &session.Session{}
-	err = conn.QueryRow(ctx, query, args...).
-		Scan(
-			&s.ID,
-			&s.UserID,
-			&s.OrganizationID,
-			&s.RefreshTokenHash,
-			&s.RefreshTokenExpiresAt,
-			&s.CreatedAt,
-		)
-
-	if err != nil {
-		return nil, fmt.Errorf("query execute: %w", err)
-	}
-
-	return s, nil
-}
-
 func (r *Repository) Save(ctx context.Context, ses *session.Session) error {
 	if ses.Stored() {
 		return r.update(ctx, ses)
@@ -196,32 +101,6 @@ func (r *Repository) Delete(ctx context.Context, userID, sessionID string) error
 
 	query := `DELETE FROM sessions WHERE user_id = $1 AND session_id = $2`
 	args := []any{userID, sessionID}
-
-	res, err := conn.Exec(ctx, query, args...)
-	if err != nil {
-		return fmt.Errorf("query execute: %w", err)
-	}
-
-	n, err := res.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("get rows affected: %w", err)
-	}
-
-	if n == 0 {
-		return repository.ErrNotFound
-	}
-
-	return nil
-}
-
-func (r *Repository) SetOrgnID(ctx context.Context, sessID, orgnID string) error {
-	conn, err := r.conns.Conn(ctx)
-	if err != nil {
-		return err
-	}
-
-	query := `UPDATE sessions SET organization_id = $2 WHERE id = $1`
-	args := []any{sessID, orgnID}
 
 	res, err := conn.Exec(ctx, query, args...)
 	if err != nil {

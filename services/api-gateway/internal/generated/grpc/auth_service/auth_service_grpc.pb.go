@@ -28,6 +28,7 @@ const (
 	AuthService_GetSessions_FullMethodName             = "/auth_service.AuthService/GetSessions"
 	AuthService_FinishAllSessions_FullMethodName       = "/auth_service.AuthService/FinishAllSessions"
 	AuthService_FinishSession_FullMethodName           = "/auth_service.AuthService/FinishSession"
+	AuthService_SwitchOrgn_FullMethodName              = "/auth_service.AuthService/SwitchOrgn"
 	AuthService_GetMe_FullMethodName                   = "/auth_service.AuthService/GetMe"
 )
 
@@ -43,6 +44,7 @@ type AuthServiceClient interface {
 	GetSessions(ctx context.Context, in *GetSessionsRequest, opts ...grpc.CallOption) (*GetSessionsResponse, error)
 	FinishAllSessions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	FinishSession(ctx context.Context, in *FinishSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SwitchOrgn(ctx context.Context, in *SwitchOrgnRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMeResponse, error)
 }
 
@@ -134,6 +136,16 @@ func (c *authServiceClient) FinishSession(ctx context.Context, in *FinishSession
 	return out, nil
 }
 
+func (c *authServiceClient) SwitchOrgn(ctx context.Context, in *SwitchOrgnRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_SwitchOrgn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetMeResponse)
@@ -156,6 +168,7 @@ type AuthServiceServer interface {
 	GetSessions(context.Context, *GetSessionsRequest) (*GetSessionsResponse, error)
 	FinishAllSessions(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	FinishSession(context.Context, *FinishSessionRequest) (*emptypb.Empty, error)
+	SwitchOrgn(context.Context, *SwitchOrgnRequest) (*emptypb.Empty, error)
 	GetMe(context.Context, *emptypb.Empty) (*GetMeResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -190,6 +203,9 @@ func (UnimplementedAuthServiceServer) FinishAllSessions(context.Context, *emptyp
 }
 func (UnimplementedAuthServiceServer) FinishSession(context.Context, *FinishSessionRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method FinishSession not implemented")
+}
+func (UnimplementedAuthServiceServer) SwitchOrgn(context.Context, *SwitchOrgnRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method SwitchOrgn not implemented")
 }
 func (UnimplementedAuthServiceServer) GetMe(context.Context, *emptypb.Empty) (*GetMeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMe not implemented")
@@ -359,6 +375,24 @@ func _AuthService_FinishSession_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_SwitchOrgn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SwitchOrgnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).SwitchOrgn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_SwitchOrgn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).SwitchOrgn(ctx, req.(*SwitchOrgnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_GetMe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -415,6 +449,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FinishSession",
 			Handler:    _AuthService_FinishSession_Handler,
+		},
+		{
+			MethodName: "SwitchOrgn",
+			Handler:    _AuthService_SwitchOrgn_Handler,
 		},
 		{
 			MethodName: "GetMe",

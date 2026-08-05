@@ -44,7 +44,7 @@ type AuthServiceClient interface {
 	GetSessions(ctx context.Context, in *GetSessionsRequest, opts ...grpc.CallOption) (*GetSessionsResponse, error)
 	FinishAllSessions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	FinishSession(ctx context.Context, in *FinishSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	SwitchOrgn(ctx context.Context, in *SwitchOrgnRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SwitchOrgn(ctx context.Context, in *SwitchOrgnRequest, opts ...grpc.CallOption) (*SwitchOrgnResponse, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMeResponse, error)
 }
 
@@ -136,9 +136,9 @@ func (c *authServiceClient) FinishSession(ctx context.Context, in *FinishSession
 	return out, nil
 }
 
-func (c *authServiceClient) SwitchOrgn(ctx context.Context, in *SwitchOrgnRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *authServiceClient) SwitchOrgn(ctx context.Context, in *SwitchOrgnRequest, opts ...grpc.CallOption) (*SwitchOrgnResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(SwitchOrgnResponse)
 	err := c.cc.Invoke(ctx, AuthService_SwitchOrgn_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -168,7 +168,7 @@ type AuthServiceServer interface {
 	GetSessions(context.Context, *GetSessionsRequest) (*GetSessionsResponse, error)
 	FinishAllSessions(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	FinishSession(context.Context, *FinishSessionRequest) (*emptypb.Empty, error)
-	SwitchOrgn(context.Context, *SwitchOrgnRequest) (*emptypb.Empty, error)
+	SwitchOrgn(context.Context, *SwitchOrgnRequest) (*SwitchOrgnResponse, error)
 	GetMe(context.Context, *emptypb.Empty) (*GetMeResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -204,7 +204,7 @@ func (UnimplementedAuthServiceServer) FinishAllSessions(context.Context, *emptyp
 func (UnimplementedAuthServiceServer) FinishSession(context.Context, *FinishSessionRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method FinishSession not implemented")
 }
-func (UnimplementedAuthServiceServer) SwitchOrgn(context.Context, *SwitchOrgnRequest) (*emptypb.Empty, error) {
+func (UnimplementedAuthServiceServer) SwitchOrgn(context.Context, *SwitchOrgnRequest) (*SwitchOrgnResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SwitchOrgn not implemented")
 }
 func (UnimplementedAuthServiceServer) GetMe(context.Context, *emptypb.Empty) (*GetMeResponse, error) {

@@ -3,8 +3,6 @@ package switch_orgn
 import (
 	"context"
 
-	"google.golang.org/protobuf/types/known/emptypb"
-
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/switch_orgn/dto"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/auth_service"
@@ -17,7 +15,7 @@ type authorizer interface {
 }
 
 type Usecase interface {
-	Do(ctx context.Context, req *dto.Request) error
+	Do(ctx context.Context, req *dto.Request) (*dto.Response, error)
 }
 
 type Handler struct {
@@ -40,13 +38,13 @@ func NewHandler(
 	}
 }
 
-func (h *Handler) SwitchOrgn(ctx context.Context, req *pb.SwitchOrgnRequest) (*emptypb.Empty, error) {
+func (h *Handler) SwitchOrgn(ctx context.Context, req *pb.SwitchOrgnRequest) (*pb.SwitchOrgnResponse, error) {
 	auth, err := h.authorizer.Authorize(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = h.usecase.Do(ctx, &dto.Request{
+	res, err := h.usecase.Do(ctx, &dto.Request{
 		Auth:   auth,
 		OrgnID: req.OrgnId,
 	})
@@ -54,5 +52,7 @@ func (h *Handler) SwitchOrgn(ctx context.Context, req *pb.SwitchOrgnRequest) (*e
 		return nil, grpcutil.ConvertError(err, h.logger)
 	}
 
-	return &emptypb.Empty{}, nil
+	return &pb.SwitchOrgnResponse{
+		AccessToken: res.AccessToken,
+	}, nil
 }

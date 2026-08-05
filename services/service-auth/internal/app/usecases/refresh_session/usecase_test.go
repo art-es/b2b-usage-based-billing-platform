@@ -87,7 +87,7 @@ func TestUsecase(t *testing.T) {
 		)
 
 		d.mockSessionRepository.EXPECT().
-			GetByRefreshTokenHash(gomock.Any(), gomock.Eq("old-refresh-token-hash")).
+			FindByRefreshTokenHash(gomock.Any(), gomock.Eq("old-refresh-token-hash")).
 			Return(ses, nil)
 
 		d.mockUUIDService.EXPECT().
@@ -125,7 +125,7 @@ func TestUsecase(t *testing.T) {
 
 		d.mockTimeService.EXPECT().GetCurrentTime().Return(now)
 		d.mockKeyedHashService.EXPECT().Generate(gomock.Any(), gomock.Any()).Return("old-refresh-token-hash", nil)
-		d.mockSessionRepository.EXPECT().GetByRefreshTokenHash(gomock.Any(), gomock.Any()).Return(ses, nil)
+		d.mockSessionRepository.EXPECT().FindByRefreshTokenHash(gomock.Any(), gomock.Any()).Return(ses, nil)
 		d.mockUUIDService.EXPECT().Generate().Return("new-refresh-token")
 		d.mockKeyedHashService.EXPECT().Generate(gomock.Any(), gomock.Any()).Return("new-refresh-token-hash", nil)
 		d.mockSessionRepository.EXPECT().
@@ -164,7 +164,7 @@ func TestUsecase(t *testing.T) {
 		d.mockTimeService.EXPECT().GetCurrentTime().Return(now)
 		d.mockKeyedHashService.EXPECT().Generate(gomock.Any(), gomock.Any()).Return("old-refresh-token-hash", nil)
 		d.mockSessionRepository.EXPECT().
-			GetByRefreshTokenHash(gomock.Any(), gomock.Eq("old-refresh-token-hash")).
+			FindByRefreshTokenHash(gomock.Any(), gomock.Eq("old-refresh-token-hash")).
 			Return(nil, repository.ErrNotFound)
 
 		res, err := d.usecase.Do(ctx, "old-refresh-token")
@@ -180,7 +180,7 @@ func TestUsecase(t *testing.T) {
 		d.mockTimeService.EXPECT().GetCurrentTime().Return(now)
 		d.mockKeyedHashService.EXPECT().Generate(gomock.Any(), gomock.Any()).Return("old-refresh-token-hash", nil)
 		d.mockSessionRepository.EXPECT().
-			GetByRefreshTokenHash(gomock.Any(), gomock.Any()).
+			FindByRefreshTokenHash(gomock.Any(), gomock.Any()).
 			DoAndReturn(func(ctx context.Context, _ string) (*session.Session, error) {
 				trx.AddRollback(ctx, func() error {
 					return errors.New("rollback test error")
@@ -211,7 +211,7 @@ func TestUsecase(t *testing.T) {
 		d.mockTimeService.EXPECT().GetCurrentTime().Return(now)
 		d.mockKeyedHashService.EXPECT().Generate(gomock.Any(), gomock.Any()).Return("old-refresh-token-hash", nil)
 		d.mockSessionRepository.EXPECT().
-			GetByRefreshTokenHash(gomock.Any(), gomock.Any()).
+			FindByRefreshTokenHash(gomock.Any(), gomock.Any()).
 			DoAndReturn(func(ctx context.Context, _ string) (*session.Session, error) {
 				trx.AddRollback(ctx, func() error {
 					return errors.New("rollback test error")
@@ -244,7 +244,7 @@ func TestUsecase(t *testing.T) {
 		d.mockTimeService.EXPECT().GetCurrentTime().Return(now)
 		d.mockKeyedHashService.EXPECT().Generate(gomock.Any(), gomock.Any()).Return("old-refresh-token-hash", nil)
 		d.mockSessionRepository.EXPECT().
-			GetByRefreshTokenHash(gomock.Any(), gomock.Any()).
+			FindByRefreshTokenHash(gomock.Any(), gomock.Any()).
 			DoAndReturn(func(ctx context.Context, _ string) (*session.Session, error) {
 				trx.AddRollback(ctx, func() error {
 					return errors.New("rollback test error")
@@ -278,7 +278,7 @@ func TestUsecase(t *testing.T) {
 		d.mockTimeService.EXPECT().GetCurrentTime().Return(now)
 		d.mockKeyedHashService.EXPECT().Generate(gomock.Any(), gomock.Any()).Return("old-refresh-token-hash", nil)
 		d.mockSessionRepository.EXPECT().
-			GetByRefreshTokenHash(gomock.Any(), gomock.Any()).
+			FindByRefreshTokenHash(gomock.Any(), gomock.Any()).
 			DoAndReturn(func(ctx context.Context, _ string) (*session.Session, error) {
 				trx.AddRollback(ctx, func() error {
 					return errors.New("rollback test error")

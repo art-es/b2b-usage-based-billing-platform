@@ -2,6 +2,8 @@ package session
 
 import (
 	"time"
+
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/ptr"
 )
 
 const (
@@ -37,4 +39,8 @@ func (s *Session) Stored() bool {
 func (s *Session) SetRefreshTokenHash(hash string, now time.Time) {
 	s.RefreshTokenHash = hash
 	s.RefreshTokenExpiresAt = now.Add(RefreshTokenExpiry)
+}
+
+func (s *Session) SetOrgn(id string) {
+	s.OrganizationID = ptr.To(id)
 }

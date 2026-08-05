@@ -59,7 +59,7 @@ type (
 	}
 
 	switchOrgnHandler interface {
-		SwitchOrgn(context.Context, *pb.SwitchOrgnRequest) (*emptypb.Empty, error)
+		SwitchOrgn(context.Context, *pb.SwitchOrgnRequest) (*pb.SwitchOrgnResponse, error)
 	}
 
 	getMeHandler interface {

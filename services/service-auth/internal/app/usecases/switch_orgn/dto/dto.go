@@ -6,3 +6,7 @@ type Request struct {
 	Auth   *jwt.Claims
 	OrgnID string
 }
+
+type Response struct {
+	AccessToken string
+}

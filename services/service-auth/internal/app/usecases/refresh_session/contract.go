@@ -1,3 +1,4 @@
+//go:generate mockgen -source=contract.go -destination=contract_mock_test.go -package=$GOPACKAGE
 package refresh_session
 
 import (
@@ -25,6 +26,6 @@ type uuidService interface {
 }
 
 type sessionRepository interface {
-	GetByRefreshTokenHash(ctx context.Context, hash string) (*session.Session, error)
+	FindByRefreshTokenHash(ctx context.Context, hash string) (*session.Session, error)
 	Save(ctx context.Context, ses *session.Session) error
 }
