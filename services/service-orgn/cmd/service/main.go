@@ -14,6 +14,12 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/pkg/shutdown"
 	grpc_orgn_service "github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/transport/grpc/orgn_service"
+	"google.golang.org/grpc"
+)
+
+const (
+	envPSQLAddr        = "PSQL_ADDR"
+	envOrgnServiceAddr = "ORGN_SERVICE_ADDR"
 )
 
 var (
@@ -60,16 +66,13 @@ func main() {
 }
 
 func build(ctx context.Context) error {
-	envs, err := env.ParseVars(
-		env.Required(env.FieldPsqlAddr),
-		env.FieldOrgnServiceAddr,
-	)
+	err := env.CheckEmpty(envPSQLAddr)
 	if err != nil {
-		return fmt.Errorf("parse env vars: %w", err)
+		return err
 	}
 
 	// Clients
-	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlAddr), logger)
+	psqlConn, err := psql.Connect(ctx, os.Getenv(envPSQLAddr), logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
@@ -82,28 +85,34 @@ func build(ctx context.Context) error {
 	getByIDUsecase := usecases.NewGetByIDUsecase(orgnRepository)
 
 	// GRPC Server
-	grpcServerAddr := envs.Get(env.FieldOrgnServiceAddr)
-	if grpcServerAddr == "" {
-		grpcServerAddr = ":8080"
-	}
-
-	grpcServerListener, err := net.Listen("tcp", grpcServerAddr)
-	if err != nil {
-		return fmt.Errorf("listen grpc server port: %w", err)
-	}
-	shutdowner.Add(grpcServerListener)
-
 	grpcServer := grpc_orgn_service.NewServer(
 		logger,
 		getByIDUsecase,
 	)
+	initGRPCServer(grpcServer)
+
+	return nil
+}
+
+func initGRPCServer(server *grpc.Server) error {
+	addr := os.Getenv(envOrgnServiceAddr)
+	if addr == "" {
+		addr = ":8080"
+	}
+
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return fmt.Errorf("listen grpc server port: %w", err)
+	}
+
+	shutdowner.Add(listener)
 	shutdowner.AddFunc(func() error {
-		grpcServer.GracefulStop()
+		server.GracefulStop()
 		return nil
 	})
 
 	runGRPCServer = func() error {
-		return grpcServer.Serve(grpcServerListener)
+		return server.Serve(listener)
 	}
 
 	return nil
