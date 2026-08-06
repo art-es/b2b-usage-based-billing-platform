@@ -21,6 +21,16 @@ import (
 	grpc_auth_service "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service"
 	grpc_auth "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/auth"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/orgn_service"
+	"google.golang.org/grpc"
+)
+
+const (
+	envPSQLAddr             = "PSQL_ADDR"
+	envAuthServiceAddr      = "AUTH_SERVICE_ADDR"
+	envOrgnServiceAddr      = "ORGN_SERVICE_ADDR"
+	envJWTSecret            = "JWT_SECRET"
+	envRefreshTokenSecret   = "REFRESH_TOKEN_SECRET"
+	envSessionsCursorSecret = "SESSIONS_CURSOR_SECRET"
 )
 
 var (
@@ -67,26 +77,19 @@ func main() {
 }
 
 func build(ctx context.Context) error {
-	envs, err := env.ParseVars(
-		env.Required(env.FieldPsqlAddr),
-		env.FieldAuthServiceAddr,
-		env.Required(env.FieldOrgnServiceAddr),
-		env.Required(env.FieldJwtSecret),
-		env.Required(env.FieldRefreshTokenSecret),
-		env.Required(env.FieldSessionsCursorSecret),
-	)
+	err := env.CheckEmpty(envPSQLAddr, envOrgnServiceAddr, envJWTSecret, envRefreshTokenSecret, envSessionsCursorSecret)
 	if err != nil {
-		return fmt.Errorf("parse env vars: %w", err)
+		return err
 	}
 
 	// Clients
-	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlAddr), logger)
+	psqlConn, err := psql.Connect(ctx, os.Getenv(envPSQLAddr), logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
 	shutdowner.Add(psqlConn)
 
-	orgnService, err := orgn_service.NewClient(envs.Get(env.FieldOrgnServiceAddr))
+	orgnService, err := orgn_service.NewClient(os.Getenv(envOrgnServiceAddr))
 	if err != nil {
 		return fmt.Errorf("connect orgn-service: %w", err)
 	}
@@ -110,31 +113,20 @@ func build(ctx context.Context) error {
 	resendEmailVerificationsUsecase := usecases.NewResendEmailVerificationUsecase(emailVerificationRepository)
 	loginUsecase := usecases.NewLoginUsecase(
 		jwtService, hmacSha256Service, passwordHashService, timeService, uuidService, sessionRepository,
-		userRepository, envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenSecret), logger,
+		userRepository, os.Getenv(envJWTSecret), os.Getenv(envRefreshTokenSecret), logger,
 	)
 	refreshSessionUsecase := usecases.NewRefreshSessionUsecase(
 		jwtService, hmacSha256Service, timeService, uuidService, sessionRepository,
-		envs.Get(env.FieldJwtSecret), envs.Get(env.FieldRefreshTokenSecret), logger,
+		os.Getenv(envJWTSecret), os.Getenv(envRefreshTokenSecret), logger,
 	)
-	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, envs.Get(env.FieldSessionsCursorSecret))
+	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, os.Getenv(envSessionsCursorSecret))
 	finishAllSessionsUsecase := usecases.NewFinishAllSessionsUsecase(sessionRepository)
 	finishSessionUsecase := usecases.NewFinishSessionUsecase(sessionRepository)
-	switchOrgnUsecase := usecases.NewSwitchOrgnUsecase(sessionRepository, orgnService, jwtService, envs.Get(env.FieldJwtSecret), logger)
+	switchOrgnUsecase := usecases.NewSwitchOrgnUsecase(sessionRepository, orgnService, jwtService, os.Getenv(envJWTSecret), logger)
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnService)
 
 	// GRPC Server
-	grpcServerAddr := envs.Get(env.FieldAuthServiceAddr)
-	if grpcServerAddr == "" {
-		grpcServerAddr = ":8080"
-	}
-
-	grpcServerListener, err := net.Listen("tcp", grpcServerAddr)
-	if err != nil {
-		return fmt.Errorf("listen grpc server port: %w", err)
-	}
-	shutdowner.Add(grpcServerListener)
-
-	grpcAuthorizer := grpc_auth.NewAuthorizer(jwtService, envs.Get(env.FieldJwtSecret), logger)
+	grpcAuthorizer := grpc_auth.NewAuthorizer(jwtService, os.Getenv(envJWTSecret), logger)
 	grpcServer := grpc_auth_service.NewServer(
 		logger,
 		grpcAuthorizer,
@@ -149,13 +141,31 @@ func build(ctx context.Context) error {
 		switchOrgnUsecase,
 		getMeUsecase,
 	)
+	initGRPCServer(grpcServer)
+
+	return nil
+}
+
+func initGRPCServer(server *grpc.Server) error {
+	addr := os.Getenv(envAuthServiceAddr)
+	if addr == "" {
+		addr = ":8080"
+	}
+
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return fmt.Errorf("listen grpc server port: %w", err)
+	}
+
+	shutdowner.Add(listener)
 	shutdowner.AddFunc(func() error {
-		grpcServer.GracefulStop()
+		server.GracefulStop()
 		return nil
 	})
 
 	runGRPCServer = func() error {
-		return grpcServer.Serve(grpcServerListener)
+		server.Serve(listener)
+		return nil
 	}
 
 	return nil

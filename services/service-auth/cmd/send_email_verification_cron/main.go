@@ -19,6 +19,11 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/broker/producers/email_send"
 )
 
+const (
+	envPSQLAddr = "PSQL_ADDR"
+	envNATSAddr = "NATS_ADDR"
+)
+
 var (
 	batchSize int
 )
@@ -75,37 +80,27 @@ func build(ctx context.Context) error {
 		return errors.New("-batch must be more than 0")
 	}
 
-	envs, err := env.ParseVars(
-		env.Required(env.FieldPsqlAddr),
-		env.Required(env.FieldNatsAddr),
-	)
+	err := env.CheckEmpty(envPSQLAddr, envNATSAddr)
 	if err != nil {
-		return fmt.Errorf("parse env vars: %w", err)
+		return err
 	}
 
-	psqlConn, err := psql.Connect(ctx, envs.Get(env.FieldPsqlAddr), logger)
+	psqlConn, err := psql.Connect(ctx, os.Getenv(envPSQLAddr), logger)
 	if err != nil {
 		return fmt.Errorf("connect psql: %w", err)
 	}
 	shutdowner.Add(psqlConn)
 
-	natsConn, err := nats.Connect(envs.Get(env.FieldNatsAddr))
+	natsConn, err := nats.Connect(os.Getenv(envNATSAddr))
 	if err != nil {
 		return fmt.Errorf("connect nats: %w", err)
 	}
 	shutdowner.Add(natsConn)
 
 	natsProducer := nats.NewProducer(natsConn)
-
-	repository = email_verification.NewRepository(psqlConn)
 	emailSendProducer := email_send.NewProducer(natsProducer)
-
-	usecase = send_email_verification.NewUsecase(
-		repository,
-		emailSendProducer,
-		logger,
-		batchSize,
-	)
+	repository = email_verification.NewRepository(psqlConn)
+	usecase = send_email_verification.NewUsecase(repository, emailSendProducer, logger, batchSize)
 
 	return nil
 }
