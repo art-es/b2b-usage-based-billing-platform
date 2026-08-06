@@ -19,7 +19,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_switch_orgn"
 )
 
-type authService interface {
+type AuthService interface {
 	post_v1_auth_register.AuthService
 	post_v1_auth_email_verify.AuthService
 	post_v1_auth_email_resend_verification.AuthService
@@ -90,7 +90,7 @@ type serverHandler struct {
 
 func NewHandler(
 	logger log.Logger,
-	authService authService,
+	authService AuthService,
 ) http.Handler {
 	logger = logger.Set("pkg", "internal/transport/http/openapi")
 

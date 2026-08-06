@@ -15,6 +15,11 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi"
 )
 
+const (
+	envApiGatewayAddr  = "API_GATEWAY_ADDR"
+	envAuthServiceAddr = "AUTH_SERVICE_ADDR"
+)
+
 var (
 	logger        log.Logger
 	shutdowner    *shutdown.Shutdowner
@@ -34,6 +39,7 @@ func main() {
 		logger.Log(log.Error).
 			Set("message", "build error").
 			Write()
+
 		return
 	}
 
@@ -59,35 +65,35 @@ func main() {
 }
 
 func build(ctx context.Context) error {
-	envs, err := env.ParseVars(
-		env.Required(env.FieldApiGatewayAddr),
-		env.Required(env.FieldAuthServiceAddr),
-	)
+	err := env.CheckEmpty(envApiGatewayAddr, envAuthServiceAddr)
 	if err != nil {
-		return fmt.Errorf("parse env vars: %w", err)
+		return err
 	}
 
-	authService, err := auth_service.NewClient(envs.Get(env.FieldAuthServiceAddr))
+	authService, err := auth_service.NewClient(os.Getenv(envAuthServiceAddr))
 	if err != nil {
 		return fmt.Errorf("create grpc client of auth service: %w", err)
 	}
 	shutdowner.Add(authService)
 
-	httpServer := &http.Server{
-		Addr: envs.Get(env.FieldApiGatewayAddr),
-		Handler: openapi.NewHandler(
-			logger,
-			authService,
-		),
+	openapiHandler := openapi.NewHandler(logger, authService)
+	initHTTPServer(ctx, openapiHandler)
+
+	return nil
+}
+
+func initHTTPServer(ctx context.Context, handler http.Handler) {
+	server := &http.Server{
+		Addr:        os.Getenv(envApiGatewayAddr),
+		Handler:     handler,
 		BaseContext: func(net.Listener) context.Context { return ctx },
 	}
+
 	shutdowner.AddFunc(func() error {
-		return httpServer.Shutdown(context.Background())
+		return server.Shutdown(ctx)
 	})
 
 	runHTTPServer = func() error {
-		return httpServer.ListenAndServe()
+		return server.ListenAndServe()
 	}
-
-	return nil
 }
