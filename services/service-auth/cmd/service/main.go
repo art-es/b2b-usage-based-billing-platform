@@ -125,6 +125,7 @@ func build(ctx context.Context) error {
 	finishAllSessionsUsecase := usecases.NewFinishAllSessionsUsecase(sessionRepository)
 	finishSessionUsecase := usecases.NewFinishSessionUsecase(sessionRepository)
 	createPasswordResetUsecase := usecases.NewCreatePasswordResetUsecase(userRepository, passwordResetRepository)
+	resetPasswordUsecase := usecases.NewResetPasswordUsecase(passwordResetRepository, userRepository, passwordHashService, logger)
 	switchOrgnUsecase := usecases.NewSwitchOrgnUsecase(sessionRepository, orgnService, jwtService, os.Getenv(envJWTSecret), logger)
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnService)
 
@@ -142,6 +143,7 @@ func build(ctx context.Context) error {
 		finishAllSessionsUsecase,
 		finishSessionUsecase,
 		createPasswordResetUsecase,
+		resetPasswordUsecase,
 		switchOrgnUsecase,
 		getMeUsecase,
 	)

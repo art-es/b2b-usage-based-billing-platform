@@ -118,3 +118,49 @@ func (r *Repository) ClearDeprecated(ctx context.Context) error {
 
 	return nil
 }
+
+func (r *Repository) Find(ctx context.Context, token string) (*user.PasswordReset, error) {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := `SELECT r.token, u.user_id
+		FROM password_resets AS r
+		JOIN users AS u ON u.id = r.user_id
+		WHERE r.token = $1 AND u.verified_at IS NULL
+		FOR UPDATE OF r SKIP LOCKED`
+	args := []any{token}
+
+	var reset user.PasswordReset
+
+	err = conn.QueryRow(ctx, query, args...).
+		Scan(&reset.Token, &reset.UserID)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, fmt.Errorf("query execute: %w", err)
+	}
+
+	return &reset, nil
+}
+
+func (r *Repository) DeleteForUser(ctx context.Context, userID string) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `DELETE FROM password_resets WHERE user_id = $1`
+	args := []any{userID}
+
+	_, err = conn.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	return nil
+}

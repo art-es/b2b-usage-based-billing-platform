@@ -29,6 +29,11 @@ const (
 		UPDATE users 
 		SET verified_at = current_timestamp 
 		WHERE id = $1`
+
+	queryUpdatePasswordHash = `
+		UPDATE users
+		SET password_hash = $1
+		WHERE id = $1`
 )
 
 type Repository struct {
@@ -114,6 +119,20 @@ func (r *Repository) MarkAsVerified(ctx context.Context, userID string) error {
 	}
 
 	_, err = conn.Exec(ctx, queryMarkAsVerified, userID)
+	if err != nil {
+		return fmt.Errorf("query execute: %w", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) UpdatePasswordHash(ctx context.Context, userID, passwordHash string) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = conn.Exec(ctx, queryUpdatePasswordHash, userID)
 	if err != nil {
 		return fmt.Errorf("query execute: %w", err)
 	}

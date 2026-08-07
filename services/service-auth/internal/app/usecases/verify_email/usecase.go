@@ -30,6 +30,8 @@ func NewUsecase(
 	userRepository userRepository,
 	logger log.Logger,
 ) *Usecase {
+	logger = logger.Set("pkg", "internal/app/usecases/verify_email")
+
 	return &Usecase{
 		emailVerificationsRepository: emailVerificationsRepository,
 		userRepository:               userRepository,
