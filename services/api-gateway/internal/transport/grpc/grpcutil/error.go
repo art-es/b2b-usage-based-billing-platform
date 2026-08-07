@@ -21,6 +21,8 @@ func HandleError(err error) error {
 	}
 
 	switch st.Code() {
+	case codes.Unimplemented:
+		return app_errors.ErrUnimplemented
 	case codes.Unauthenticated:
 		return app_errors.ErrUnauthorized
 	case codes.InvalidArgument:

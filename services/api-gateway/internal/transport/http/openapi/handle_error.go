@@ -40,7 +40,7 @@ func getResponseErrorHandlerFunc(logger log.Logger) func(w http.ResponseWriter, 
 			return
 		}
 
-		if errors.Is(err, errUnimplemented) {
+		if errors.Is(err, app_errors.ErrUnimplemented) {
 			httputil.WriteNotImplemented(w, logger, endpointByRequest(r))
 			return
 		}
