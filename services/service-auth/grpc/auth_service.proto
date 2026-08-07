@@ -17,6 +17,9 @@ service AuthService {
     rpc FinishAllSessions (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc FinishSession (FinishSessionRequest) returns (google.protobuf.Empty) {}
     rpc SwitchOrgn (SwitchOrgnRequest) returns (SwitchOrgnResponse) {}
+    rpc CreatePasswordReset (CreatePasswordResetRequest) returns (google.protobuf.Empty) {}
+    rpc ResetPassword (ResetPasswordRequest) returns (google.protobuf.Empty) {}
+    rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty) {}
     rpc GetMe (google.protobuf.Empty) returns (GetMeResponse) {}
 }
 
@@ -69,6 +72,20 @@ message Session {
 
 message FinishSessionRequest {
     string session_id = 1;
+}
+
+message CreatePasswordResetRequest {
+    string email = 1;
+}
+
+message ResetPasswordRequest {
+    string token = 1;
+    string new_password = 2;
+}
+
+message ChangePasswordRequest {
+    string old_password = 1;
+    string new_password = 2;
 }
 
 message SwitchOrgnRequest {

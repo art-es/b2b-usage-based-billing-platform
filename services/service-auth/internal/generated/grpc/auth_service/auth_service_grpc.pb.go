@@ -29,6 +29,9 @@ const (
 	AuthService_FinishAllSessions_FullMethodName       = "/auth_service.AuthService/FinishAllSessions"
 	AuthService_FinishSession_FullMethodName           = "/auth_service.AuthService/FinishSession"
 	AuthService_SwitchOrgn_FullMethodName              = "/auth_service.AuthService/SwitchOrgn"
+	AuthService_CreatePasswordReset_FullMethodName     = "/auth_service.AuthService/CreatePasswordReset"
+	AuthService_ResetPassword_FullMethodName           = "/auth_service.AuthService/ResetPassword"
+	AuthService_ChangePassword_FullMethodName          = "/auth_service.AuthService/ChangePassword"
 	AuthService_GetMe_FullMethodName                   = "/auth_service.AuthService/GetMe"
 )
 
@@ -45,6 +48,9 @@ type AuthServiceClient interface {
 	FinishAllSessions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	FinishSession(ctx context.Context, in *FinishSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	SwitchOrgn(ctx context.Context, in *SwitchOrgnRequest, opts ...grpc.CallOption) (*SwitchOrgnResponse, error)
+	CreatePasswordReset(ctx context.Context, in *CreatePasswordResetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMeResponse, error)
 }
 
@@ -146,6 +152,36 @@ func (c *authServiceClient) SwitchOrgn(ctx context.Context, in *SwitchOrgnReques
 	return out, nil
 }
 
+func (c *authServiceClient) CreatePasswordReset(ctx context.Context, in *CreatePasswordResetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_CreatePasswordReset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_ResetPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_ChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetMeResponse)
@@ -169,6 +205,9 @@ type AuthServiceServer interface {
 	FinishAllSessions(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	FinishSession(context.Context, *FinishSessionRequest) (*emptypb.Empty, error)
 	SwitchOrgn(context.Context, *SwitchOrgnRequest) (*SwitchOrgnResponse, error)
+	CreatePasswordReset(context.Context, *CreatePasswordResetRequest) (*emptypb.Empty, error)
+	ResetPassword(context.Context, *ResetPasswordRequest) (*emptypb.Empty, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
 	GetMe(context.Context, *emptypb.Empty) (*GetMeResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -206,6 +245,15 @@ func (UnimplementedAuthServiceServer) FinishSession(context.Context, *FinishSess
 }
 func (UnimplementedAuthServiceServer) SwitchOrgn(context.Context, *SwitchOrgnRequest) (*SwitchOrgnResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SwitchOrgn not implemented")
+}
+func (UnimplementedAuthServiceServer) CreatePasswordReset(context.Context, *CreatePasswordResetRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreatePasswordReset not implemented")
+}
+func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPasswordRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedAuthServiceServer) GetMe(context.Context, *emptypb.Empty) (*GetMeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMe not implemented")
@@ -393,6 +441,60 @@ func _AuthService_SwitchOrgn_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_CreatePasswordReset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePasswordResetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CreatePasswordReset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_CreatePasswordReset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CreatePasswordReset(ctx, req.(*CreatePasswordResetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResetPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ResetPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ResetPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ResetPassword(ctx, req.(*ResetPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_GetMe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -453,6 +555,18 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SwitchOrgn",
 			Handler:    _AuthService_SwitchOrgn_Handler,
+		},
+		{
+			MethodName: "CreatePasswordReset",
+			Handler:    _AuthService_CreatePasswordReset_Handler,
+		},
+		{
+			MethodName: "ResetPassword",
+			Handler:    _AuthService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _AuthService_ChangePassword_Handler,
 		},
 		{
 			MethodName: "GetMe",

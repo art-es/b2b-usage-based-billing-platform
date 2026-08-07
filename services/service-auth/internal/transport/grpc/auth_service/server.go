@@ -9,6 +9,8 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/jwt"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/auth_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/change_password"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/create_password_reset"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/finish_all_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/finish_session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_me"
@@ -17,6 +19,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/refresh_session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/register"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/resend_email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/reset_password"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/switch_orgn"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/verify_email"
 )
@@ -58,6 +61,18 @@ type (
 		FinishSession(context.Context, *pb.FinishSessionRequest) (*emptypb.Empty, error)
 	}
 
+	createPasswordResetHandler interface {
+		CreatePasswordReset(context.Context, *pb.CreatePasswordResetRequest) (*emptypb.Empty, error)
+	}
+
+	resetPasswordHandler interface {
+		ResetPassword(context.Context, *pb.ResetPasswordRequest) (*emptypb.Empty, error)
+	}
+
+	changePasswordHandler interface {
+		ChangePassword(context.Context, *pb.ChangePasswordRequest) (*emptypb.Empty, error)
+	}
+
 	switchOrgnHandler interface {
 		SwitchOrgn(context.Context, *pb.SwitchOrgnRequest) (*pb.SwitchOrgnResponse, error)
 	}
@@ -76,6 +91,9 @@ type serverHandler struct {
 	getSessionsHandler
 	finishAllSessionsHandler
 	finishSessionHandler
+	createPasswordResetHandler
+	resetPasswordHandler
+	changePasswordHandler
 	switchOrgnHandler
 	getMeHandler
 
@@ -105,6 +123,9 @@ func NewServer(
 		getSessionsHandler:             get_sessions.NewHandler(authorizer, getSessionsUsecase, logger),
 		finishAllSessionsHandler:       finish_all_sessions.NewHandler(authorizer, finishAllSessionsUsecase, logger),
 		finishSessionHandler:           finish_session.NewHandler(authorizer, finishSessionUsecase, logger),
+		createPasswordResetHandler:     create_password_reset.NewHandler(),
+		resetPasswordHandler:           reset_password.NewHandler(),
+		changePasswordHandler:          change_password.NewHandler(),
 		switchOrgnHandler:              switch_orgn.NewHandler(authorizer, switchOrgnUsecase, logger),
 		getMeHandler:                   get_me.NewHandler(authorizer, getMeUsecase, logger),
 	}

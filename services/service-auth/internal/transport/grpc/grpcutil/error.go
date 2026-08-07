@@ -48,3 +48,7 @@ func InternalError() error {
 func Unauthenticated() error {
 	return status.Error(codes.Unauthenticated, "authorization error")
 }
+
+func Unimplemented() error {
+	return status.Error(codes.Unimplemented, "unimplemented method")
+}

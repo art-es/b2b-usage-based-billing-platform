@@ -74,6 +74,12 @@ type BadRequestResponseError struct {
 // BadRequestResponseErrorCode Codes: * `1001` – value is empty (when field is required) * `1002` – value in incorrect format * `1003` – value with incorrect length * `1004` – value is incorrect (e.g. incorrect email or password) * `1005` – value is already in use (when value should be unique) * `1006` – field is not verified (e.g. email is not verified yet)
 type BadRequestResponseErrorCode int
 
+// ChangePasswordRequest defines model for ChangePasswordRequest.
+type ChangePasswordRequest struct {
+	NewPassword string `json:"new_password"`
+	OldPassword string `json:"old_password"`
+}
+
 // CreateOrgnRequest defines model for CreateOrgnRequest.
 type CreateOrgnRequest struct {
 	Name *string `json:"name,omitempty"`
@@ -83,6 +89,11 @@ type CreateOrgnRequest struct {
 type CreateOrgnResponse struct {
 	AccessToken string             `json:"access_token"`
 	OrgnId      openapi_types.UUID `json:"orgn_id"`
+}
+
+// ForgotPasswordRequest defines model for ForgotPasswordRequest.
+type ForgotPasswordRequest struct {
+	Email openapi_types.Email `json:"email"`
 }
 
 // GetSessionsRequest defines model for GetSessionsRequest.
@@ -160,6 +171,12 @@ type ResendEmailVerificationRequest struct {
 	Email string `json:"email"`
 }
 
+// ResetPasswordRequest defines model for ResetPasswordRequest.
+type ResetPasswordRequest struct {
+	NewPassword string             `json:"new_password"`
+	Token       openapi_types.UUID `json:"token"`
+}
+
 // Session defines model for Session.
 type Session struct {
 	CreatedAt string `json:"created_at"`
@@ -195,6 +212,15 @@ type PostV1AuthEmailVerifyJSONRequestBody = VerifyEmailRequest
 
 // PostV1AuthLoginJSONRequestBody defines body for PostV1AuthLogin for application/json ContentType.
 type PostV1AuthLoginJSONRequestBody = LoginRequest
+
+// PostV1AuthPasswordChangeJSONRequestBody defines body for PostV1AuthPasswordChange for application/json ContentType.
+type PostV1AuthPasswordChangeJSONRequestBody = ChangePasswordRequest
+
+// PostV1AuthPasswordForgotJSONRequestBody defines body for PostV1AuthPasswordForgot for application/json ContentType.
+type PostV1AuthPasswordForgotJSONRequestBody = ForgotPasswordRequest
+
+// PostV1AuthPasswordResetJSONRequestBody defines body for PostV1AuthPasswordReset for application/json ContentType.
+type PostV1AuthPasswordResetJSONRequestBody = ResetPasswordRequest
 
 // PostV1AuthRefreshJSONRequestBody defines body for PostV1AuthRefresh for application/json ContentType.
 type PostV1AuthRefreshJSONRequestBody = RefreshSessionRequest
@@ -1297,47 +1323,50 @@ func (response PostV1AuthLogin200JSONResponse) VisitPostV1AuthLoginResponse(w ht
 }
 
 type PostV1AuthPasswordChangeRequestObject struct {
+	Body *PostV1AuthPasswordChangeJSONRequestBody
 }
 
 type PostV1AuthPasswordChangeResponseObject interface {
 	VisitPostV1AuthPasswordChangeResponse(w http.ResponseWriter) error
 }
 
-type PostV1AuthPasswordChange200Response struct {
+type PostV1AuthPasswordChange204Response struct {
 }
 
-func (response PostV1AuthPasswordChange200Response) VisitPostV1AuthPasswordChangeResponse(w http.ResponseWriter) error {
-	w.WriteHeader(200)
+func (response PostV1AuthPasswordChange204Response) VisitPostV1AuthPasswordChangeResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
 	return nil
 }
 
 type PostV1AuthPasswordForgotRequestObject struct {
+	Body *PostV1AuthPasswordForgotJSONRequestBody
 }
 
 type PostV1AuthPasswordForgotResponseObject interface {
 	VisitPostV1AuthPasswordForgotResponse(w http.ResponseWriter) error
 }
 
-type PostV1AuthPasswordForgot200Response struct {
+type PostV1AuthPasswordForgot202Response struct {
 }
 
-func (response PostV1AuthPasswordForgot200Response) VisitPostV1AuthPasswordForgotResponse(w http.ResponseWriter) error {
-	w.WriteHeader(200)
+func (response PostV1AuthPasswordForgot202Response) VisitPostV1AuthPasswordForgotResponse(w http.ResponseWriter) error {
+	w.WriteHeader(202)
 	return nil
 }
 
 type PostV1AuthPasswordResetRequestObject struct {
+	Body *PostV1AuthPasswordResetJSONRequestBody
 }
 
 type PostV1AuthPasswordResetResponseObject interface {
 	VisitPostV1AuthPasswordResetResponse(w http.ResponseWriter) error
 }
 
-type PostV1AuthPasswordReset200Response struct {
+type PostV1AuthPasswordReset204Response struct {
 }
 
-func (response PostV1AuthPasswordReset200Response) VisitPostV1AuthPasswordResetResponse(w http.ResponseWriter) error {
-	w.WriteHeader(200)
+func (response PostV1AuthPasswordReset204Response) VisitPostV1AuthPasswordResetResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
 	return nil
 }
 
@@ -2075,6 +2104,13 @@ func (sh *strictHandler) PostV1AuthLogin(w http.ResponseWriter, r *http.Request)
 func (sh *strictHandler) PostV1AuthPasswordChange(w http.ResponseWriter, r *http.Request) {
 	var request PostV1AuthPasswordChangeRequestObject
 
+	var body PostV1AuthPasswordChangeJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.PostV1AuthPasswordChange(ctx, request.(PostV1AuthPasswordChangeRequestObject))
 	}
@@ -2099,6 +2135,13 @@ func (sh *strictHandler) PostV1AuthPasswordChange(w http.ResponseWriter, r *http
 func (sh *strictHandler) PostV1AuthPasswordForgot(w http.ResponseWriter, r *http.Request) {
 	var request PostV1AuthPasswordForgotRequestObject
 
+	var body PostV1AuthPasswordForgotJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.PostV1AuthPasswordForgot(ctx, request.(PostV1AuthPasswordForgotRequestObject))
 	}
@@ -2122,6 +2165,13 @@ func (sh *strictHandler) PostV1AuthPasswordForgot(w http.ResponseWriter, r *http
 // PostV1AuthPasswordReset operation middleware
 func (sh *strictHandler) PostV1AuthPasswordReset(w http.ResponseWriter, r *http.Request) {
 	var request PostV1AuthPasswordResetRequestObject
+
+	var body PostV1AuthPasswordResetJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.PostV1AuthPasswordReset(ctx, request.(PostV1AuthPasswordResetRequestObject))

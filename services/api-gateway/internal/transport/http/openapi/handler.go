@@ -14,6 +14,9 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_email_resend_verification"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_email_verify"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_login"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_password_change"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_password_forgot"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_password_reset"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_refresh"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_register"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/handlers/post_v1_auth_switch_orgn"
@@ -28,6 +31,9 @@ type AuthService interface {
 	get_v1_auth_sessions.AuthService
 	delete_v1_auth_sessions.AuthService
 	delete_v1_auth_sessions_session_id.AuthService
+	post_v1_auth_password_forgot.AuthService
+	post_v1_auth_password_reset.AuthService
+	post_v1_auth_password_change.AuthService
 	post_v1_auth_switch_orgn.AuthService
 	get_v1_me.AuthService
 }
@@ -66,6 +72,18 @@ type (
 		DeleteV1AuthSessionsSessionId(ctx context.Context, req openapi.DeleteV1AuthSessionsSessionIdRequestObject) (openapi.DeleteV1AuthSessionsSessionIdResponseObject, error)
 	}
 
+	postV1AuthPasswordForgotHandler interface {
+		PostV1AuthPasswordForgot(context.Context, openapi.PostV1AuthPasswordForgotRequestObject) (openapi.PostV1AuthPasswordForgotResponseObject, error)
+	}
+
+	postV1AuthPasswordResetHandler interface {
+		PostV1AuthPasswordReset(context.Context, openapi.PostV1AuthPasswordResetRequestObject) (openapi.PostV1AuthPasswordResetResponseObject, error)
+	}
+
+	postV1AuthPasswordChangeHandler interface {
+		PostV1AuthPasswordChange(context.Context, openapi.PostV1AuthPasswordChangeRequestObject) (openapi.PostV1AuthPasswordChangeResponseObject, error)
+	}
+
 	postV1AuthSwitchOrgnHandler interface {
 		PostV1AuthSwitchOrgn(context.Context, openapi.PostV1AuthSwitchOrgnRequestObject) (openapi.PostV1AuthSwitchOrgnResponseObject, error)
 	}
@@ -84,6 +102,9 @@ type serverHandler struct {
 	getV1AuthSessionsHandler
 	deleteV1AuthSessionsHandler
 	deleteV1AuthSessionsSessionIdHandler
+	postV1AuthPasswordForgotHandler
+	postV1AuthPasswordResetHandler
+	postV1AuthPasswordChangeHandler
 	postV1AuthSwitchOrgnHandler
 	getV1MeHandler
 }
@@ -103,6 +124,9 @@ func NewHandler(
 		getV1AuthSessionsHandler:                 get_v1_auth_sessions.NewHandler(authService),
 		deleteV1AuthSessionsHandler:              delete_v1_auth_sessions.NewHandler(authService),
 		deleteV1AuthSessionsSessionIdHandler:     delete_v1_auth_sessions_session_id.NewHandler(authService),
+		postV1AuthPasswordForgotHandler:          post_v1_auth_password_forgot.NewHandler(authService),
+		postV1AuthPasswordResetHandler:           post_v1_auth_password_reset.NewHandler(authService),
+		postV1AuthPasswordChangeHandler:          post_v1_auth_password_change.NewHandler(authService),
 		postV1AuthSwitchOrgnHandler:              post_v1_auth_switch_orgn.NewHandler(authService),
 		getV1MeHandler:                           get_v1_me.NewHandler(authService),
 	}

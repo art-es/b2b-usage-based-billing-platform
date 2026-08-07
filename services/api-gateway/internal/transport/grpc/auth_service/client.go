@@ -135,6 +135,38 @@ func (c *Client) FinishSession(ctx context.Context, sessionID string) error {
 	return grpcutil.HandleError(err)
 }
 
+func (c *Client) CreatePasswordReset(ctx context.Context, email string) error {
+	req := &pb.CreatePasswordResetRequest{
+		Email: email,
+	}
+
+	_, err := c.client.CreatePasswordReset(ctx, req, grpcutil.CallOpts(ctx)...)
+
+	return grpcutil.HandleError(err)
+}
+
+func (c *Client) ResetPassword(ctx context.Context, token, newPassword string) error {
+	req := &pb.ResetPasswordRequest{
+		Token:       token,
+		NewPassword: newPassword,
+	}
+
+	_, err := c.client.ResetPassword(ctx, req, grpcutil.CallOpts(ctx)...)
+
+	return grpcutil.HandleError(err)
+}
+
+func (c *Client) ChangePassword(ctx context.Context, oldPassword, newPassword string) error {
+	req := &pb.ChangePasswordRequest{
+		OldPassword: oldPassword,
+		NewPassword: newPassword,
+	}
+
+	_, err := c.client.ChangePassword(ctx, req, grpcutil.CallOpts(ctx)...)
+
+	return grpcutil.HandleError(err)
+}
+
 func (c *Client) SwitchOrgn(ctx context.Context, orgnID string) (string, error) {
 	req := &pb.SwitchOrgnRequest{
 		OrgnId: orgnID,

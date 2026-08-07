@@ -190,26 +190,44 @@ paths:
     post:
       summary: Send email with reset password link
       tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordRequest"
       responses:
-        "200":
-          description: OK
+        "202":
+          description: Request accepted. Link for reset password has been sent to email
 
   /v1/auth/password/reset:
     post:
       summary: Reset the password
       tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
       responses:
-        "200":
-          description: OK
+        "204":
+          description: Password reset complete
 
   /v1/auth/password/change:
     post:
       summary: Change the password of authorized user
       tags: [Auth]
       security: [Bearer: []]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
       responses:
-        "200":
-          description: OK
+        "204":
+          description: Password change complete
 
   /v1/auth/switch-orgn:
     post:
@@ -651,6 +669,41 @@ components:
           type: string
         created_at:
           type: string
+
+    ForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    
+    ResetPasswordRequest:
+      type: object
+      required:
+        - token
+        - new_password
+      properties:
+        token:
+          type: string
+          format: uuid
+        new_password:
+          type: string
+          format: password
+    
+    ChangePasswordRequest:
+      type: object
+      required:
+        - old_password
+        - new_password
+      properties:
+        old_password:
+          type: string
+          format: password
+        new_password:
+          type: string
+          format: password
 
     SwitchOrgnRequest:
       type: object

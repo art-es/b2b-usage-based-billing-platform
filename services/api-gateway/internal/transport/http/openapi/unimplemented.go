@@ -9,24 +9,6 @@ import (
 
 var errUnimplemented = errors.New("unimplemented")
 
-// PostV1AuthPasswordChange Change the password of authorized user
-// (POST /v1/auth/password/change)
-func (h *serverHandler) PostV1AuthPasswordChange(ctx context.Context, request openapi.PostV1AuthPasswordChangeRequestObject) (_ openapi.PostV1AuthPasswordChangeResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
-// PostV1AuthPasswordForgot Send email with reset password link
-// (POST /v1/auth/password/forgot)
-func (h *serverHandler) PostV1AuthPasswordForgot(ctx context.Context, request openapi.PostV1AuthPasswordForgotRequestObject) (_ openapi.PostV1AuthPasswordForgotResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
-// PostV1AuthPasswordReset Reset the password
-// (POST /v1/auth/password/reset)
-func (h *serverHandler) PostV1AuthPasswordReset(ctx context.Context, request openapi.PostV1AuthPasswordResetRequestObject) (_ openapi.PostV1AuthPasswordResetResponseObject, _ error) {
-	return nil, errUnimplemented
-}
-
 // GetV1BillingPayments Get payment status
 // (GET /v1/billing/payments)
 func (h *serverHandler) GetV1BillingPayments(ctx context.Context, request openapi.GetV1BillingPaymentsRequestObject) (_ openapi.GetV1BillingPaymentsResponseObject, _ error) {
