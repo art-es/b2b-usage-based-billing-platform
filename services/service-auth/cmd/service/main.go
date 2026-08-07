@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/signal"
 
+	"google.golang.org/grpc"
+
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/env"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql"
@@ -21,7 +23,6 @@ import (
 	grpc_auth_service "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service"
 	grpc_auth "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/auth"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/orgn_service"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -106,6 +107,7 @@ func build(ctx context.Context) error {
 	userRepository := repositories.NewUserRepository(psqlConn)
 	emailVerificationRepository := repositories.NewEmailVerificationRepository(psqlConn)
 	sessionRepository := repositories.NewSessionsRepository(psqlConn)
+	passwordResetRepository := repositories.NewPasswordResetRepository(psqlConn)
 
 	// Usecases
 	registerUsecase := usecases.NewRegisterUsecase(passwordHashService, userRepository, emailVerificationRepository, logger)
@@ -122,6 +124,7 @@ func build(ctx context.Context) error {
 	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, os.Getenv(envSessionsCursorSecret))
 	finishAllSessionsUsecase := usecases.NewFinishAllSessionsUsecase(sessionRepository)
 	finishSessionUsecase := usecases.NewFinishSessionUsecase(sessionRepository)
+	createPasswordResetUsecase := usecases.NewCreatePasswordResetUsecase(userRepository, passwordResetRepository)
 	switchOrgnUsecase := usecases.NewSwitchOrgnUsecase(sessionRepository, orgnService, jwtService, os.Getenv(envJWTSecret), logger)
 	getMeUsecase := usecases.NewGetMeUsecase(userRepository, orgnService)
 
@@ -138,6 +141,7 @@ func build(ctx context.Context) error {
 		getSessionsUsecase,
 		finishAllSessionsUsecase,
 		finishSessionUsecase,
+		createPasswordResetUsecase,
 		switchOrgnUsecase,
 		getMeUsecase,
 	)

@@ -8,10 +8,10 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/send_email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/send_password_reset"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/env"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql"
-	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories/email_verification"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/data/psql/repositories/password_reset"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/nats"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/retry"
@@ -31,15 +31,15 @@ var (
 var (
 	logger     log.Logger
 	shutdowner *shutdown.Shutdowner
-	usecase    *send_email_verification.Usecase
-	repository *email_verification.Repository
+	usecase    *send_password_reset.Usecase
+	repository *password_reset.Repository
 )
 
 func main() {
 	flag.IntVar(&batchSize, "batch", 10, "batch size, default: 10")
 	flag.Parse()
 
-	logger = log.NewLogger(nil).Set("pkg", "cmd/send_email_verification_cron")
+	logger = log.NewLogger(nil).Set("pkg", "cmd/send_password_reset_cron")
 
 	shutdowner = shutdown.New(logger)
 	defer shutdowner.Shutdown()
@@ -99,8 +99,8 @@ func build(ctx context.Context) error {
 
 	natsProducer := nats.NewProducer(natsConn)
 	emailSendProducer := email_send.NewProducer(natsProducer)
-	repository = email_verification.NewRepository(psqlConn)
-	usecase = send_email_verification.NewUsecase(repository, emailSendProducer, logger, batchSize)
+	repository = password_reset.NewRepository(psqlConn)
+	usecase = send_password_reset.NewUsecase(repository, emailSendProducer, logger, batchSize)
 
 	return nil
 }
@@ -109,7 +109,7 @@ func run(ctx context.Context) error {
 	err := repository.ClearDeprecated(ctx)
 	if err != nil {
 		logger.Log(log.Error).
-			Set("message", "clear deprecated email verifications error").
+			Set("message", "clear deprecated password reset error").
 			Set("error", err.Error()).
 			Write()
 	}

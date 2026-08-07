@@ -6,8 +6,8 @@ import (
 
 type EmailVerification struct {
 	Token  string
-	Email  string
 	UserID string
+	Email  string
 }
 
 func (v *EmailVerification) EmailSubject() string {

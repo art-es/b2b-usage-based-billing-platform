@@ -35,7 +35,7 @@ func NewUsecase(
 	logger log.Logger,
 	batchSize int,
 ) *Usecase {
-	logger = logger.Set("pkg", "internal/app/usecases/mail_verification")
+	logger = logger.Set("pkg", "internal/app/usecases/send_email_verification")
 
 	return &Usecase{
 		verificationRepository: verificationRepository,

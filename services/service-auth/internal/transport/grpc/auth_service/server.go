@@ -111,6 +111,7 @@ func NewServer(
 	getSessionsUsecase get_sessions.Usecase,
 	finishAllSessionsUsecase finish_all_sessions.Usecase,
 	finishSessionUsecase finish_session.Usecase,
+	createPasswordResetUsecase create_password_reset.Usecase,
 	switchOrgnUsecase switch_orgn.Usecase,
 	getMeUsecase get_me.Usecase,
 ) *grpc.Server {
@@ -123,7 +124,7 @@ func NewServer(
 		getSessionsHandler:             get_sessions.NewHandler(authorizer, getSessionsUsecase, logger),
 		finishAllSessionsHandler:       finish_all_sessions.NewHandler(authorizer, finishAllSessionsUsecase, logger),
 		finishSessionHandler:           finish_session.NewHandler(authorizer, finishSessionUsecase, logger),
-		createPasswordResetHandler:     create_password_reset.NewHandler(),
+		createPasswordResetHandler:     create_password_reset.NewHandler(createPasswordResetUsecase, logger),
 		resetPasswordHandler:           reset_password.NewHandler(),
 		changePasswordHandler:          change_password.NewHandler(),
 		switchOrgnHandler:              switch_orgn.NewHandler(authorizer, switchOrgnUsecase, logger),
