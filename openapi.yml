@@ -267,14 +267,18 @@ paths:
       tags: [Organization]
       security: [Bearer: []]
       parameters:
-        - name: from_id
+        - name: cursor
           in: query
-          description: last id of previous organization list
+          description: Cursor for organizations batch, first batch is null
           schema:
             type: string
       responses:
         "200":
           description: Organization list
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/GetOrganizationsResponse"
 
     post:
       summary: Create a new organization
@@ -737,9 +741,22 @@ components:
           type: string
           format: email
         orgn:
-          $ref: "#/components/schemas/MeResponseOrgn"
+          $ref: "#/components/schemas/Orgn"
     
-    MeResponseOrgn:
+    GetOrganizationsResponse:
+      type: object
+      required:
+        - organizations
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Orgn"
+        next_cursor:
+          type: string
+          description: Cursor for next organizations batch, when no more organizations then value is null
+        
+    Orgn:
       type: object
       required:
         - id

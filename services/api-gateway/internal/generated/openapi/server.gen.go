@@ -96,6 +96,13 @@ type ForgotPasswordRequest struct {
 	Email openapi_types.Email `json:"email"`
 }
 
+// GetOrganizationsResponse defines model for GetOrganizationsResponse.
+type GetOrganizationsResponse struct {
+	// NextCursor Cursor for next organizations batch, when no more organizations then value is null
+	NextCursor    *string `json:"next_cursor,omitempty"`
+	Organizations []Orgn  `json:"organizations"`
+}
+
 // GetSessionsRequest defines model for GetSessionsRequest.
 type GetSessionsRequest struct {
 	// Cursor Cursor for sessions batch, first batch is null
@@ -125,12 +132,12 @@ type LoginRequest struct {
 type MeResponse struct {
 	Email     openapi_types.Email `json:"email"`
 	Name      string              `json:"name"`
-	Orgn      *MeResponseOrgn     `json:"orgn,omitempty"`
+	Orgn      *Orgn               `json:"orgn,omitempty"`
 	SessionId string              `json:"session_id"`
 }
 
-// MeResponseOrgn defines model for MeResponseOrgn.
-type MeResponseOrgn struct {
+// Orgn defines model for Orgn.
+type Orgn struct {
 	Id   openapi_types.UUID `json:"id"`
 	Name string             `json:"name"`
 }
@@ -200,8 +207,8 @@ type VerifyEmailRequest struct {
 
 // GetV1OrgnsParams defines parameters for GetV1Orgns.
 type GetV1OrgnsParams struct {
-	// FromId last id of previous organization list
-	FromId *string `form:"from_id,omitempty" json:"from_id,omitempty"`
+	// Cursor Cursor for organizations batch, first batch is null
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 }
 
 // PostV1AuthEmailResendVerificationJSONRequestBody defines body for PostV1AuthEmailResendVerification for application/json ContentType.
@@ -646,15 +653,15 @@ func (siw *ServerInterfaceWrapper) GetV1Orgns(w http.ResponseWriter, r *http.Req
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetV1OrgnsParams
 
-	// ------------- Optional query parameter "from_id" -------------
+	// ------------- Optional query parameter "cursor" -------------
 
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "from_id", r.URL.Query(), &params.FromId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
 	if err != nil {
 		var requiredError *runtime.RequiredParameterError
 		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from_id"})
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
 		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from_id", Err: err})
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
 		}
 		return
 	}
@@ -1623,12 +1630,18 @@ type GetV1OrgnsResponseObject interface {
 	VisitGetV1OrgnsResponse(w http.ResponseWriter) error
 }
 
-type GetV1Orgns200Response struct {
-}
+type GetV1Orgns200JSONResponse GetOrganizationsResponse
 
-func (response GetV1Orgns200Response) VisitGetV1OrgnsResponse(w http.ResponseWriter) error {
+func (response GetV1Orgns200JSONResponse) VisitGetV1OrgnsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type PostV1OrgnsRequestObject struct {

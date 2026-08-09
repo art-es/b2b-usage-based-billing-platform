@@ -5,7 +5,17 @@ package orgn_service;
 option go_package = "internal/generated/grpc/orgn_service";
 
 service OrgnService {
+    rpc Get (GetRequest) returns (GetResponse) {}
     rpc GetById (GetByIdRequest) returns (Orgn) {}
+}
+
+message GetRequest {
+    optional string cursor = 1;
+}
+
+message GetResponse {
+    repeated Orgn orgns = 1;
+    optional string next_cursor = 2;
 }
 
 message GetByIdRequest {

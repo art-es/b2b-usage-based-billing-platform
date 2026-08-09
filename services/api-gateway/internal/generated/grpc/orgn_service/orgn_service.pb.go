@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v3.21.8
-// source: orgn_service.proto
+// source: grpc/orgn_service.proto
 
 package orgn_service
 
@@ -30,7 +30,7 @@ type GetRequest struct {
 
 func (x *GetRequest) Reset() {
 	*x = GetRequest{}
-	mi := &file_orgn_service_proto_msgTypes[0]
+	mi := &file_grpc_orgn_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +42,7 @@ func (x *GetRequest) String() string {
 func (*GetRequest) ProtoMessage() {}
 
 func (x *GetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_orgn_service_proto_msgTypes[0]
+	mi := &file_grpc_orgn_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +55,7 @@ func (x *GetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRequest.ProtoReflect.Descriptor instead.
 func (*GetRequest) Descriptor() ([]byte, []int) {
-	return file_orgn_service_proto_rawDescGZIP(), []int{0}
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetRequest) GetCursor() string {
@@ -75,7 +75,7 @@ type GetResponse struct {
 
 func (x *GetResponse) Reset() {
 	*x = GetResponse{}
-	mi := &file_orgn_service_proto_msgTypes[1]
+	mi := &file_grpc_orgn_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -87,7 +87,7 @@ func (x *GetResponse) String() string {
 func (*GetResponse) ProtoMessage() {}
 
 func (x *GetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_orgn_service_proto_msgTypes[1]
+	mi := &file_grpc_orgn_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +100,7 @@ func (x *GetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResponse.ProtoReflect.Descriptor instead.
 func (*GetResponse) Descriptor() ([]byte, []int) {
-	return file_orgn_service_proto_rawDescGZIP(), []int{1}
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetResponse) GetOrgns() []*Orgn {
@@ -126,7 +126,7 @@ type GetByIdRequest struct {
 
 func (x *GetByIdRequest) Reset() {
 	*x = GetByIdRequest{}
-	mi := &file_orgn_service_proto_msgTypes[2]
+	mi := &file_grpc_orgn_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -138,7 +138,7 @@ func (x *GetByIdRequest) String() string {
 func (*GetByIdRequest) ProtoMessage() {}
 
 func (x *GetByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_orgn_service_proto_msgTypes[2]
+	mi := &file_grpc_orgn_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -151,7 +151,7 @@ func (x *GetByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetByIdRequest.ProtoReflect.Descriptor instead.
 func (*GetByIdRequest) Descriptor() ([]byte, []int) {
-	return file_orgn_service_proto_rawDescGZIP(), []int{2}
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetByIdRequest) GetId() string {
@@ -172,7 +172,7 @@ type Orgn struct {
 
 func (x *Orgn) Reset() {
 	*x = Orgn{}
-	mi := &file_orgn_service_proto_msgTypes[3]
+	mi := &file_grpc_orgn_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -184,7 +184,7 @@ func (x *Orgn) String() string {
 func (*Orgn) ProtoMessage() {}
 
 func (x *Orgn) ProtoReflect() protoreflect.Message {
-	mi := &file_orgn_service_proto_msgTypes[3]
+	mi := &file_grpc_orgn_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -197,7 +197,7 @@ func (x *Orgn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Orgn.ProtoReflect.Descriptor instead.
 func (*Orgn) Descriptor() ([]byte, []int) {
-	return file_orgn_service_proto_rawDescGZIP(), []int{3}
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Orgn) GetId() string {
@@ -221,11 +221,11 @@ func (x *Orgn) GetUserId() string {
 	return ""
 }
 
-var File_orgn_service_proto protoreflect.FileDescriptor
+var File_grpc_orgn_service_proto protoreflect.FileDescriptor
 
-const file_orgn_service_proto_rawDesc = "" +
+const file_grpc_orgn_service_proto_rawDesc = "" +
 	"\n" +
-	"\x12orgn_service.proto\x12\forgn_service\"4\n" +
+	"\x17grpc/orgn_service.proto\x12\forgn_service\"4\n" +
 	"\n" +
 	"GetRequest\x12\x1b\n" +
 	"\x06cursor\x18\x01 \x01(\tH\x00R\x06cursor\x88\x01\x01B\t\n" +
@@ -246,25 +246,25 @@ const file_orgn_service_proto_rawDesc = "" +
 	"\aGetById\x12\x1c.orgn_service.GetByIdRequest\x1a\x12.orgn_service.Orgn\"\x00B&Z$internal/generated/grpc/orgn_serviceb\x06proto3"
 
 var (
-	file_orgn_service_proto_rawDescOnce sync.Once
-	file_orgn_service_proto_rawDescData []byte
+	file_grpc_orgn_service_proto_rawDescOnce sync.Once
+	file_grpc_orgn_service_proto_rawDescData []byte
 )
 
-func file_orgn_service_proto_rawDescGZIP() []byte {
-	file_orgn_service_proto_rawDescOnce.Do(func() {
-		file_orgn_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_orgn_service_proto_rawDesc), len(file_orgn_service_proto_rawDesc)))
+func file_grpc_orgn_service_proto_rawDescGZIP() []byte {
+	file_grpc_orgn_service_proto_rawDescOnce.Do(func() {
+		file_grpc_orgn_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_grpc_orgn_service_proto_rawDesc), len(file_grpc_orgn_service_proto_rawDesc)))
 	})
-	return file_orgn_service_proto_rawDescData
+	return file_grpc_orgn_service_proto_rawDescData
 }
 
-var file_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_orgn_service_proto_goTypes = []any{
+var file_grpc_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_grpc_orgn_service_proto_goTypes = []any{
 	(*GetRequest)(nil),     // 0: orgn_service.GetRequest
 	(*GetResponse)(nil),    // 1: orgn_service.GetResponse
 	(*GetByIdRequest)(nil), // 2: orgn_service.GetByIdRequest
 	(*Orgn)(nil),           // 3: orgn_service.Orgn
 }
-var file_orgn_service_proto_depIdxs = []int32{
+var file_grpc_orgn_service_proto_depIdxs = []int32{
 	3, // 0: orgn_service.GetResponse.orgns:type_name -> orgn_service.Orgn
 	0, // 1: orgn_service.OrgnService.Get:input_type -> orgn_service.GetRequest
 	2, // 2: orgn_service.OrgnService.GetById:input_type -> orgn_service.GetByIdRequest
@@ -277,28 +277,28 @@ var file_orgn_service_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_orgn_service_proto_init() }
-func file_orgn_service_proto_init() {
-	if File_orgn_service_proto != nil {
+func init() { file_grpc_orgn_service_proto_init() }
+func file_grpc_orgn_service_proto_init() {
+	if File_grpc_orgn_service_proto != nil {
 		return
 	}
-	file_orgn_service_proto_msgTypes[0].OneofWrappers = []any{}
-	file_orgn_service_proto_msgTypes[1].OneofWrappers = []any{}
+	file_grpc_orgn_service_proto_msgTypes[0].OneofWrappers = []any{}
+	file_grpc_orgn_service_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_orgn_service_proto_rawDesc), len(file_orgn_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_grpc_orgn_service_proto_rawDesc), len(file_grpc_orgn_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_orgn_service_proto_goTypes,
-		DependencyIndexes: file_orgn_service_proto_depIdxs,
-		MessageInfos:      file_orgn_service_proto_msgTypes,
+		GoTypes:           file_grpc_orgn_service_proto_goTypes,
+		DependencyIndexes: file_grpc_orgn_service_proto_depIdxs,
+		MessageInfos:      file_grpc_orgn_service_proto_msgTypes,
 	}.Build()
-	File_orgn_service_proto = out.File
-	file_orgn_service_proto_goTypes = nil
-	file_orgn_service_proto_depIdxs = nil
+	File_grpc_orgn_service_proto = out.File
+	file_grpc_orgn_service_proto_goTypes = nil
+	file_grpc_orgn_service_proto_depIdxs = nil
 }

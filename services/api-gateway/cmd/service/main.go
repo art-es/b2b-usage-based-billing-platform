@@ -12,12 +12,14 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/log"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/pkg/shutdown"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/grpc/auth_service"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/grpc/orgn_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi"
 )
 
 const (
 	envApiGatewayAddr  = "API_GATEWAY_ADDR"
 	envAuthServiceAddr = "AUTH_SERVICE_ADDR"
+	envOrgnServiceAddr = "ORGN_SERVICE_ADDR"
 )
 
 var (
@@ -76,7 +78,13 @@ func build(ctx context.Context) error {
 	}
 	shutdowner.Add(authService)
 
-	openapiHandler := openapi.NewHandler(logger, authService)
+	orgnService, err := orgn_service.NewClient(os.Getenv(envOrgnServiceAddr))
+	if err != nil {
+		return fmt.Errorf("create grpc client of orgn service: %w", err)
+	}
+	shutdowner.Add(orgnService)
+
+	openapiHandler := openapi.NewHandler(logger, authService, orgnService)
 	initHTTPServer(ctx, openapiHandler)
 
 	return nil

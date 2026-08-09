@@ -58,6 +58,10 @@ type AuthService interface {
 	get_v1_me.AuthService
 }
 
+type OrgnService interface {
+	get_v1_orgns.OrgnService
+}
+
 // Endpoint handlers
 type (
 	postV1AuthRegisterHandler interface {
@@ -232,6 +236,7 @@ type serverHandler struct {
 func NewHandler(
 	logger log.Logger,
 	authService AuthService,
+	orgnService OrgnService,
 ) http.Handler {
 	logger = logger.Set("pkg", "internal/transport/http/openapi")
 
@@ -254,7 +259,7 @@ func NewHandler(
 		postV1CustomerCustomerIdUsageHandler:      post_v1_customer_customer_id_usage.NewHandler(),
 		postV1CustomersHandler:                    post_v1_customers.NewHandler(),
 		postV1CustomersCustomerIdSubscribeHandler: post_v1_customers_customer_id_subscribe.NewHandler(),
-		getV1OrgnsHandler:                         get_v1_orgns.NewHandler(),
+		getV1OrgnsHandler:                         get_v1_orgns.NewHandler(orgnService),
 		postV1OrgnsHandler:                        post_v1_orgns.NewHandler(),
 		deleteV1OrgnsOrgnIdHandler:                delete_v1_orgns_orgn_id.NewHandler(),
 		putV1OrgnsOrgnIdHandler:                   put_v1_orgns_orgn_id.NewHandler(),

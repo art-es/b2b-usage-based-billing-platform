@@ -3,8 +3,8 @@ package get_v1_me
 import (
 	"context"
 
-	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/openapiutil"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -36,7 +36,7 @@ func (h *Handler) GetV1Me(ctx context.Context, req openapi.GetV1MeRequestObject)
 	}
 
 	if dtoRes.Orgn != nil {
-		res.Orgn = &openapi.MeResponseOrgn{
+		res.Orgn = &openapi.Orgn{
 			Id:   openapiutil.ToUUID(dtoRes.Orgn.ID),
 			Name: dtoRes.Name,
 		}
