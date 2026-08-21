@@ -10,7 +10,8 @@ service OrgnService {
 }
 
 message GetRequest {
-    optional string cursor = 1;
+    string user_id = 1;
+    optional string cursor = 2;
 }
 
 message GetResponse {
@@ -26,4 +27,5 @@ message Orgn {
     string id = 1;
     string name = 2;
     string user_id = 3;
+    // TODO: add created_at 
 }

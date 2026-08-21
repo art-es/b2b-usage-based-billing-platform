@@ -919,6 +919,66 @@ func (x *GetMeResponseOrgn) GetName() string {
 	return ""
 }
 
+type ParseTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	OrgnId        *string                `protobuf:"bytes,3,opt,name=orgn_id,json=orgnId,proto3,oneof" json:"orgn_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ParseTokenResponse) Reset() {
+	*x = ParseTokenResponse{}
+	mi := &file_auth_service_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParseTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParseTokenResponse) ProtoMessage() {}
+
+func (x *ParseTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_service_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParseTokenResponse.ProtoReflect.Descriptor instead.
+func (*ParseTokenResponse) Descriptor() ([]byte, []int) {
+	return file_auth_service_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ParseTokenResponse) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *ParseTokenResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *ParseTokenResponse) GetOrgnId() string {
+	if x != nil && x.OrgnId != nil {
+		return *x.OrgnId
+	}
+	return ""
+}
+
 var File_auth_service_proto protoreflect.FileDescriptor
 
 const file_auth_service_proto_rawDesc = "" +
@@ -979,7 +1039,14 @@ const file_auth_service_proto_rawDesc = "" +
 	"\x05_orgn\"7\n" +
 	"\x11GetMeResponseOrgn\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name2\x9d\b\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"v\n" +
+	"\x12ParseTokenResponse\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1c\n" +
+	"\aorgn_id\x18\x03 \x01(\tH\x00R\x06orgnId\x88\x01\x01B\n" +
+	"\n" +
+	"\b_orgn_id2\xe7\b\n" +
 	"\vAuthService\x12C\n" +
 	"\bRegister\x12\x1d.auth_service.RegisterRequest\x1a\x16.google.protobuf.Empty\"\x00\x12I\n" +
 	"\vVerifyEmail\x12 .auth_service.VerifyEmailRequest\x1a\x16.google.protobuf.Empty\"\x00\x12a\n" +
@@ -994,7 +1061,9 @@ const file_auth_service_proto_rawDesc = "" +
 	"\x13CreatePasswordReset\x12(.auth_service.CreatePasswordResetRequest\x1a\x16.google.protobuf.Empty\"\x00\x12M\n" +
 	"\rResetPassword\x12\".auth_service.ResetPasswordRequest\x1a\x16.google.protobuf.Empty\"\x00\x12O\n" +
 	"\x0eChangePassword\x12#.auth_service.ChangePasswordRequest\x1a\x16.google.protobuf.Empty\"\x00\x12>\n" +
-	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x1b.auth_service.GetMeResponse\"\x00B&Z$internal/generated/grpc/auth_serviceb\x06proto3"
+	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x1b.auth_service.GetMeResponse\"\x00\x12H\n" +
+	"\n" +
+	"ParseToken\x12\x16.google.protobuf.Empty\x1a .auth_service.ParseTokenResponse\"\x00B&Z$internal/generated/grpc/auth_serviceb\x06proto3"
 
 var (
 	file_auth_service_proto_rawDescOnce sync.Once
@@ -1008,7 +1077,7 @@ func file_auth_service_proto_rawDescGZIP() []byte {
 	return file_auth_service_proto_rawDescData
 }
 
-var file_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_auth_service_proto_goTypes = []any{
 	(*RegisterRequest)(nil),                // 0: auth_service.RegisterRequest
 	(*VerifyEmailRequest)(nil),             // 1: auth_service.VerifyEmailRequest
@@ -1028,12 +1097,13 @@ var file_auth_service_proto_goTypes = []any{
 	(*SwitchOrgnResponse)(nil),             // 15: auth_service.SwitchOrgnResponse
 	(*GetMeResponse)(nil),                  // 16: auth_service.GetMeResponse
 	(*GetMeResponseOrgn)(nil),              // 17: auth_service.GetMeResponseOrgn
-	(*timestamppb.Timestamp)(nil),          // 18: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                  // 19: google.protobuf.Empty
+	(*ParseTokenResponse)(nil),             // 18: auth_service.ParseTokenResponse
+	(*timestamppb.Timestamp)(nil),          // 19: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                  // 20: google.protobuf.Empty
 }
 var file_auth_service_proto_depIdxs = []int32{
 	9,  // 0: auth_service.GetSessionsResponse.sessions:type_name -> auth_service.Session
-	18, // 1: auth_service.Session.created_at:type_name -> google.protobuf.Timestamp
+	19, // 1: auth_service.Session.created_at:type_name -> google.protobuf.Timestamp
 	17, // 2: auth_service.GetMeResponse.orgn:type_name -> auth_service.GetMeResponseOrgn
 	0,  // 3: auth_service.AuthService.Register:input_type -> auth_service.RegisterRequest
 	1,  // 4: auth_service.AuthService.VerifyEmail:input_type -> auth_service.VerifyEmailRequest
@@ -1041,28 +1111,30 @@ var file_auth_service_proto_depIdxs = []int32{
 	3,  // 6: auth_service.AuthService.Login:input_type -> auth_service.LoginRequest
 	5,  // 7: auth_service.AuthService.RefreshSession:input_type -> auth_service.RefreshSessionRequest
 	7,  // 8: auth_service.AuthService.GetSessions:input_type -> auth_service.GetSessionsRequest
-	19, // 9: auth_service.AuthService.FinishAllSessions:input_type -> google.protobuf.Empty
+	20, // 9: auth_service.AuthService.FinishAllSessions:input_type -> google.protobuf.Empty
 	10, // 10: auth_service.AuthService.FinishSession:input_type -> auth_service.FinishSessionRequest
 	14, // 11: auth_service.AuthService.SwitchOrgn:input_type -> auth_service.SwitchOrgnRequest
 	11, // 12: auth_service.AuthService.CreatePasswordReset:input_type -> auth_service.CreatePasswordResetRequest
 	12, // 13: auth_service.AuthService.ResetPassword:input_type -> auth_service.ResetPasswordRequest
 	13, // 14: auth_service.AuthService.ChangePassword:input_type -> auth_service.ChangePasswordRequest
-	19, // 15: auth_service.AuthService.GetMe:input_type -> google.protobuf.Empty
-	19, // 16: auth_service.AuthService.Register:output_type -> google.protobuf.Empty
-	19, // 17: auth_service.AuthService.VerifyEmail:output_type -> google.protobuf.Empty
-	19, // 18: auth_service.AuthService.ResendEmailVerification:output_type -> google.protobuf.Empty
-	4,  // 19: auth_service.AuthService.Login:output_type -> auth_service.LoginResponse
-	6,  // 20: auth_service.AuthService.RefreshSession:output_type -> auth_service.RefreshSessionResponse
-	8,  // 21: auth_service.AuthService.GetSessions:output_type -> auth_service.GetSessionsResponse
-	19, // 22: auth_service.AuthService.FinishAllSessions:output_type -> google.protobuf.Empty
-	19, // 23: auth_service.AuthService.FinishSession:output_type -> google.protobuf.Empty
-	15, // 24: auth_service.AuthService.SwitchOrgn:output_type -> auth_service.SwitchOrgnResponse
-	19, // 25: auth_service.AuthService.CreatePasswordReset:output_type -> google.protobuf.Empty
-	19, // 26: auth_service.AuthService.ResetPassword:output_type -> google.protobuf.Empty
-	19, // 27: auth_service.AuthService.ChangePassword:output_type -> google.protobuf.Empty
-	16, // 28: auth_service.AuthService.GetMe:output_type -> auth_service.GetMeResponse
-	16, // [16:29] is the sub-list for method output_type
-	3,  // [3:16] is the sub-list for method input_type
+	20, // 15: auth_service.AuthService.GetMe:input_type -> google.protobuf.Empty
+	20, // 16: auth_service.AuthService.ParseToken:input_type -> google.protobuf.Empty
+	20, // 17: auth_service.AuthService.Register:output_type -> google.protobuf.Empty
+	20, // 18: auth_service.AuthService.VerifyEmail:output_type -> google.protobuf.Empty
+	20, // 19: auth_service.AuthService.ResendEmailVerification:output_type -> google.protobuf.Empty
+	4,  // 20: auth_service.AuthService.Login:output_type -> auth_service.LoginResponse
+	6,  // 21: auth_service.AuthService.RefreshSession:output_type -> auth_service.RefreshSessionResponse
+	8,  // 22: auth_service.AuthService.GetSessions:output_type -> auth_service.GetSessionsResponse
+	20, // 23: auth_service.AuthService.FinishAllSessions:output_type -> google.protobuf.Empty
+	20, // 24: auth_service.AuthService.FinishSession:output_type -> google.protobuf.Empty
+	15, // 25: auth_service.AuthService.SwitchOrgn:output_type -> auth_service.SwitchOrgnResponse
+	20, // 26: auth_service.AuthService.CreatePasswordReset:output_type -> google.protobuf.Empty
+	20, // 27: auth_service.AuthService.ResetPassword:output_type -> google.protobuf.Empty
+	20, // 28: auth_service.AuthService.ChangePassword:output_type -> google.protobuf.Empty
+	16, // 29: auth_service.AuthService.GetMe:output_type -> auth_service.GetMeResponse
+	18, // 30: auth_service.AuthService.ParseToken:output_type -> auth_service.ParseTokenResponse
+	17, // [17:31] is the sub-list for method output_type
+	3,  // [3:17] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -1076,13 +1148,14 @@ func file_auth_service_proto_init() {
 	file_auth_service_proto_msgTypes[7].OneofWrappers = []any{}
 	file_auth_service_proto_msgTypes[8].OneofWrappers = []any{}
 	file_auth_service_proto_msgTypes[16].OneofWrappers = []any{}
+	file_auth_service_proto_msgTypes[18].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_service_proto_rawDesc), len(file_auth_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

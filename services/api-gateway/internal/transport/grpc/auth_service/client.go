@@ -201,3 +201,16 @@ func (c *Client) GetMe(ctx context.Context) (*dto.GetMeResponse, error) {
 
 	return dtoRes, nil
 }
+
+func (c *Client) ParseToken(ctx context.Context) (*dto.ParseTokenResponse, error) {
+	res, err := c.client.ParseToken(ctx, &emptypb.Empty{}, grpcutil.CallOpts(ctx)...)
+	if err != nil {
+		return nil, grpcutil.HandleError(err)
+	}
+
+	return &dto.ParseTokenResponse{
+		SessionID: res.SessionId,
+		UserID:    res.UserId,
+		OrgnID:    res.OrgnId,
+	}, nil
+}

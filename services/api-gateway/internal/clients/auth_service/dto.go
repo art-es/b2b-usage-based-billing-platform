@@ -48,3 +48,9 @@ type GetMeResponseOrgn struct {
 	ID   string
 	Name string
 }
+
+type ParseTokenResponse struct {
+	SessionID string
+	UserID    string
+	OrgnID    *string
+}

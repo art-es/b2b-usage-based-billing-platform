@@ -56,6 +56,7 @@ type AuthService interface {
 	post_v1_auth_password_change.AuthService
 	post_v1_auth_switch_orgn.AuthService
 	get_v1_me.AuthService
+	tokenParser
 }
 
 type OrgnService interface {
@@ -240,6 +241,8 @@ func NewHandler(
 ) http.Handler {
 	logger = logger.Set("pkg", "internal/transport/http/openapi")
 
+	authrz := newAuthorizer(authService)
+
 	hand := &serverHandler{
 		postV1AuthRegisterHandler:                 post_v1_auth_register.NewHandler(authService),
 		postV1AuthEmailVerifyHandler:              post_v1_auth_email_verify.NewHandler(authService),
@@ -259,7 +262,7 @@ func NewHandler(
 		postV1CustomerCustomerIdUsageHandler:      post_v1_customer_customer_id_usage.NewHandler(),
 		postV1CustomersHandler:                    post_v1_customers.NewHandler(),
 		postV1CustomersCustomerIdSubscribeHandler: post_v1_customers_customer_id_subscribe.NewHandler(),
-		getV1OrgnsHandler:                         get_v1_orgns.NewHandler(orgnService),
+		getV1OrgnsHandler:                         get_v1_orgns.NewHandler(authrz, orgnService),
 		postV1OrgnsHandler:                        post_v1_orgns.NewHandler(),
 		deleteV1OrgnsOrgnIdHandler:                delete_v1_orgns_orgn_id.NewHandler(),
 		putV1OrgnsOrgnIdHandler:                   put_v1_orgns_orgn_id.NewHandler(),

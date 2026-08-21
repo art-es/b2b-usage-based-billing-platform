@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	OrgnService_Get_FullMethodName     = "/orgn_service.OrgnService/Get"
 	OrgnService_GetById_FullMethodName = "/orgn_service.OrgnService/GetById"
 )
 
@@ -26,6 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OrgnServiceClient interface {
+	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Orgn, error)
 }
 
@@ -35,6 +37,16 @@ type orgnServiceClient struct {
 
 func NewOrgnServiceClient(cc grpc.ClientConnInterface) OrgnServiceClient {
 	return &orgnServiceClient{cc}
+}
+
+func (c *orgnServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetResponse)
+	err := c.cc.Invoke(ctx, OrgnService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *orgnServiceClient) GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Orgn, error) {
@@ -51,6 +63,7 @@ func (c *orgnServiceClient) GetById(ctx context.Context, in *GetByIdRequest, opt
 // All implementations must embed UnimplementedOrgnServiceServer
 // for forward compatibility.
 type OrgnServiceServer interface {
+	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetById(context.Context, *GetByIdRequest) (*Orgn, error)
 	mustEmbedUnimplementedOrgnServiceServer()
 }
@@ -62,6 +75,9 @@ type OrgnServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedOrgnServiceServer struct{}
 
+func (UnimplementedOrgnServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
 func (UnimplementedOrgnServiceServer) GetById(context.Context, *GetByIdRequest) (*Orgn, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetById not implemented")
 }
@@ -84,6 +100,24 @@ func RegisterOrgnServiceServer(s grpc.ServiceRegistrar, srv OrgnServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&OrgnService_ServiceDesc, srv)
+}
+
+func _OrgnService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrgnServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrgnService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrgnServiceServer).Get(ctx, req.(*GetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _OrgnService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -111,6 +145,10 @@ var OrgnService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "orgn_service.OrgnService",
 	HandlerType: (*OrgnServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Get",
+			Handler:    _OrgnService_Get_Handler,
+		},
 		{
 			MethodName: "GetById",
 			Handler:    _OrgnService_GetById_Handler,

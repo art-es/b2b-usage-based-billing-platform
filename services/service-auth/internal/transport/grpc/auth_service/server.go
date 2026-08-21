@@ -16,6 +16,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_me"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/get_sessions"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/login"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/parse_token"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/refresh_session"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/register"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/transport/grpc/auth_service/rpc/resend_email_verification"
@@ -80,6 +81,10 @@ type (
 	getMeHandler interface {
 		GetMe(context.Context, *emptypb.Empty) (*pb.GetMeResponse, error)
 	}
+
+	parseTokenHandler interface {
+		ParseToken(context.Context, *emptypb.Empty) (*pb.ParseTokenResponse, error)
+	}
 )
 
 type serverHandler struct {
@@ -96,6 +101,7 @@ type serverHandler struct {
 	changePasswordHandler
 	switchOrgnHandler
 	getMeHandler
+	parseTokenHandler
 
 	pb.UnsafeAuthServiceServer
 }
@@ -131,6 +137,7 @@ func NewServer(
 		changePasswordHandler:          change_password.NewHandler(authorizer, changePasswordUsecase, logger),
 		switchOrgnHandler:              switch_orgn.NewHandler(authorizer, switchOrgnUsecase, logger),
 		getMeHandler:                   get_me.NewHandler(authorizer, getMeUsecase, logger),
+		parseTokenHandler:              parse_token.NewHandler(authorizer),
 	}
 
 	server := grpc.NewServer()

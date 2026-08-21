@@ -23,7 +23,8 @@ const (
 
 type GetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Cursor        *string                `protobuf:"bytes,1,opt,name=cursor,proto3,oneof" json:"cursor,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Cursor        *string                `protobuf:"bytes,2,opt,name=cursor,proto3,oneof" json:"cursor,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -56,6 +57,13 @@ func (x *GetRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetRequest.ProtoReflect.Descriptor instead.
 func (*GetRequest) Descriptor() ([]byte, []int) {
 	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *GetRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
 }
 
 func (x *GetRequest) GetCursor() string {
@@ -165,7 +173,7 @@ type Orgn struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // TODO: add created_at
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -225,10 +233,11 @@ var File_grpc_orgn_service_proto protoreflect.FileDescriptor
 
 const file_grpc_orgn_service_proto_rawDesc = "" +
 	"\n" +
-	"\x17grpc/orgn_service.proto\x12\forgn_service\"4\n" +
+	"\x17grpc/orgn_service.proto\x12\forgn_service\"M\n" +
 	"\n" +
-	"GetRequest\x12\x1b\n" +
-	"\x06cursor\x18\x01 \x01(\tH\x00R\x06cursor\x88\x01\x01B\t\n" +
+	"GetRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
+	"\x06cursor\x18\x02 \x01(\tH\x00R\x06cursor\x88\x01\x01B\t\n" +
 	"\a_cursor\"m\n" +
 	"\vGetResponse\x12(\n" +
 	"\x05orgns\x18\x01 \x03(\v2\x12.orgn_service.OrgnR\x05orgns\x12$\n" +

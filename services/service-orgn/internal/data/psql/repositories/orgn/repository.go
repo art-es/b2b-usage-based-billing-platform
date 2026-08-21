@@ -11,6 +11,12 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/data/psql"
 )
 
+const columns = `id, name, user_id, created_at`
+
+func scanColumns(o *orgn.Orgn) []any {
+	return []any{&o.ID, &o.Name, &o.UserID, &o.CreatedAt}
+}
+
 type Repository struct {
 	conns psql.Conns
 }
@@ -25,17 +31,11 @@ func (r *Repository) Find(ctx context.Context, id string) (*orgn.Orgn, error) {
 		return nil, err
 	}
 
-	query := `SELECT id, name, user_id FROM organizations WHERE id = $1`
+	query := fmt.Sprintf(`SELECT %s FROM organizations WHERE id = $1`, columns)
 	args := []any{id}
 
 	org := &orgn.Orgn{}
-	err = conn.QueryRow(ctx, query, args...).
-		Scan(
-			&org.ID,
-			&org.Name,
-			&org.UserID,
-		)
-
+	err = conn.QueryRow(ctx, query, args...).Scan(scanColumns(org)...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, repository.ErrNotFound
@@ -45,4 +45,54 @@ func (r *Repository) Find(ctx context.Context, id string) (*orgn.Orgn, error) {
 	}
 
 	return org, nil
+}
+
+func (r *Repository) Get(ctx context.Context, userID string, cursor *orgn.ListCursor) ([]*orgn.Orgn, *orgn.ListCursor, error) {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	args := make([]any, 0, 3)
+	args = append(args, userID)
+
+	var whereCursor string
+	if cursor != nil {
+		whereCursor = "(created_at, id) < ($2, $3)"
+		args = append(args, cursor.CreatedAt, cursor.ID)
+	}
+
+	query := fmt.Sprintf(
+		`SELECT %s
+		FROM organizations
+		WHERE user_id = $1%s
+		ORDER BY created_at DESC, id DESC
+		LIMIT %d`,
+		columns, whereCursor, orgn.DBListLimit,
+	)
+
+	rows, err := conn.Query(ctx, query, args...)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil, nil
+		}
+
+		return nil, nil, fmt.Errorf("query execute: %w", err)
+	}
+
+	defer rows.Close()
+
+	var list []*orgn.Orgn
+
+	for rows.Next() {
+		s := &orgn.Orgn{}
+		err = rows.Scan(scanColumns(s)...)
+		if err != nil {
+			return nil, nil, fmt.Errorf("scan row: %w", err)
+		}
+		list = append(list, s)
+	}
+
+	list, nextCursor := orgn.HandleList(list)
+	return list, nextCursor, nil
 }

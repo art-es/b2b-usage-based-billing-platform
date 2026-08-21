@@ -21,6 +21,7 @@ service AuthService {
     rpc ResetPassword (ResetPasswordRequest) returns (google.protobuf.Empty) {}
     rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty) {}
     rpc GetMe (google.protobuf.Empty) returns (GetMeResponse) {}
+    rpc ParseToken (google.protobuf.Empty) returns (ParseTokenResponse) {}
 }
 
 message RegisterRequest {
@@ -106,4 +107,10 @@ message GetMeResponse {
 message GetMeResponseOrgn {
     string id = 1;
     string name = 2;
+}
+
+message ParseTokenResponse {
+	string session_id = 1;
+	string user_id = 2;    
+	optional string orgn_id = 3;
 }

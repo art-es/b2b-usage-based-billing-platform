@@ -18,8 +18,9 @@ import (
 )
 
 const (
-	envPSQLAddr        = "PSQL_ADDR"
-	envOrgnServiceAddr = "ORGN_SERVICE_ADDR"
+	envPSQLAddr         = "PSQL_ADDR"
+	envOrgnServiceAddr  = "ORGN_SERVICE_ADDR"
+	envOrgnCursorSecret = "ORGN_CURSOR_SECRET"
 )
 
 var (
@@ -66,7 +67,7 @@ func main() {
 }
 
 func build(ctx context.Context) error {
-	err := env.CheckEmpty(envPSQLAddr)
+	err := env.CheckEmpty(envPSQLAddr, envOrgnCursorSecret)
 	if err != nil {
 		return err
 	}
@@ -82,11 +83,13 @@ func build(ctx context.Context) error {
 	orgnRepository := repositories.NewOrgnRepository(psqlConn)
 
 	// Usecases
+	getUsecase := usecases.NewGetUsecase(orgnRepository, os.Getenv(envOrgnCursorSecret), logger)
 	getByIDUsecase := usecases.NewGetByIDUsecase(orgnRepository)
 
 	// GRPC Server
 	grpcServer := grpc_orgn_service.NewServer(
 		logger,
+		getUsecase,
 		getByIDUsecase,
 	)
 	initGRPCServer(grpcServer)

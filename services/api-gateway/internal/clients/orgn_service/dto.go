@@ -1,6 +1,7 @@
 package orgn_service
 
 type GetRequest struct {
+	UserID string
 	Cursor *string
 }
 

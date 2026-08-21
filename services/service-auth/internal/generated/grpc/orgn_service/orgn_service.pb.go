@@ -21,6 +21,110 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type GetRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Cursor        *string                `protobuf:"bytes,2,opt,name=cursor,proto3,oneof" json:"cursor,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetRequest) Reset() {
+	*x = GetRequest{}
+	mi := &file_grpc_orgn_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetRequest) ProtoMessage() {}
+
+func (x *GetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_orgn_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetRequest.ProtoReflect.Descriptor instead.
+func (*GetRequest) Descriptor() ([]byte, []int) {
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *GetRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetRequest) GetCursor() string {
+	if x != nil && x.Cursor != nil {
+		return *x.Cursor
+	}
+	return ""
+}
+
+type GetResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Orgns         []*Orgn                `protobuf:"bytes,1,rep,name=orgns,proto3" json:"orgns,omitempty"`
+	NextCursor    *string                `protobuf:"bytes,2,opt,name=next_cursor,json=nextCursor,proto3,oneof" json:"next_cursor,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetResponse) Reset() {
+	*x = GetResponse{}
+	mi := &file_grpc_orgn_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetResponse) ProtoMessage() {}
+
+func (x *GetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_orgn_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetResponse.ProtoReflect.Descriptor instead.
+func (*GetResponse) Descriptor() ([]byte, []int) {
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetResponse) GetOrgns() []*Orgn {
+	if x != nil {
+		return x.Orgns
+	}
+	return nil
+}
+
+func (x *GetResponse) GetNextCursor() string {
+	if x != nil && x.NextCursor != nil {
+		return *x.NextCursor
+	}
+	return ""
+}
+
 type GetByIdRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -30,7 +134,7 @@ type GetByIdRequest struct {
 
 func (x *GetByIdRequest) Reset() {
 	*x = GetByIdRequest{}
-	mi := &file_grpc_orgn_service_proto_msgTypes[0]
+	mi := &file_grpc_orgn_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +146,7 @@ func (x *GetByIdRequest) String() string {
 func (*GetByIdRequest) ProtoMessage() {}
 
 func (x *GetByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_orgn_service_proto_msgTypes[0]
+	mi := &file_grpc_orgn_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +159,7 @@ func (x *GetByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetByIdRequest.ProtoReflect.Descriptor instead.
 func (*GetByIdRequest) Descriptor() ([]byte, []int) {
-	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{0}
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetByIdRequest) GetId() string {
@@ -69,14 +173,14 @@ type Orgn struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // TODO: add created_at
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Orgn) Reset() {
 	*x = Orgn{}
-	mi := &file_grpc_orgn_service_proto_msgTypes[1]
+	mi := &file_grpc_orgn_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -88,7 +192,7 @@ func (x *Orgn) String() string {
 func (*Orgn) ProtoMessage() {}
 
 func (x *Orgn) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_orgn_service_proto_msgTypes[1]
+	mi := &file_grpc_orgn_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -101,7 +205,7 @@ func (x *Orgn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Orgn.ProtoReflect.Descriptor instead.
 func (*Orgn) Descriptor() ([]byte, []int) {
-	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{1}
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Orgn) GetId() string {
@@ -129,14 +233,25 @@ var File_grpc_orgn_service_proto protoreflect.FileDescriptor
 
 const file_grpc_orgn_service_proto_rawDesc = "" +
 	"\n" +
-	"\x17grpc/orgn_service.proto\x12\forgn_service\" \n" +
+	"\x17grpc/orgn_service.proto\x12\forgn_service\"M\n" +
+	"\n" +
+	"GetRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
+	"\x06cursor\x18\x02 \x01(\tH\x00R\x06cursor\x88\x01\x01B\t\n" +
+	"\a_cursor\"m\n" +
+	"\vGetResponse\x12(\n" +
+	"\x05orgns\x18\x01 \x03(\v2\x12.orgn_service.OrgnR\x05orgns\x12$\n" +
+	"\vnext_cursor\x18\x02 \x01(\tH\x00R\n" +
+	"nextCursor\x88\x01\x01B\x0e\n" +
+	"\f_next_cursor\" \n" +
 	"\x0eGetByIdRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"C\n" +
 	"\x04Orgn\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId2L\n" +
-	"\vOrgnService\x12=\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId2\x8a\x01\n" +
+	"\vOrgnService\x12<\n" +
+	"\x03Get\x12\x18.orgn_service.GetRequest\x1a\x19.orgn_service.GetResponse\"\x00\x12=\n" +
 	"\aGetById\x12\x1c.orgn_service.GetByIdRequest\x1a\x12.orgn_service.Orgn\"\x00B&Z$internal/generated/grpc/orgn_serviceb\x06proto3"
 
 var (
@@ -151,19 +266,24 @@ func file_grpc_orgn_service_proto_rawDescGZIP() []byte {
 	return file_grpc_orgn_service_proto_rawDescData
 }
 
-var file_grpc_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_grpc_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_grpc_orgn_service_proto_goTypes = []any{
-	(*GetByIdRequest)(nil), // 0: orgn_service.GetByIdRequest
-	(*Orgn)(nil),           // 1: orgn_service.Orgn
+	(*GetRequest)(nil),     // 0: orgn_service.GetRequest
+	(*GetResponse)(nil),    // 1: orgn_service.GetResponse
+	(*GetByIdRequest)(nil), // 2: orgn_service.GetByIdRequest
+	(*Orgn)(nil),           // 3: orgn_service.Orgn
 }
 var file_grpc_orgn_service_proto_depIdxs = []int32{
-	0, // 0: orgn_service.OrgnService.GetById:input_type -> orgn_service.GetByIdRequest
-	1, // 1: orgn_service.OrgnService.GetById:output_type -> orgn_service.Orgn
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: orgn_service.GetResponse.orgns:type_name -> orgn_service.Orgn
+	0, // 1: orgn_service.OrgnService.Get:input_type -> orgn_service.GetRequest
+	2, // 2: orgn_service.OrgnService.GetById:input_type -> orgn_service.GetByIdRequest
+	1, // 3: orgn_service.OrgnService.Get:output_type -> orgn_service.GetResponse
+	3, // 4: orgn_service.OrgnService.GetById:output_type -> orgn_service.Orgn
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_grpc_orgn_service_proto_init() }
@@ -171,13 +291,15 @@ func file_grpc_orgn_service_proto_init() {
 	if File_grpc_orgn_service_proto != nil {
 		return
 	}
+	file_grpc_orgn_service_proto_msgTypes[0].OneofWrappers = []any{}
+	file_grpc_orgn_service_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_grpc_orgn_service_proto_rawDesc), len(file_grpc_orgn_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

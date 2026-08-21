@@ -28,10 +28,11 @@ type serverHandler struct {
 
 func NewServer(
 	logger log.Logger,
+	getUsecase get.Usecase,
 	getByIDUsecase get_by_id.Usecase,
 ) *grpc.Server {
 	handler := &serverHandler{
-		getHandler:     get.NewHandler(),
+		getHandler:     get.NewHandler(getUsecase, logger),
 		getByIDHandler: get_by_id.NewHandler(getByIDUsecase, logger),
 	}
 

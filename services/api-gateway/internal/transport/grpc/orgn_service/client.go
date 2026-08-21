@@ -31,6 +31,7 @@ func NewClient(addr string) (*Client, error) {
 
 func (c *Client) Get(ctx context.Context, dtoReq *dto.GetRequest) (*dto.GetResponse, error) {
 	req := &pb.GetRequest{
+		UserId: dtoReq.UserID,
 		Cursor: dtoReq.Cursor,
 	}
 
