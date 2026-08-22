@@ -56,11 +56,12 @@ type AuthService interface {
 	post_v1_auth_password_change.AuthService
 	post_v1_auth_switch_orgn.AuthService
 	get_v1_me.AuthService
-	tokenParser
+	accessTokenParser
 }
 
 type OrgnService interface {
 	get_v1_orgns.OrgnService
+	post_v1_orgns.OrgnService
 }
 
 // Endpoint handlers
@@ -263,7 +264,7 @@ func NewHandler(
 		postV1CustomersHandler:                    post_v1_customers.NewHandler(),
 		postV1CustomersCustomerIdSubscribeHandler: post_v1_customers_customer_id_subscribe.NewHandler(),
 		getV1OrgnsHandler:                         get_v1_orgns.NewHandler(authrz, orgnService),
-		postV1OrgnsHandler:                        post_v1_orgns.NewHandler(),
+		postV1OrgnsHandler:                        post_v1_orgns.NewHandler(authrz, orgnService, authService),
 		deleteV1OrgnsOrgnIdHandler:                delete_v1_orgns_orgn_id.NewHandler(),
 		putV1OrgnsOrgnIdHandler:                   put_v1_orgns_orgn_id.NewHandler(),
 		getV1OrgnsOrgnIdApiKeysHandler:            get_v1_orgns_orgn_id_api_keys.NewHandler(),

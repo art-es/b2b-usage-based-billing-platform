@@ -82,7 +82,7 @@ type ChangePasswordRequest struct {
 
 // CreateOrgnRequest defines model for CreateOrgnRequest.
 type CreateOrgnRequest struct {
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name"`
 }
 
 // CreateOrgnResponse defines model for CreateOrgnResponse.

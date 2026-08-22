@@ -7,6 +7,7 @@ option go_package = "internal/generated/grpc/orgn_service";
 service OrgnService {
     rpc Get (GetRequest) returns (GetResponse) {}
     rpc GetById (GetByIdRequest) returns (Orgn) {}
+    rpc Create (CreateRequest) returns (CreateResponse) {}
 }
 
 message GetRequest {
@@ -28,4 +29,13 @@ message Orgn {
     string name = 2;
     string user_id = 3;
     // TODO: add created_at 
+}
+
+message CreateRequest {
+    string user_id = 1;
+    string name = 2;
+}
+
+message CreateResponse {
+    string orgn_id = 1;
 }

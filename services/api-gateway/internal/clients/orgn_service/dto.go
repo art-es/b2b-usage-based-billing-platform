@@ -14,3 +14,12 @@ type Orgn struct {
 	ID   string
 	Name string
 }
+
+type CreateRequest struct {
+	UserID string
+	Name   string
+}
+
+type CreateResponse struct {
+	OrgnID string
+}

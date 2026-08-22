@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	OrgnService_Get_FullMethodName     = "/orgn_service.OrgnService/Get"
 	OrgnService_GetById_FullMethodName = "/orgn_service.OrgnService/GetById"
+	OrgnService_Create_FullMethodName  = "/orgn_service.OrgnService/Create"
 )
 
 // OrgnServiceClient is the client API for OrgnService service.
@@ -29,6 +30,7 @@ const (
 type OrgnServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Orgn, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 }
 
 type orgnServiceClient struct {
@@ -59,12 +61,23 @@ func (c *orgnServiceClient) GetById(ctx context.Context, in *GetByIdRequest, opt
 	return out, nil
 }
 
+func (c *orgnServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, OrgnService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrgnServiceServer is the server API for OrgnService service.
 // All implementations must embed UnimplementedOrgnServiceServer
 // for forward compatibility.
 type OrgnServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetById(context.Context, *GetByIdRequest) (*Orgn, error)
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	mustEmbedUnimplementedOrgnServiceServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedOrgnServiceServer) Get(context.Context, *GetRequest) (*GetRes
 }
 func (UnimplementedOrgnServiceServer) GetById(context.Context, *GetByIdRequest) (*Orgn, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetById not implemented")
+}
+func (UnimplementedOrgnServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedOrgnServiceServer) mustEmbedUnimplementedOrgnServiceServer() {}
 func (UnimplementedOrgnServiceServer) testEmbeddedByValue()                     {}
@@ -138,6 +154,24 @@ func _OrgnService_GetById_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrgnService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrgnServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrgnService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrgnServiceServer).Create(ctx, req.(*CreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OrgnService_ServiceDesc is the grpc.ServiceDesc for OrgnService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var OrgnService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetById",
 			Handler:    _OrgnService_GetById_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _OrgnService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

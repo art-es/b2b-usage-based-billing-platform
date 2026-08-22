@@ -96,3 +96,24 @@ func (r *Repository) Get(ctx context.Context, userID string, cursor *orgn.ListCu
 	list, nextCursor := orgn.HandleList(list)
 	return list, nextCursor, nil
 }
+
+func (r *Repository) Save(ctx context.Context, o *orgn.Orgn) error {
+	if o.Stored() {
+		return errors.New("UPDATE orgn unimplemented")
+	}
+
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `INSERT INTO orgns (name, user_id) VALUES ($1, $2) RETURNING id`
+	args := []any{o.Name, o.UserID}
+
+	err = conn.QueryRow(ctx, query, args...).Scan(&o.ID)
+	if err != nil {
+		return fmt.Errorf("execute query: %w", err)
+	}
+
+	return nil
+}

@@ -7,15 +7,15 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/auth_service"
 )
 
-type tokenParser interface {
+type accessTokenParser interface {
 	ParseToken(ctx context.Context) (*auth_service.ParseTokenResponse, error)
 }
 
 type authorizer struct {
-	tokenParser tokenParser
+	tokenParser accessTokenParser
 }
 
-func newAuthorizer(tokenParser tokenParser) *authorizer {
+func newAuthorizer(tokenParser accessTokenParser) *authorizer {
 	return &authorizer{tokenParser: tokenParser}
 }
 

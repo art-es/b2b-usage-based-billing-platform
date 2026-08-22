@@ -229,6 +229,102 @@ func (x *Orgn) GetUserId() string {
 	return ""
 }
 
+type CreateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateRequest) Reset() {
+	*x = CreateRequest{}
+	mi := &file_grpc_orgn_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRequest) ProtoMessage() {}
+
+func (x *CreateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_orgn_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRequest.ProtoReflect.Descriptor instead.
+func (*CreateRequest) Descriptor() ([]byte, []int) {
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CreateRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *CreateRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type CreateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OrgnId        string                 `protobuf:"bytes,1,opt,name=orgn_id,json=orgnId,proto3" json:"orgn_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateResponse) Reset() {
+	*x = CreateResponse{}
+	mi := &file_grpc_orgn_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateResponse) ProtoMessage() {}
+
+func (x *CreateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_orgn_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateResponse.ProtoReflect.Descriptor instead.
+func (*CreateResponse) Descriptor() ([]byte, []int) {
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CreateResponse) GetOrgnId() string {
+	if x != nil {
+		return x.OrgnId
+	}
+	return ""
+}
+
 var File_grpc_orgn_service_proto protoreflect.FileDescriptor
 
 const file_grpc_orgn_service_proto_rawDesc = "" +
@@ -249,10 +345,16 @@ const file_grpc_orgn_service_proto_rawDesc = "" +
 	"\x04Orgn\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId2\x8a\x01\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\"<\n" +
+	"\rCreateRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\")\n" +
+	"\x0eCreateResponse\x12\x17\n" +
+	"\aorgn_id\x18\x01 \x01(\tR\x06orgnId2\xd1\x01\n" +
 	"\vOrgnService\x12<\n" +
 	"\x03Get\x12\x18.orgn_service.GetRequest\x1a\x19.orgn_service.GetResponse\"\x00\x12=\n" +
-	"\aGetById\x12\x1c.orgn_service.GetByIdRequest\x1a\x12.orgn_service.Orgn\"\x00B&Z$internal/generated/grpc/orgn_serviceb\x06proto3"
+	"\aGetById\x12\x1c.orgn_service.GetByIdRequest\x1a\x12.orgn_service.Orgn\"\x00\x12E\n" +
+	"\x06Create\x12\x1b.orgn_service.CreateRequest\x1a\x1c.orgn_service.CreateResponse\"\x00B&Z$internal/generated/grpc/orgn_serviceb\x06proto3"
 
 var (
 	file_grpc_orgn_service_proto_rawDescOnce sync.Once
@@ -266,21 +368,25 @@ func file_grpc_orgn_service_proto_rawDescGZIP() []byte {
 	return file_grpc_orgn_service_proto_rawDescData
 }
 
-var file_grpc_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_grpc_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_grpc_orgn_service_proto_goTypes = []any{
 	(*GetRequest)(nil),     // 0: orgn_service.GetRequest
 	(*GetResponse)(nil),    // 1: orgn_service.GetResponse
 	(*GetByIdRequest)(nil), // 2: orgn_service.GetByIdRequest
 	(*Orgn)(nil),           // 3: orgn_service.Orgn
+	(*CreateRequest)(nil),  // 4: orgn_service.CreateRequest
+	(*CreateResponse)(nil), // 5: orgn_service.CreateResponse
 }
 var file_grpc_orgn_service_proto_depIdxs = []int32{
 	3, // 0: orgn_service.GetResponse.orgns:type_name -> orgn_service.Orgn
 	0, // 1: orgn_service.OrgnService.Get:input_type -> orgn_service.GetRequest
 	2, // 2: orgn_service.OrgnService.GetById:input_type -> orgn_service.GetByIdRequest
-	1, // 3: orgn_service.OrgnService.Get:output_type -> orgn_service.GetResponse
-	3, // 4: orgn_service.OrgnService.GetById:output_type -> orgn_service.Orgn
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
+	4, // 3: orgn_service.OrgnService.Create:input_type -> orgn_service.CreateRequest
+	1, // 4: orgn_service.OrgnService.Get:output_type -> orgn_service.GetResponse
+	3, // 5: orgn_service.OrgnService.GetById:output_type -> orgn_service.Orgn
+	5, // 6: orgn_service.OrgnService.Create:output_type -> orgn_service.CreateResponse
+	4, // [4:7] is the sub-list for method output_type
+	1, // [1:4] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -299,7 +405,7 @@ func file_grpc_orgn_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_grpc_orgn_service_proto_rawDesc), len(file_grpc_orgn_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

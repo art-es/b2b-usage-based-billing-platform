@@ -53,3 +53,19 @@ func (c *Client) Get(ctx context.Context, dtoReq *dto.GetRequest) (*dto.GetRespo
 		NextCursor: res.NextCursor,
 	}, nil
 }
+
+func (c *Client) Create(ctx context.Context, dtoReq *dto.CreateRequest) (*dto.CreateResponse, error) {
+	req := &pb.CreateRequest{
+		UserId: dtoReq.UserID,
+		Name:   dtoReq.Name,
+	}
+
+	res, err := c.client.Create(ctx, req, grpcutil.CallOpts(ctx)...)
+	if err != nil {
+		return nil, grpcutil.HandleError(err)
+	}
+
+	return &dto.CreateResponse{
+		OrgnID: res.OrgnId,
+	}, nil
+}

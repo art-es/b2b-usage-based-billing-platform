@@ -3,18 +3,66 @@ package post_v1_orgns
 import (
 	"context"
 
-	app_errors "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/app/errors"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/app/auth"
+	dto "github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/clients/orgn_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/generated/openapi"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/api-gateway/internal/transport/http/openapi/openapiutil"
 )
 
-type Handler struct{}
+type authorizer interface {
+	Authorize(ctx context.Context) (*auth.Auth, error)
+}
 
-func NewHandler() *Handler {
-	return &Handler{}
+type OrgnService interface {
+	Create(ctx context.Context, req *dto.CreateRequest) (*dto.CreateResponse, error)
+}
+
+type AuthService interface {
+	SwitchOrgn(ctx context.Context, orgnID string) (string, error)
+}
+
+type Handler struct {
+	authorizer  authorizer
+	orgnService OrgnService
+	authService AuthService
+}
+
+func NewHandler(
+	authorizer authorizer,
+	orgnService OrgnService,
+	authService AuthService,
+) *Handler {
+	return &Handler{
+		authorizer:  authorizer,
+		orgnService: orgnService,
+		authService: authService,
+	}
 }
 
 // PostV1Orgns Create a new organization
 // (POST /v1/orgns)
 func (h *Handler) PostV1Orgns(ctx context.Context, req openapi.PostV1OrgnsRequestObject) (openapi.PostV1OrgnsResponseObject, error) {
-	return nil, app_errors.ErrUnimplemented
+	auth, err := h.authorizer.Authorize(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	createOrgnRes, err := h.orgnService.Create(ctx, &dto.CreateRequest{
+		UserID: auth.UserID,
+		Name:   req.Body.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: add circuit breaker
+	newAccessToken, err := h.authService.SwitchOrgn(ctx, createOrgnRes.OrgnID)
+	if err != nil {
+		return nil, err
+	}
+
+	return openapi.PostV1Orgns201JSONResponse{
+		OrgnId:      openapiutil.ToUUID(createOrgnRes.OrgnID),
+		AccessToken: newAccessToken,
+	}, nil
 }

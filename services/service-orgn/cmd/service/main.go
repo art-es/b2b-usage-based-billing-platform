@@ -85,12 +85,14 @@ func build(ctx context.Context) error {
 	// Usecases
 	getUsecase := usecases.NewGetUsecase(orgnRepository, os.Getenv(envOrgnCursorSecret), logger)
 	getByIDUsecase := usecases.NewGetByIDUsecase(orgnRepository)
+	createUsecase := usecases.NewCreateUsecase(orgnRepository)
 
 	// GRPC Server
 	grpcServer := grpc_orgn_service.NewServer(
 		logger,
 		getUsecase,
 		getByIDUsecase,
+		createUsecase,
 	)
 	initGRPCServer(grpcServer)
 
