@@ -58,14 +58,13 @@ func (r *Repository) Get(ctx context.Context, userID string, cursor *session.Lis
 		args = append(args, cursor.CreatedAt, cursor.ID)
 	}
 
-	const limit = 10
 	query := fmt.Sprintf(
 		`SELECT %s
 		FROM sessions
 		WHERE user_id = $1%s
 		ORDER BY created_at DESC, id DESC
 		LIMIT %d`,
-		columns, whereCursor, limit+1,
+		columns, whereCursor, session.DBListLimit,
 	)
 
 	rows, err := conn.Query(ctx, query, args...)
@@ -76,7 +75,6 @@ func (r *Repository) Get(ctx context.Context, userID string, cursor *session.Lis
 	defer rows.Close()
 
 	var list []*session.Session
-
 	for rows.Next() {
 		s := &session.Session{}
 		err = rows.Scan(scanColumns(s)...)
@@ -86,9 +84,6 @@ func (r *Repository) Get(ctx context.Context, userID string, cursor *session.Lis
 		list = append(list, s)
 	}
 
-	hasMore := len(list) == limit+1
-	list = list[:limit]
-	nextCursor := session.GetNextCursor(list, hasMore)
-
+	list, nextCursor := session.HandleList(list)
 	return list, nextCursor, nil
 }

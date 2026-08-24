@@ -1,4 +1,4 @@
-package orgn
+package session
 
 import (
 	"time"
@@ -10,11 +10,12 @@ const (
 )
 
 type ListCursor struct {
-	ID        string    `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
+	Version   int       `json:"v"`
+	ID        string    `json:"i"`
+	CreatedAt time.Time `json:"t"`
 }
 
-func HandleList(list []*Orgn) ([]*Orgn, *ListCursor) {
+func HandleList(list []*Session) ([]*Session, *ListCursor) {
 	if len(list) < DBListLimit {
 		return list, nil
 	}
@@ -23,6 +24,7 @@ func HandleList(list []*Orgn) ([]*Orgn, *ListCursor) {
 	list = list[:len(list)-1]
 
 	return list, &ListCursor{
+		Version:   1,
 		ID:        last.ID,
 		CreatedAt: last.CreatedAt,
 	}
