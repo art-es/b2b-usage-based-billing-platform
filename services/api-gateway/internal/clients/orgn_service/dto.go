@@ -23,3 +23,9 @@ type CreateRequest struct {
 type CreateResponse struct {
 	OrgnID string
 }
+
+type UpdateRequest struct {
+	UserID string
+	OrgnID string
+	Name   *string
+}

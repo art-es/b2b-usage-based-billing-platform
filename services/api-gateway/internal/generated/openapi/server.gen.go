@@ -200,6 +200,11 @@ type SwitchOrgnResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
+// UpdateOrgnRequest defines model for UpdateOrgnRequest.
+type UpdateOrgnRequest struct {
+	Name *string `json:"name,omitempty"`
+}
+
 // VerifyEmailRequest defines model for VerifyEmailRequest.
 type VerifyEmailRequest struct {
 	Token openapi_types.UUID `json:"token"`
@@ -243,6 +248,9 @@ type PostV1AuthSwitchOrgnJSONRequestBody = SwitchOrgnRequest
 
 // PostV1OrgnsJSONRequestBody defines body for PostV1Orgns for application/json ContentType.
 type PostV1OrgnsJSONRequestBody = CreateOrgnRequest
+
+// PutV1OrgnsOrgnIdJSONRequestBody defines body for PutV1OrgnsOrgnId for application/json ContentType.
+type PutV1OrgnsOrgnIdJSONRequestBody = UpdateOrgnRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -1684,17 +1692,18 @@ func (response DeleteV1OrgnsOrgnId200Response) VisitDeleteV1OrgnsOrgnIdResponse(
 
 type PutV1OrgnsOrgnIdRequestObject struct {
 	OrgnId string `json:"orgn_id"`
+	Body   *PutV1OrgnsOrgnIdJSONRequestBody
 }
 
 type PutV1OrgnsOrgnIdResponseObject interface {
 	VisitPutV1OrgnsOrgnIdResponse(w http.ResponseWriter) error
 }
 
-type PutV1OrgnsOrgnId200Response struct {
+type PutV1OrgnsOrgnId202Response struct {
 }
 
-func (response PutV1OrgnsOrgnId200Response) VisitPutV1OrgnsOrgnIdResponse(w http.ResponseWriter) error {
-	w.WriteHeader(200)
+func (response PutV1OrgnsOrgnId202Response) VisitPutV1OrgnsOrgnIdResponse(w http.ResponseWriter) error {
+	w.WriteHeader(202)
 	return nil
 }
 
@@ -2616,6 +2625,13 @@ func (sh *strictHandler) PutV1OrgnsOrgnId(w http.ResponseWriter, r *http.Request
 	var request PutV1OrgnsOrgnIdRequestObject
 
 	request.OrgnId = orgnId
+
+	var body PutV1OrgnsOrgnIdJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.PutV1OrgnsOrgnId(ctx, request.(PutV1OrgnsOrgnIdRequestObject))

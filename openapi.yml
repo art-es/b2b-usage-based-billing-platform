@@ -309,8 +309,15 @@ paths:
     put:
       summary: Update the organization
       tags: [Organization]
+      security: [Bearer: []]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/UpdateOrgnRequest"
       responses:
-        "200":
+        "202":
           description: Organization updated
     
     delete:
@@ -786,4 +793,10 @@ components:
           type: string
           format: uuid
         access_token:
+          type: string
+
+    UpdateOrgnRequest:
+      type: object
+      properties:
+        name:
           type: string

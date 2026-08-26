@@ -69,3 +69,15 @@ func (c *Client) Create(ctx context.Context, dtoReq *dto.CreateRequest) (*dto.Cr
 		OrgnID: res.OrgnId,
 	}, nil
 }
+
+func (c *Client) Update(ctx context.Context, dtoReq *dto.UpdateRequest) error {
+	req := &pb.UpdateRequest{
+		UserId: dtoReq.UserID,
+		OrgnId: dtoReq.OrgnID,
+		Name:   dtoReq.Name,
+	}
+
+	_, err := c.client.Update(ctx, req, grpcutil.CallOpts(ctx)...)
+
+	return grpcutil.HandleError(err)
+}

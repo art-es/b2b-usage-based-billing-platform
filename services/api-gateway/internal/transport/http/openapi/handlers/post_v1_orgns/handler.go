@@ -42,13 +42,13 @@ func NewHandler(
 // PostV1Orgns Create a new organization
 // (POST /v1/orgns)
 func (h *Handler) PostV1Orgns(ctx context.Context, req openapi.PostV1OrgnsRequestObject) (openapi.PostV1OrgnsResponseObject, error) {
-	auth, err := h.authorizer.Authorize(ctx)
+	authObj, err := h.authorizer.Authorize(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	createOrgnRes, err := h.orgnService.Create(ctx, &dto.CreateRequest{
-		UserID: auth.UserID,
+		UserID: authObj.UserID,
 		Name:   req.Body.Name,
 	})
 	if err != nil {
