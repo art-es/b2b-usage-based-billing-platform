@@ -11,6 +11,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/orgn"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/get_me/dto"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/clients/orgn_service"
 )
 
 type userRepository interface {
@@ -18,7 +19,7 @@ type userRepository interface {
 }
 
 type orgnService interface {
-	GetByID(ctx context.Context, id string) (*orgn.Orgn, error)
+	GetByID(ctx context.Context, req *orgn_service.GetByIDRequest) (*orgn.Orgn, error)
 }
 
 type Usecase struct {
@@ -53,7 +54,10 @@ func (u *Usecase) Do(ctx context.Context, claims *jwt.Claims) (*dto.Response, er
 
 	if claims.OrgnID != nil {
 		eg.Go(func() (err error) {
-			org, err = u.orgnService.GetByID(egCtx, *claims.OrgnID)
+			org, err = u.orgnService.GetByID(egCtx, &orgn_service.GetByIDRequest{
+				UserID: claims.UserID,
+				OrgnID: *claims.OrgnID,
+			})
 			if err != nil {
 				return fmt.Errorf("get orgn by id: %w", err)
 			}

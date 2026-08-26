@@ -13,6 +13,7 @@ import (
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/trx/trxutil"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/usecases/switch_orgn/dto"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/validate"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/clients/orgn_service"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/pkg/log"
 )
 
@@ -22,7 +23,7 @@ type sessionRepository interface {
 }
 
 type orgnService interface {
-	GetByID(ctx context.Context, orgnID string) (*orgn.Orgn, error)
+	GetByID(ctx context.Context, req *orgn_service.GetByIDRequest) (*orgn.Orgn, error)
 }
 
 type jwtService interface {
@@ -56,7 +57,10 @@ func NewUsecase(
 }
 
 func (u *Usecase) Do(ctx context.Context, req *dto.Request) (*dto.Response, error) {
-	org, err := u.orgnService.GetByID(ctx, req.OrgnID)
+	org, err := u.orgnService.GetByID(ctx, &orgn_service.GetByIDRequest{
+		UserID: req.Auth.UserID,
+		OrgnID: req.OrgnID,
+	})
 	if err != nil {
 		if errors.Is(err, orgn.ErrNotFound) {
 			return nil, errIncorrectOrgnID

@@ -9,6 +9,8 @@ package orgn_service
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -127,7 +129,8 @@ func (x *GetResponse) GetNextCursor() string {
 
 type GetByIdRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	OrgnId        string                 `protobuf:"bytes,2,opt,name=orgn_id,json=orgnId,proto3" json:"orgn_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -162,9 +165,16 @@ func (*GetByIdRequest) Descriptor() ([]byte, []int) {
 	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetByIdRequest) GetId() string {
+func (x *GetByIdRequest) GetUserId() string {
 	if x != nil {
-		return x.Id
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetByIdRequest) GetOrgnId() string {
+	if x != nil {
+		return x.OrgnId
 	}
 	return ""
 }
@@ -173,7 +183,8 @@ type Orgn struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // TODO: add created_at
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -227,6 +238,13 @@ func (x *Orgn) GetUserId() string {
 		return x.UserId
 	}
 	return ""
+}
+
+func (x *Orgn) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
 }
 
 type CreateRequest struct {
@@ -325,11 +343,71 @@ func (x *CreateResponse) GetOrgnId() string {
 	return ""
 }
 
+type UpdateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	OrgnId        string                 `protobuf:"bytes,2,opt,name=orgn_id,json=orgnId,proto3" json:"orgn_id,omitempty"`
+	Name          *string                `protobuf:"bytes,3,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateRequest) Reset() {
+	*x = UpdateRequest{}
+	mi := &file_grpc_orgn_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateRequest) ProtoMessage() {}
+
+func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_orgn_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateRequest.ProtoReflect.Descriptor instead.
+func (*UpdateRequest) Descriptor() ([]byte, []int) {
+	return file_grpc_orgn_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UpdateRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *UpdateRequest) GetOrgnId() string {
+	if x != nil {
+		return x.OrgnId
+	}
+	return ""
+}
+
+func (x *UpdateRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
 var File_grpc_orgn_service_proto protoreflect.FileDescriptor
 
 const file_grpc_orgn_service_proto_rawDesc = "" +
 	"\n" +
-	"\x17grpc/orgn_service.proto\x12\forgn_service\"M\n" +
+	"\x17grpc/orgn_service.proto\x12\forgn_service\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"M\n" +
 	"\n" +
 	"GetRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
@@ -339,22 +417,31 @@ const file_grpc_orgn_service_proto_rawDesc = "" +
 	"\x05orgns\x18\x01 \x03(\v2\x12.orgn_service.OrgnR\x05orgns\x12$\n" +
 	"\vnext_cursor\x18\x02 \x01(\tH\x00R\n" +
 	"nextCursor\x88\x01\x01B\x0e\n" +
-	"\f_next_cursor\" \n" +
-	"\x0eGetByIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"C\n" +
+	"\f_next_cursor\"B\n" +
+	"\x0eGetByIdRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x17\n" +
+	"\aorgn_id\x18\x02 \x01(\tR\x06orgnId\"~\n" +
 	"\x04Orgn\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId\"<\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x129\n" +
+	"\n" +
+	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"<\n" +
 	"\rCreateRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\")\n" +
 	"\x0eCreateResponse\x12\x17\n" +
-	"\aorgn_id\x18\x01 \x01(\tR\x06orgnId2\xd1\x01\n" +
+	"\aorgn_id\x18\x01 \x01(\tR\x06orgnId\"c\n" +
+	"\rUpdateRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x17\n" +
+	"\aorgn_id\x18\x02 \x01(\tR\x06orgnId\x12\x17\n" +
+	"\x04name\x18\x03 \x01(\tH\x00R\x04name\x88\x01\x01B\a\n" +
+	"\x05_name2\x92\x02\n" +
 	"\vOrgnService\x12<\n" +
 	"\x03Get\x12\x18.orgn_service.GetRequest\x1a\x19.orgn_service.GetResponse\"\x00\x12=\n" +
 	"\aGetById\x12\x1c.orgn_service.GetByIdRequest\x1a\x12.orgn_service.Orgn\"\x00\x12E\n" +
-	"\x06Create\x12\x1b.orgn_service.CreateRequest\x1a\x1c.orgn_service.CreateResponse\"\x00B&Z$internal/generated/grpc/orgn_serviceb\x06proto3"
+	"\x06Create\x12\x1b.orgn_service.CreateRequest\x1a\x1c.orgn_service.CreateResponse\"\x00\x12?\n" +
+	"\x06Update\x12\x1b.orgn_service.UpdateRequest\x1a\x16.google.protobuf.Empty\"\x00B&Z$internal/generated/grpc/orgn_serviceb\x06proto3"
 
 var (
 	file_grpc_orgn_service_proto_rawDescOnce sync.Once
@@ -368,28 +455,34 @@ func file_grpc_orgn_service_proto_rawDescGZIP() []byte {
 	return file_grpc_orgn_service_proto_rawDescData
 }
 
-var file_grpc_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_grpc_orgn_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_grpc_orgn_service_proto_goTypes = []any{
-	(*GetRequest)(nil),     // 0: orgn_service.GetRequest
-	(*GetResponse)(nil),    // 1: orgn_service.GetResponse
-	(*GetByIdRequest)(nil), // 2: orgn_service.GetByIdRequest
-	(*Orgn)(nil),           // 3: orgn_service.Orgn
-	(*CreateRequest)(nil),  // 4: orgn_service.CreateRequest
-	(*CreateResponse)(nil), // 5: orgn_service.CreateResponse
+	(*GetRequest)(nil),            // 0: orgn_service.GetRequest
+	(*GetResponse)(nil),           // 1: orgn_service.GetResponse
+	(*GetByIdRequest)(nil),        // 2: orgn_service.GetByIdRequest
+	(*Orgn)(nil),                  // 3: orgn_service.Orgn
+	(*CreateRequest)(nil),         // 4: orgn_service.CreateRequest
+	(*CreateResponse)(nil),        // 5: orgn_service.CreateResponse
+	(*UpdateRequest)(nil),         // 6: orgn_service.UpdateRequest
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 8: google.protobuf.Empty
 }
 var file_grpc_orgn_service_proto_depIdxs = []int32{
 	3, // 0: orgn_service.GetResponse.orgns:type_name -> orgn_service.Orgn
-	0, // 1: orgn_service.OrgnService.Get:input_type -> orgn_service.GetRequest
-	2, // 2: orgn_service.OrgnService.GetById:input_type -> orgn_service.GetByIdRequest
-	4, // 3: orgn_service.OrgnService.Create:input_type -> orgn_service.CreateRequest
-	1, // 4: orgn_service.OrgnService.Get:output_type -> orgn_service.GetResponse
-	3, // 5: orgn_service.OrgnService.GetById:output_type -> orgn_service.Orgn
-	5, // 6: orgn_service.OrgnService.Create:output_type -> orgn_service.CreateResponse
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	7, // 1: orgn_service.Orgn.created_at:type_name -> google.protobuf.Timestamp
+	0, // 2: orgn_service.OrgnService.Get:input_type -> orgn_service.GetRequest
+	2, // 3: orgn_service.OrgnService.GetById:input_type -> orgn_service.GetByIdRequest
+	4, // 4: orgn_service.OrgnService.Create:input_type -> orgn_service.CreateRequest
+	6, // 5: orgn_service.OrgnService.Update:input_type -> orgn_service.UpdateRequest
+	1, // 6: orgn_service.OrgnService.Get:output_type -> orgn_service.GetResponse
+	3, // 7: orgn_service.OrgnService.GetById:output_type -> orgn_service.Orgn
+	5, // 8: orgn_service.OrgnService.Create:output_type -> orgn_service.CreateResponse
+	8, // 9: orgn_service.OrgnService.Update:output_type -> google.protobuf.Empty
+	6, // [6:10] is the sub-list for method output_type
+	2, // [2:6] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_grpc_orgn_service_proto_init() }
@@ -399,13 +492,14 @@ func file_grpc_orgn_service_proto_init() {
 	}
 	file_grpc_orgn_service_proto_msgTypes[0].OneofWrappers = []any{}
 	file_grpc_orgn_service_proto_msgTypes[1].OneofWrappers = []any{}
+	file_grpc_orgn_service_proto_msgTypes[6].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_grpc_orgn_service_proto_rawDesc), len(file_grpc_orgn_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

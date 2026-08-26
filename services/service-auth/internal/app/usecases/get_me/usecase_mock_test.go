@@ -15,6 +15,7 @@ import (
 
 	orgn "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/orgn"
 	user "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/user"
+	orgn_service "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/clients/orgn_service"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -82,16 +83,16 @@ func (m *MockorgnService) EXPECT() *MockorgnServiceMockRecorder {
 }
 
 // GetByID mocks base method.
-func (m *MockorgnService) GetByID(ctx context.Context, id string) (*orgn.Orgn, error) {
+func (m *MockorgnService) GetByID(ctx context.Context, req *orgn_service.GetByIDRequest) (*orgn.Orgn, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", ctx, id)
+	ret := m.ctrl.Call(m, "GetByID", ctx, req)
 	ret0, _ := ret[0].(*orgn.Orgn)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByID indicates an expected call of GetByID.
-func (mr *MockorgnServiceMockRecorder) GetByID(ctx, id any) *gomock.Call {
+func (mr *MockorgnServiceMockRecorder) GetByID(ctx, req any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockorgnService)(nil).GetByID), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockorgnService)(nil).GetByID), ctx, req)
 }

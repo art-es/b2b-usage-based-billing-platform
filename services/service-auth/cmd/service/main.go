@@ -121,7 +121,7 @@ func build(ctx context.Context) error {
 		jwtService, hmacSha256Service, timeService, uuidService, sessionRepository,
 		os.Getenv(envJWTSecret), os.Getenv(envRefreshTokenSecret), logger,
 	)
-	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, hmacSha256Service, os.Getenv(envSessionsCursorSecret))
+	getSessionsUsecase := usecases.NewGetSessionsUsecase(sessionRepository, os.Getenv(envSessionsCursorSecret), logger)
 	finishAllSessionsUsecase := usecases.NewFinishAllSessionsUsecase(sessionRepository)
 	finishSessionUsecase := usecases.NewFinishSessionUsecase(sessionRepository)
 	createPasswordResetUsecase := usecases.NewCreatePasswordResetUsecase(userRepository, passwordResetRepository)

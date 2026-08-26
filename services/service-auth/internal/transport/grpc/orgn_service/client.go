@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/app/domains/orgn"
+	dto "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/clients/orgn_service"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-auth/internal/generated/grpc/orgn_service"
 )
 
@@ -28,8 +29,11 @@ func NewClient(addr string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) GetByID(ctx context.Context, id string) (*orgn.Orgn, error) {
-	org, err := c.client.GetById(ctx, &pb.GetByIdRequest{Id: id})
+func (c *Client) GetByID(ctx context.Context, req *dto.GetByIDRequest) (*orgn.Orgn, error) {
+	org, err := c.client.GetById(ctx, &pb.GetByIdRequest{
+		UserId: req.UserID,
+		OrgnId: req.OrgnID,
+	})
 	if err != nil {
 		return nil, err
 	}
