@@ -1,13 +1,16 @@
 syntax = "proto3";
 
 package orgn_service;
-
 option go_package = "internal/generated/grpc/orgn_service";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 service OrgnService {
     rpc Get (GetRequest) returns (GetResponse) {}
     rpc GetById (GetByIdRequest) returns (Orgn) {}
     rpc Create (CreateRequest) returns (CreateResponse) {}
+    rpc Update (UpdateRequest) returns (google.protobuf.Empty) {}
 }
 
 message GetRequest {
@@ -21,14 +24,15 @@ message GetResponse {
 }
 
 message GetByIdRequest {
-    string id = 1;
+    string user_id = 1;
+    string orgn_id = 2;
 }
 
 message Orgn {
     string id = 1;
     string name = 2;
     string user_id = 3;
-    // TODO: add created_at 
+    google.protobuf.Timestamp created_at = 4;
 }
 
 message CreateRequest {
@@ -38,4 +42,10 @@ message CreateRequest {
 
 message CreateResponse {
     string orgn_id = 1;
+}
+
+message UpdateRequest {
+    string user_id = 1;
+    string orgn_id = 2;
+    optional string name = 3;
 }

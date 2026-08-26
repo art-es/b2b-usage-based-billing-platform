@@ -19,3 +19,14 @@ func New(name, userID string) *Orgn {
 func (o *Orgn) Stored() bool {
 	return o.ID != ""
 }
+
+func (o *Orgn) Update(name *string) bool {
+	var hasUpdates bool
+
+	if name != nil {
+		hasUpdates = true
+		o.Name = *name
+	}
+
+	return hasUpdates
+}

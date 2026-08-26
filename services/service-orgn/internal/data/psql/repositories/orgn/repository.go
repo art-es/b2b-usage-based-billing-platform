@@ -25,14 +25,18 @@ func NewRepository(conns psql.Conns) *Repository {
 	return &Repository{conns: conns}
 }
 
-func (r *Repository) Find(ctx context.Context, id string) (*orgn.Orgn, error) {
+func (r *Repository) Find(ctx context.Context, orgnID, userID string) (*orgn.Orgn, error) {
 	conn, err := r.conns.Conn(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	query := fmt.Sprintf(`SELECT %s FROM organizations WHERE id = $1`, columns)
-	args := []any{id}
+	query := fmt.Sprintf(`SELECT %s FROM organizations WHERE id = $1 AND user_id = $2`, columns)
+	args := []any{orgnID, userID}
+
+	if conn.IsTx() {
+		query += " FOR UPDATE"
+	}
 
 	org := &orgn.Orgn{}
 	err = conn.QueryRow(ctx, query, args...).Scan(scanColumns(org)...)
@@ -99,9 +103,12 @@ func (r *Repository) Get(ctx context.Context, userID string, cursor *orgn.ListCu
 
 func (r *Repository) Save(ctx context.Context, o *orgn.Orgn) error {
 	if o.Stored() {
-		return errors.New("UPDATE orgn unimplemented")
+		return r.update(ctx, o)
 	}
+	return r.insert(ctx, o)
+}
 
+func (r *Repository) insert(ctx context.Context, o *orgn.Orgn) error {
 	conn, err := r.conns.Conn(ctx)
 	if err != nil {
 		return err
@@ -111,6 +118,23 @@ func (r *Repository) Save(ctx context.Context, o *orgn.Orgn) error {
 	args := []any{o.Name, o.UserID}
 
 	err = conn.QueryRow(ctx, query, args...).Scan(&o.ID)
+	if err != nil {
+		return fmt.Errorf("execute query: %w", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) update(ctx context.Context, o *orgn.Orgn) error {
+	conn, err := r.conns.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `UPDATE orgns SET name = $2 WHERE id = $1`
+	args := []any{o.UserID, o.Name}
+
+	_, err = conn.Exec(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("execute query: %w", err)
 	}

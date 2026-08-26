@@ -86,6 +86,7 @@ func build(ctx context.Context) error {
 	getUsecase := usecases.NewGetUsecase(orgnRepository, os.Getenv(envOrgnCursorSecret), logger)
 	getByIDUsecase := usecases.NewGetByIDUsecase(orgnRepository)
 	createUsecase := usecases.NewCreateUsecase(orgnRepository)
+	updateUsecase := usecases.NewUpdateUsecase(orgnRepository)
 
 	// GRPC Server
 	grpcServer := grpc_orgn_service.NewServer(
@@ -94,7 +95,11 @@ func build(ctx context.Context) error {
 		getByIDUsecase,
 		createUsecase,
 	)
-	initGRPCServer(grpcServer)
+
+	err = initGRPCServer(grpcServer)
+	if err != nil {
+		return fmt.Errorf("init grpc server: %w", err)
+	}
 
 	return nil
 }

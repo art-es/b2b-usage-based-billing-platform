@@ -13,12 +13,14 @@ func Required() *requiredRule {
 }
 
 func (*requiredRule) Validate(val any) (bool, error) {
-	s, ok := val.(string)
-	if !ok {
+	switch val := val.(type) {
+	case string:
+		return len(val) != 0, nil
+	case *string:
+		return val != nil && len(*val) != 0, nil
+	default:
 		return false, fmt.Errorf("unknown value type: %T", val)
 	}
-
-	return s == "", nil
 }
 
 func (*requiredRule) FormError() *validate.Error {

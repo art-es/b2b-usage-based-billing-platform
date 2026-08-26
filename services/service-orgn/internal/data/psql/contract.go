@@ -14,6 +14,7 @@ type Conn interface {
 	Exec(ctx context.Context, query string, args ...any) (Result, error)
 	Query(ctx context.Context, query string, args ...any) (Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) Row
+	IsTx() bool
 }
 
 type Result sql.Result

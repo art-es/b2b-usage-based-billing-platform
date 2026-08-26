@@ -3,6 +3,8 @@ package get
 import (
 	"context"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/app/domains/orgn"
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/app/usecases/get/dto"
 	pb "github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/generated/grpc/orgn_service"
@@ -50,9 +52,10 @@ func convertOrgns(in []*orgn.Orgn) []*pb.Orgn {
 	out := make([]*pb.Orgn, 0, len(in))
 	for _, o := range in {
 		out = append(out, &pb.Orgn{
-			Id:     o.ID,
-			Name:   o.Name,
-			UserId: o.UserID,
+			Id:        o.ID,
+			Name:      o.Name,
+			UserId:    o.UserID,
+			CreatedAt: timestamppb.New(o.CreatedAt),
 		})
 	}
 	return out

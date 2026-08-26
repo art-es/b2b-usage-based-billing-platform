@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/app/validate"
+	"github.com/art-es/b2b-usage-based-billing-platform/services/service-orgn/internal/pkg/ptr"
 )
 
 type lengthRule struct {
@@ -30,12 +31,16 @@ func Length(min, max *int) *lengthRule {
 }
 
 func (r *lengthRule) Validate(val any) (bool, error) {
-	s, ok := val.(string)
-	if !ok {
+	var n int
+	switch val := val.(type) {
+	case string:
+		n = len(val)
+	case *string:
+		n = len(ptr.Value(val))
+	default:
 		return false, fmt.Errorf("unknown value type: %T", val)
 	}
 
-	n := len(s)
 	res := (r.min == nil || n >= *r.min) || (r.max == nil || n <= *r.max)
 	return res, nil
 }

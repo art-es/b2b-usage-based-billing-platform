@@ -99,6 +99,10 @@ func (a *dbAdapter) QueryRow(ctx context.Context, query string, args ...any) Row
 	return a.adaptee.QueryRowContext(ctx, query, args...)
 }
 
+func (a *dbAdapter) IsTx() bool {
+	return false
+}
+
 // *sql.Tx adapter
 
 type txAdapter struct {
@@ -119,4 +123,8 @@ func (a *txAdapter) Query(ctx context.Context, query string, args ...any) (Rows,
 
 func (a *txAdapter) QueryRow(ctx context.Context, query string, args ...any) Row {
 	return a.adaptee.QueryRowContext(ctx, query, args...)
+}
+
+func (a *txAdapter) IsTx() bool {
+	return true
 }

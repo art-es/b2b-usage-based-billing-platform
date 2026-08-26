@@ -11,7 +11,7 @@ type Rule interface {
 	FormError() *Error
 }
 
-func Validate(field, val string, rules ...Rule) error {
+func Validate(field string, val any, rules ...Rule) error {
 	for _, rule := range rules {
 		ok, err := rule.Validate(val)
 		if err != nil {

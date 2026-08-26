@@ -23,8 +23,13 @@ func NewUsecase(orgnRepository orgnRepository) *Usecase {
 }
 
 func (u *Usecase) Do(ctx context.Context, req *dto.Request) (*dto.Response, error) {
+	err := validateRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
 	org := orgn.New(req.Name, req.UserID)
-	err := u.orgnRepository.Save(ctx, org)
+	err = u.orgnRepository.Save(ctx, org)
 	if err != nil {
 		return nil, fmt.Errorf("save orgn: %w", err)
 	}
