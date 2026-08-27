@@ -94,6 +94,7 @@ func build(ctx context.Context) error {
 		getUsecase,
 		getByIDUsecase,
 		createUsecase,
+		updateUsecase,
 	)
 
 	err = initGRPCServer(grpcServer)
