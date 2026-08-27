@@ -62,6 +62,7 @@ type AuthService interface {
 type OrgnService interface {
 	get_v1_orgns.OrgnService
 	post_v1_orgns.OrgnService
+	put_v1_orgns_orgn_id.OrgnService
 }
 
 // Endpoint handlers
@@ -266,7 +267,7 @@ func NewHandler(
 		getV1OrgnsHandler:                         get_v1_orgns.NewHandler(authrz, orgnService),
 		postV1OrgnsHandler:                        post_v1_orgns.NewHandler(authrz, orgnService, authService),
 		deleteV1OrgnsOrgnIdHandler:                delete_v1_orgns_orgn_id.NewHandler(),
-		putV1OrgnsOrgnIdHandler:                   put_v1_orgns_orgn_id.NewHandler(),
+		putV1OrgnsOrgnIdHandler:                   put_v1_orgns_orgn_id.NewHandler(authrz, orgnService),
 		getV1OrgnsOrgnIdApiKeysHandler:            get_v1_orgns_orgn_id_api_keys.NewHandler(),
 		postV1OrgnsOrgnIdApiKeysHandler:           post_v1_orgns_orgn_id_api_keys.NewHandler(),
 		deleteV1OrgnsOrgnIdApiKeysKeyIdHandler:    delete_v1_orgns_orgn_id_api_keys_key_id.NewHandler(),
